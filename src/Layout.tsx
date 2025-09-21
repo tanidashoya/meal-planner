@@ -43,6 +43,7 @@ export const Layout = () => {
         recipeStore.set(recipes)
     }
 
+
     useEffect(() => {
         fetchRecipes()
         const channel = subscribeRecipe()
@@ -51,6 +52,7 @@ export const Layout = () => {
             unsubscribe(channel!)
         }
     },[currentUserStore.currentUser])
+ 
     
     const moveToDetail = (recipeID:number) => {
         navigate(`/recipes/${recipeID}`)
@@ -94,7 +96,7 @@ export const Layout = () => {
 
     //payloadは「どのように変更されるかを定義している」のではなく、「実際に変更が起きた後の結果情報」
     //データベースが変更されたときに変更情報を接続されているアプリにpayloadとして送っている
-    //
+    //raitingを既存のデータに追加するときにはpayload.eventTypeはUPDATEとなる ⇒ グローバスステートに追加される
     const subscribeRecipe = () => {
         if (currentUserStore.currentUser == null) {
             return;
@@ -152,4 +154,17 @@ overflow-y-auto
 縦方向のスクロール制御。
 内容が親の高さを超えたらスクロールバーが出る。
 内容が収まっていればスクロールバーは出ない。
+*/
+
+/* 
+supabaseのRealTimeで購読したときのコールバックにはこんなpayloadが渡ってくる
+{
+  schema: "public",             // スキーマ名
+  table: "recipes",             // テーブル名
+  commit_timestamp: "2025-09-21T10:00:00Z", // DBでのコミット時刻
+  eventType: "UPDATE",          // "INSERT" | "UPDATE" | "DELETE"
+  new: { ... },                 // 更新後 / 追加後 のレコード
+  old: { ... },                 // 更新前 / 削除前 のレコード
+  errors: null
+}
 */

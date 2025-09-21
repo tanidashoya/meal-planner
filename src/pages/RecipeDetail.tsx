@@ -16,8 +16,13 @@ export const RecipeDetail = ()=> {
     const currentUserStore = useCurrentUserStore();
     const recipes = recipeStore.getAll();
     //グローバルステートから取得したレシピデータをfilterでidが一致するものを抽出
-    const targetRecipes = recipes.filter(recipe => recipe.id == Number(id));
-    console.log(targetRecipes);
+    //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
+    const targetRecipe = recipes.filter(recipe => recipe.id == Number(id))[0];
+
+    const handleReload = () => {
+        window.location.reload(); // ページをリロード
+    };
+
     // レシピが見つからない場合、データベースから直接取得
     //データベースから直接取得することで、グローバルステートの更新が不要になる
     //直接レシピ詳細画面にアクセス（LayOutコンポーネントを経由せず）した場合でもレシピをグローバルステートに取得するため
@@ -29,42 +34,46 @@ export const RecipeDetail = ()=> {
     // ブラウザの戻る/進むボタン
     useEffect(() => {
         const loadRecipe = async () => {
-            if (targetRecipes.length === 0 && id && currentUserStore.currentUser) {
+            if (targetRecipe === undefined && id && currentUserStore.currentUser) {
                 const recipes = await recipeRepository.findAll(currentUserStore.currentUser.id);
                 //LayOutを経由した場合は重複するように思えるがsetメソッドで重複を排除している
                 recipeStore.set(recipes);
             }
         };
         loadRecipe();
-    }, [id, targetRecipes.length, currentUserStore.currentUser]);
+    }, [id, targetRecipe, currentUserStore.currentUser]);
     
     //Numberを付けるのはidがstring型のため
     return (
         <div className="flex flex-col items-center justify-center h-screen p-12">
-            {targetRecipes.length === 0 ? (
+            {targetRecipe === undefined ? (
                 <div className="text-center">
-                    <p className="text-xl text-gray-600">レシピが見つかりません</p>
-                    <p className="text-sm text-gray-400 mt-2">ID: {id}</p>
-                    <p className="text-sm text-gray-400">総レシピ数: {recipes.length}</p>
+                    <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
+                    <span className="text-xl text-gray-600">
+                        ページを
+                        <span onClick={handleReload} className="text-blue-500 py-2 mx-2 text-lg">
+                            更新
+                        </span>
+                        してもう一度お試しください
+                    </span>
                 </div>
-            ) : (
-                targetRecipes.map((recipe, index) => (
-                    <div key={index} className="flex flex-col items-center justify-center">
-                        <span className="text-2xl font-bold underline mb-6">{recipe.title}</span>
-                        <StarRatingHalfFill recipeId={recipe.id} />
-                        <div>
-                            <span className="text-lg">参照先：</span>
-                            <a 
-                                href={recipe.source || ""} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-blue-500 py-2 text-lg"
-                            >
-                                {recipe.source}
-                            </a>
-                        </div>
+            ) : (              
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold underline mb-6">{targetRecipe.title}</span>
+                    <StarRatingHalfFill recipeId={targetRecipe.id} />
+                    <div>
+                        <span className="text-lg">参照先：</span>
+                        <a 
+                            href={targetRecipe.source || ""} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-500 py-2 text-lg"
+                        >
+                            {targetRecipe.source}
+                        </a>
                     </div>
-                ))
+                </div>
+                
             )}
         </div>
     )

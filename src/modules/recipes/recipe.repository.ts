@@ -93,7 +93,7 @@ export const recipeRepository = {
     async fetchRating(userID:string,id:number){
       const {data,error} = await supabase
         .from("recipes")
-        //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみで取得する)
+        //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみ取得する)
         .select("rating")
         .eq("user_id",userID)
         .eq("id",id)
