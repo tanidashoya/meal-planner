@@ -16,6 +16,7 @@ export function StarRatingHalfFill({ recipeId }: Rating) {
     const [rating, setRating] = useState<number>(0)
     //現在の評価値を保持
     // 初期ロードでDBの値を取得
+    //recipeIDが変更になるたび（レシピ詳細画面に遷移するたび）に実行される
     useEffect(() => {
         const fetchRating = async () => {
             const data = await recipeRepository.fetchRating(currentUser!.id,recipeId)
@@ -27,9 +28,9 @@ export function StarRatingHalfFill({ recipeId }: Rating) {
 	//第一引数star:numberは何番目の星かが渡される
 	//クリックした星のonClickで実行する
     const handleClick = (star: number, e: React.MouseEvent<HTMLDivElement>) => { 
-        //新しい評価値をデータベースに保存する関数定義
+        //新しい評価値をデータベースとグローバルステートに保存する関数定義
         const updateRating = async (newRating: number) => {
-            // データベースを更新し、更新されたレシピデータを取得
+            // supabaseを更新し、更新されたレシピデータを取得
             const updatedRecipe = await recipeRepository.updateRating(currentUser!.id, recipeId, newRating)
             // グローバルステートも更新
             recipeStore.updateRating(updatedRecipe)
@@ -86,16 +87,19 @@ export function StarRatingHalfFill({ recipeId }: Rating) {
 								style → その場で動的に変化させたいとき向き。 */}
             <div
               className="absolute top-0 left-0 overflow-hidden"
+              //styleはJavaScriptのオブジェクトを受け取る仕様となっており、かつJSXではavaScript の値を埋め込むときに {} を使うから{{}}になっている
+              //レンダリング時にJSXの中のJavaScriptは計算されて結果として、style = { width: "100%" } このように渡される
               style={{ width: full ? "100%" : half ? "50%" : "0%" }}
             >
             {/* fillタイプ（内側の色指定等がある）のアイコンの場合はfillで色指定可能 */}
             {/* strockタイプ（線タイプ）アイコンの場合はstrokeWidth={3}で太さ・色調整可能 
 		            ⇒ classNameの外側に指定*/}
-              <Star className="h-9 w-9 text-yellow-400 fill-yellow-400" />
+              <Star className="h-9 w-9 text-yellow-300 fill-yellow-300" />
             </div>
           </div>
         )
       })}
+      {/* toFixed(1)で小数点第一位まで表示(四捨五入) ⇒ 返り値は文字列*/}
       <div className="text-xl text-gray-500 ml-2 font-bold ">{rating?.toFixed(1)}</div>
     </div>
   )

@@ -77,11 +77,14 @@ export const recipeRepository = {
         .update({rating:rating})
         .eq("user_id",userID)
         .eq("id",id)
+        //seledtですべてのデータを取得しているため返り値は完全なレシピのデータをして返ってくる
         .select()
+        //single()で返り値を配列ではなく、オブジェクトとして返ってくる
         .single()
       if (error != null || data == null){
         throw new Error(error?.message)
       }
+      //更新後のデータを返す
       return data
     },
 
@@ -90,7 +93,7 @@ export const recipeRepository = {
     async fetchRating(userID:string,id:number){
       const {data,error} = await supabase
         .from("recipes")
-        //ratingカラムのみを取得
+        //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみで取得する)
         .select("rating")
         .eq("user_id",userID)
         .eq("id",id)

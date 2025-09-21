@@ -98,7 +98,7 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
             </Sheet>
 
                 <Button variant="outline" className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/")}>
-                    <PlusCircle className="size-8 text-gray-500 fill-yellow-100 stroke-width-1" strokeWidth={1.5} />
+                    <PlusCircle className="size-8 text-gray-500 stroke-width-1" strokeWidth={1.5} />
                 </Button>
         </div>
     )

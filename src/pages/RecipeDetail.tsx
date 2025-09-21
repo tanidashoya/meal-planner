@@ -15,9 +15,9 @@ export const RecipeDetail = ()=> {
     const recipeStore = useRecipeStore();
     const currentUserStore = useCurrentUserStore();
     const recipes = recipeStore.getAll();
-    //データベースから取得したレシピデータをfilterでidが一致するものを抽出
+    //グローバルステートから取得したレシピデータをfilterでidが一致するものを抽出
     const targetRecipes = recipes.filter(recipe => recipe.id == Number(id));
-
+    console.log(targetRecipes);
     // レシピが見つからない場合、データベースから直接取得
     //データベースから直接取得することで、グローバルステートの更新が不要になる
     //直接レシピ詳細画面にアクセス（LayOutコンポーネントを経由せず）した場合でもレシピをグローバルステートに取得するため
