@@ -45,7 +45,7 @@ export const RecipeDetail = ()=> {
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center h-screen p-12">
+        <div className="flex flex-col items-center justify-center p-8 mt-30 lg:m-0 h-full lg:h-screen">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -59,15 +59,17 @@ export const RecipeDetail = ()=> {
                 </div>
             ) : (              
                 <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold underline mb-6">{targetRecipe.title}</span>
+                    <span className="text-2xl lg:text-3xl font-bold underline mb-6">
+                        {targetRecipe.title}
+                    </span>
                     <StarRatingHalfFill recipeId={targetRecipe.id} />
-                    <div>
+                    <div className="flex flex-col">
                         <span className="text-lg">参照先：</span>
                         <a 
                             href={targetRecipe.source || ""} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-500 py-2 text-lg"
+                            className="text-blue-500 py-2 lg:text-lg break-all"
                         >
                             {targetRecipe.source}
                         </a>
