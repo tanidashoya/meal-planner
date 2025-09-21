@@ -15,7 +15,7 @@ function App() {
 
   const fetchCrrentUser = async() => {
     const currentUser = await authRepository.getCurrentUser()
-    currentUserStore.set(currentUser!)
+    currentUserStore.set(currentUser)
     setIsLoading(false)
   }
 

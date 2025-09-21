@@ -44,12 +44,20 @@ export const Layout = () => {
     }
 
 
+
+//channelを作っておけばsubscribeの.onメソッドの第二引数で定義されているtableや指定の場所に変化があれば第三引数で渡されたcallback関数が実行されるということ
+    //スマホでログアウトしてPCでログアウトしようとしたときのエラー対応のためクリーンアップ関数にif文を追加
+    // ⇒ スマホでログアウトした際にcurrentUserがnullになり、下記のuseEffectが実行されてchannelがundefinedになる
+    // PCでログアウト処理をしようとしたときにchannelがundefinedになっており、クリーンアップ関数にunsubscribeを渡すとエラーになる
+    // ⇒ そのためif文を追加してchannelが存在する場合のみクリーンアップ関数を実行するようにする
     useEffect(() => {
         fetchRecipes()
         const channel = subscribeRecipe()
         //クリーンアップ関数
         return () => {
-            unsubscribe(channel!)
+            if (channel) {
+                unsubscribe(channel)
+            }
         }
     },[currentUserStore.currentUser])
  

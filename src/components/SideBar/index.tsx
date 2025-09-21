@@ -29,10 +29,17 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
 
     
 
+    //try-catch文を使用してエラーを捕捉する
+    //AuthSessionMissingエラー以外のエラーやグローバルステートのnull化やページ遷移に失敗した場合はエラーを捕捉して処理を停止させないようにする
     const handleSignOut = async() => {
-        await authRepository.signout()
-        currentUserStore.set(null)
-        navigate("/signin")
+        try {
+            await authRepository.signout()
+            currentUserStore.set(null)
+            navigate("/signin")
+        } catch (error) {
+            //エラーをコンソールに出力
+            console.error('ログアウト処理でエラーが発生:', error);
+        }
     }
 
     //サイドバーの開閉のショートカットキー
