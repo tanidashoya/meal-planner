@@ -45,7 +45,7 @@ export const RecipeDetail = ()=> {
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center p-8 mt-30 lg:m-0 h-full lg:h-screen">
+        <div className="flex flex-col items-center justify-center p-8 h-full">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
