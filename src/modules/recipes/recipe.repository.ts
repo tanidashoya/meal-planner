@@ -107,17 +107,14 @@ export const recipeRepository = {
     //レシピの評価を更新する
     //deleteは引数なしで呼ぶ
     async delete(userID:string,id:number){
-      const {data,error} = await supabase
+      const {error} = await supabase
         .from("recipes")
         .delete()
         .eq("user_id",userID)
         .eq("id",id)
-        .select()
-        .single()
-      if (error != null || data == null){
+      if (error != null){
         throw new Error(error?.message)
       }
-      return data
     },
 
     //レシピの詳細を取得

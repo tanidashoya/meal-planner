@@ -64,7 +64,6 @@ export const Layout = () => {
     
     const moveToDetail = (recipeID:number) => {
         navigate(`/recipes/${recipeID}`)
-        setIsShowModal(false)
         setOpen(false)
     }
 

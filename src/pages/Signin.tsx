@@ -23,27 +23,27 @@ export function Signin() {
 
     //classNameの!はimportantを意味する(詳細度を高める⇒CSSの優先度を高める)
     return (
-        <div className="flex flex-col items-center justify-center h-screen w-screen">
+        <div className="flex flex-col items-center justify-center h-[100dvh] lg:w-screen">
             <span className="text-4xl font-bold mb-8">ログイン</span>
-            <div className="flex flex-col items-center justify-center gap-y-4 border border-gray-300 rounded-md p-8">
-                <div className="flex flex-col justify-center gap-y-2 w-96">
+            <div className="flex flex-col items-center justify-center gap-y-2 border border-gray-300 rounded-md p-6 w-9/10 md:w-120">
+                <div className="flex flex-col justify-center gap-y-2 w-9/10 md:w-96">
                     <span className="text-lg">Eメールアドレス：</span>
                     <input 
                         type="email" 
                         placeholder="メールアドレスを入力" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
-                        className="p-2 border border-gray-300 rounded-md"
+                        className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                 </div>
-                <div className="flex flex-col justify-center gap-y-2 w-96">
+                <div className="flex flex-col justify-center gap-y-2 w-9/10 md:w-96">
                     <span className="text-lg">パスワード：</span>
                     <input 
                         type="password" 
                         placeholder="パスワードを入力" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)}
-                        className="p-2 border border-gray-300 rounded-md"
+                        className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                 </div>
                 <button 
@@ -55,7 +55,7 @@ export function Signin() {
                 </button>
                 <span className="text-lg">アカウントをお持ちでない方は
                     <Link to="/signup">
-                        <span className="text-lg hover:border-b-1 hover:border-blue-300 ml-2 transition-all duration-200">新規作成</span>
+                        <p className="text-center text-lg hover:border-b-1 hover:border-blue-300 ml-2 transition-all duration-200 mt-2">アカウントを新規作成</p>
                     </Link>
                 </span>
             </div>

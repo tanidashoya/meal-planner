@@ -13,6 +13,7 @@ interface SearchModalProps {
 export const SearchModal = ({isOpen,recipes,onClose,onItemSelect,onKeywordChanged}:SearchModalProps) => {
     //キーワード入力欄の状態を管理する
     const [keyword,setKeyword] = useState("")
+    
     const handleKeywordChanged = (value: string) => {
         setKeyword(value)
         onKeywordChanged(value)
@@ -20,11 +21,23 @@ export const SearchModal = ({isOpen,recipes,onClose,onItemSelect,onKeywordChange
           onKeywordChanged("")
         }
     }
+    
+    // モーダルを閉じる時にキーワードをクリアする関数
+    const handleClose = () => {
+        setKeyword("")
+        onKeywordChanged("")
+        onClose()
+    }
+
+    const handleItemSelect = (recipeId:number) => {
+      onItemSelect(recipeId)
+      handleClose()
+    }
 
     return (
       //open:モーダルが開いているかどうか
       //onOpenChange:モーダルが開いたり閉じたりした時に実行される関数
-      <CommandDialog open={isOpen} onOpenChange={onClose}>
+      <CommandDialog open={isOpen} onOpenChange={handleClose}>
         <Command shouldFilter={false}>
           {/* キーワードを入力するとonValueChangeが実行される(普通のコンポーネントのonChangeと同じ) */}
           {/* CommandItemコンポーネントのonSelectプロパティはユーザーがマウスクリック、Enterキー、方向キー + Enterキー（キーボードナビゲーション）で実行される */}
@@ -33,17 +46,20 @@ export const SearchModal = ({isOpen,recipes,onClose,onItemSelect,onKeywordChange
             value={keyword}
             //onValueChange:キーワードが入力された時に実行される関数
             onValueChange={handleKeywordChanged}
+            className="py-12 text-lg"
           />
-          <CommandList>
-            <CommandEmpty>条件に一致するノートがありません</CommandEmpty>
+          {/* 検索結果をスクロールできるように */}
+          <CommandList className="max-h-[35vh] md:max-h-[70vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain touch-pan-y">
+            <CommandEmpty className="text-center text-lg p-4 text-gray-500">条件に一致するノートがありません</CommandEmpty>
             <CommandGroup>
               {recipes?.map((recipe) => (
                 <CommandItem
                   key={recipe.id}
                   title={recipe.title ?? '無題'}
-                  onSelect={() => onItemSelect(recipe.id)}
+                  onSelect={() => handleItemSelect(recipe.id)}
+                  
                 >
-                  <span>{recipe.title ?? '無題'}</span>
+                  <span className="text-lg">{recipe.title ?? '無題'}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
