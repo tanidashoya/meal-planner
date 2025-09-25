@@ -18,35 +18,32 @@ const CategorySchema = z.enum(["肉料理","魚料理","丼・ルー料理","麵
 複数件 insert する可能性があるなら、最初から [ { … } ] 形式で書いておくと後で修正が不要になる
 */
 export const recipeRepository = {
-    async create(userID: string, params: RecipeParams | RecipeParams[]) {
-        // paramsに渡されたデータを配列に統一する
-        //Array.isArray(params)はparamsが配列かどうかを判定する
-        //基本的に追加するデータが一つでも複数でも配列に統一する
-        const rows = Array.isArray(params) ? params : [params]
+    async create(userID: string, params: RecipeParams) {
 
-        //categoryの値が正しいかどうかを判定する
-        rows.forEach(row => {
-          const parsedCategory = CategorySchema.safeParse(row.category)
-          if (!parsedCategory.success) {
-            throw new Error("値が正しくありません")
-          }
-        })
+        const parsedCategory = CategorySchema.safeParse(params.category)
+        if (!parsedCategory.success) {
+          throw new Error("値が正しくありません")
+        }
+        
 
         //.select:実際に挿入した行を返してくれるオプション
         const { data, error } = await supabase
           .from("recipes")
           .insert(
-            rows.map(row => ({
+              [
+              {
               user_id: userID,
-              title: row.title,
-              category: row.category,
-              source: row.source
-            }))
-          ).select()
+              title: params.title,
+              category: params.category,
+              source: params.source
+              }
+              ]
+            )
+          .select().single()
       
         if (error !== null) throw new Error(error?.message)
         // 単発の場合はオブジェクトを返す、複数なら配列を返す
-        return Array.isArray(params) ? data : data?.[0]
+        return data
     },
 
     //update の引数に渡すのは「更新後にしたいデータを表すオブジェクト（またはオブジェクトの配列）」

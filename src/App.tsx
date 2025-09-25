@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { useCurrentUserStore } from "./modules/auth/current-user.state"
 import { RecipeDetail } from "./pages/RecipeDetail"
 import mealPlannerLogo from "./assets/mealPlanner.png"
+import { StarSort } from "./pages/StarSort"
 
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
         <Route path="/" element={<Layout/>}>
           <Route index element={<Home/>}/>
           <Route path="/recipes/:id" element={<RecipeDetail/>}/>
+          <Route path="/star-sort" element={<StarSort/>}/>
         </Route>
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/signin" element={<Signin/>}/>

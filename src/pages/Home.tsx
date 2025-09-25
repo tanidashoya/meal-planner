@@ -29,7 +29,7 @@ export function Home(){
         setRecipeTitle("")
         setSource("")
         setSelectedCategory("")
-        return recipes
+        // return recipes
     } 
 
     //条件分岐の中で「この画面を表示する代わりにリダイレクトしたい」場合はNavigateを使う

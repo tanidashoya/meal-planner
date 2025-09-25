@@ -51,6 +51,7 @@ export const Layout = () => {
     // PCでログアウト処理をしようとしたときにchannelがundefinedになっており、クリーンアップ関数にunsubscribeを渡すとエラーになる
     // ⇒ そのためif文を追加してchannelが存在する場合のみクリーンアップ関数を実行するようにする
     useEffect(() => {
+        
         fetchRecipes()
         const channel = subscribeRecipe()
         //クリーンアップ関数
@@ -109,11 +110,15 @@ export const Layout = () => {
             return;
         }
         return subscribe(currentUserStore.currentUser!.id, (payload) => {
+            console.log('リアルタイム通信受信:', payload.eventType, payload)
             if (payload.eventType === 'INSERT') {
+                console.log('INSERTイベントを受信しました')
                 recipeStore.set([payload.new])
             } else if (payload.eventType === 'UPDATE') {
+                console.log('UPDATEイベントを受信しました')
                 recipeStore.updateRating(payload.new)
             } else if (payload.eventType === 'DELETE') {
+                console.log('DELETEイベントを受信しました')
                 recipeStore.delete(currentUserStore.currentUser!.id,payload.old.id!)
             }
         })

@@ -2,13 +2,14 @@ import { createClient } from '@supabase/supabase-js';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { Recipe } from '@/modules/recipes/recipe.entity';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { Database } from '../../database.types';
 
 
 //import.meta.env の役割    
 // Vite がビルドするとき、.env にある値を読み込みます。
 // そのうち VITE_ で始まるものだけを import.meta.env に展開して、JavaScript の中で使えるようにします。]
 
-export const supabase = createClient(
+export const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_API_KEY
 )
@@ -28,6 +29,7 @@ export const subscribe = (
     userId:string, 
     callback:(payload:RealtimePostgresChangesPayload<Recipe>)=>void
 ) => {
+    console.log('subscribe');
     return supabase
         .channel('recipes-changes')
         .on<Recipe>('postgres_changes', 

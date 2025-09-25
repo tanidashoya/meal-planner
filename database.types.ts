@@ -33,6 +33,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_id?: string
+          rating?: number | null
         }
         Update: {
           category?: string | null
@@ -42,6 +43,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_id?: string
+          rating?: number | null
         }
         Relationships: []
       }

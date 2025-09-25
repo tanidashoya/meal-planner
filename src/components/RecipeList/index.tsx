@@ -46,6 +46,7 @@ export const RecipeList = ({setOpen}:RecipeListProps) => {
         //オブジェクトaccのcategoryキーを追加
         //⇒recipesの条件に合うデータを追加
         //一つ目のreturn:useMemoの第一引数に渡したcallback（callback: 「他の関数に渡して、その関数の中で呼んでもらう」関数）の戻り値
+        //reduceの第二引数では初期値を決める
         return categories.reduce((acc, category) => {
             acc[category] = recipes.filter(recipe => 
             recipe.category === category);
