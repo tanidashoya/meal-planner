@@ -9,6 +9,7 @@ import { useCurrentUserStore } from "./modules/auth/current-user.state"
 import { RecipeDetail } from "./pages/RecipeDetail"
 import mealPlannerLogo from "./assets/mealPlanner.png"
 import { StarSort } from "./pages/StarSort"
+import { StarList } from "./pages/StarList"
 
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
           <Route index element={<Home/>}/>
           <Route path="/recipes/:id" element={<RecipeDetail/>}/>
           <Route path="/star-sort" element={<StarSort/>}/>
+          <Route path="/star-list/:star" element={<StarList/>}/>
         </Route>
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/signin" element={<Signin/>}/>

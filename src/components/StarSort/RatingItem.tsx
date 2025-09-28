@@ -28,7 +28,7 @@ export const RatingItem = ({recipes}:RatingItemProps) => {
             {recipes.map((recipe,index) => {
                 return (
                     <div key={index} 
-                    className="flex gap-4 lg:gap-6 justify-center items-center mb-5 lg:mb-8 cursor-pointer" 
+                    className="flex gap-3 lg:gap-6 justify-center items-center mb-5 lg:mb-8 cursor-pointer" 
                     onClick={() => moveToDetail(recipe.id)}
                     >
                         <Utensils className="w-5 h-5 lg:w-7 lg:h-7 fill-gray-200 text-gray-400" strokeWidth={1.0} />

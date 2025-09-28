@@ -1,6 +1,8 @@
 import { Recipe } from "../../modules/recipes/recipe.entity";
 import { RatingItem } from "./RatingItem";
 import { Star } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "../ui/button";
 
 
 // recipeByStarRating: {1:[{rating:1,・・・},{rating:0.5,・・・}],2:[{rating:2,・・・},{rating:1.5,・・・}]}
@@ -26,7 +28,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                 {sortedRecipesByStarRating.map(([rating,recipes])=> {
                     return (
                         <div key={rating} 
-                        className="w-full lg:w-4/5 mb-6 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-8 shadow-sm lg:mb-12"
+                        className="w-full lg:w-4/5 mb-6 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
                         >
                             <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
                                 {Array.from({ length: Number(rating) }, (_, i) => (
@@ -38,20 +40,42 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                                 ))}
                             </div>
                             <RatingItem 
-                                recipes={recipes}
+                                recipes={recipes.slice(0, 3)}
                             />
+                            {/* 別ページに遷移するだけならLink toが一般的 */}
+                            {recipes.length > 3 && (
+                                <div className="flex items-center justify-center gap-2 mt-8 lg:mt-12 mb-4">
+                                    <Link to={`/star-list/${rating}`}>
+                                        <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                            <p className=" font-['Inter'] text-sm lg:text-base">
+                                                {`もっと見る（全${recipes.length}件）`}
+                                            </p>
+                                        </Button>
+                                    </Link>
+                                </div>
+                        )}
                         </div>
                     )
                 })}
+                
             </div>
             <div className="w-full lg:w-4/5 mb-6 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-8 shadow-sm lg:mb-8">
                 <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
-                    <h2 className="font-['Inter'] text-lg lg:text-2xl text-gray-700 underline">未設定</h2>
+                    <h2 className="font-['Inter'] text-lg lg:text-2xl text-gray-500 border-b-2 border-gray-400">未設定</h2>
                 </div>
                 {/* Object.valuesの結果は必ず配列となり[[recipe, recipe, ...]]となるので、flat()で平坦化する */}
                 <RatingItem 
-                    recipes={Object.values(unsetRecipesObject).flat()}
+                    recipes={Object.values(unsetRecipesObject).flat().slice(0, 3)}
                 />
+                {Object.values(unsetRecipesObject).flat().length > 3 && (
+                    <div className="flex items-center justify-center gap-2 mt-8 lg:mt-12 mb-4">
+                        <Link to="/star-list/null">
+                            <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                <p className=" font-['Inter'] text-sm lg:text-base">もっと見る（全{Object.values(unsetRecipesObject).flat().length}件）</p>
+                            </Button>
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     )

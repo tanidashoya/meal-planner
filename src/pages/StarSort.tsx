@@ -30,7 +30,7 @@ export const StarSort = () => {
 
     console.log(unsetRecipesObject);
     return (
-        <Card className="border-0 shadow-none m-auto w-19/20 h-full lg:w-3/5 py-10 lg:pt-30 gap-3">
+        <Card className="border-0 shadow-none m-auto w-19/20 h-full lg:w-3/5 mt-10 lg:pt-30 gap-3">
             <CardHeader>
                 <CardTitle 
                 className="font-['Inter'] text-2xl md:text-5xl font-medium tracking-wide text-center text-gray-600 mb-2 lg:mb-8"
