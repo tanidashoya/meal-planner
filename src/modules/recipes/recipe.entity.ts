@@ -23,6 +23,8 @@ export type RecipeParams = {
   rating?: number
 }
 
+//更新時のパラメータ
+//idは必須
 export type updateRecipe = {
   id: number
   title?: string

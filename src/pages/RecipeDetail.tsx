@@ -5,7 +5,7 @@ import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { StarRatingHalfFill } from "../components/StarRatingHalfFill";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -18,9 +18,47 @@ export const RecipeDetail = ()=> {
     //グローバルステートから取得したレシピデータをfilterでidが一致するものを抽出
     //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
     const targetRecipe = recipes.filter(recipe => recipe.id == Number(id))[0];
+    const [newTitle,setNewTitle] = useState(targetRecipe?.title || "");
+
+    const handleChangeTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
+        setNewTitle(e.target.value);
+    }
+
+
 
     const handleReload = () => {
         window.location.reload(); // ページをリロード
+    };
+
+
+    const handleUpdateTitle = async () => {
+        const updatedRecipe = await recipeRepository.update(currentUserStore.currentUser!.id,{id:targetRecipe!.id,title:newTitle});
+        recipeStore.set([updatedRecipe]);
+    }
+
+    //e.currentTarget.blur()はフォーカスを外すメソッド
+    //「blur」というのは Web（ブラウザ）のUI用語で、要素（特に input や textarea）から フォーカスが外れること を指
+    const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            handleUpdateTitle();
+            e.currentTarget.blur()
+        }
+    }
+
+    //引数に渡された文字列がURLかどうかを判定
+    const isURL = (url: string | null) => {
+        //urlがnullやundefinedの場合は空文字列として扱う
+        //||""はurlがnullやundefinedの場合は空文字列として扱う
+        //|| は「左が falsy（null, undefined, 空文字, 0, false）なら右を返す」という意味です。
+        try {
+            //URLオブジェクトを作成し、エラーが発生しなければURLとして有効
+            //new URL():引数に正しいURLが渡された場合はオブジェクトが作られる
+            //エラーが発生した場合はcatchブロックが実行される(これを利用してURLかの判定に使う)
+            new URL(url || "");
+            return true;
+        } catch (error) {
+            return false;
+        }
     };
 
     // レシピが見つからない場合、データベースから直接取得
@@ -40,12 +78,15 @@ export const RecipeDetail = ()=> {
                 recipeStore.set(recipes);
             }
         };
+        //targetRecipeが変更されたら(詳細ページが遷移したら)newTitleを更新する
+        //これがないと遷移先の詳細ページのタイトルがnewtitle（一つ前の詳細ページのタイトル）になってしまう
+        setNewTitle(targetRecipe?.title || "");
         loadRecipe();
     }, [id, targetRecipe, currentUserStore.currentUser]);
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center p-8 h-full">
+        <div className="flex flex-col items-center justify-center py-8 mx-3 h-full">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -58,21 +99,33 @@ export const RecipeDetail = ()=> {
                     </span>
                 </div>
             ) : (              
-                <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl lg:text-3xl font-bold underline mb-6">
-                        {targetRecipe.title}
-                    </span>
+                <div className="flex flex-col items-center justify-center w-full">
+                    <input 
+                    type="text" 
+                    value={newTitle} 
+                    className="text-center text-2xl lg:text-3xl font-bold mb-6 w-full" 
+                    onChange={handleChangeTitle} 
+                    onKeyDown={handleKeyDown} 
+                    onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
+                    />
                     <StarRatingHalfFill recipeId={targetRecipe.id} />
                     <div className="flex flex-col">
                         <span className="text-lg">参照先：</span>
-                        <a 
-                            href={targetRecipe.source || ""} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-500 py-2 lg:text-lg break-all"
-                        >
-                            {targetRecipe.source}
-                        </a>
+                        {isURL(targetRecipe.source) ? (
+                            <a 
+                                href={targetRecipe.source || ""} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-500 py-2 lg:text-lg break-all"
+                            >
+                                {targetRecipe.source}
+                            </a>
+                        ):(
+                            <span className="text-gray-700 py-3 text-lg lg:text-2xl break-all">
+                                {targetRecipe.source}
+                            </span>
+                        )}
+                        
                     </div>
                 </div>
                 

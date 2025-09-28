@@ -25,16 +25,24 @@ export const StarSort = () => {
         },{} as Record<number,Recipe[]>)
     },[recipes,starRating])
 
+    const unsetRecipes = recipes.filter(recipe => recipe.rating === null);
+    const unsetRecipesObject = {["未設定"]:unsetRecipes};
 
+    console.log(unsetRecipesObject);
     return (
-        <Card className="border-0 shadow-none m-auto w-19/20 h-full lg:w-3/5 lg:py-15">
+        <Card className="border-0 shadow-none m-auto w-19/20 h-full lg:w-3/5 py-10 lg:pt-30 gap-3">
             <CardHeader>
-                <CardTitle className="text-2xl md:text-5xl font-medium tracking-wide text-center text-gray-800 mb-6">
+                <CardTitle 
+                className="font-['Inter'] text-2xl md:text-5xl font-medium tracking-wide text-center text-gray-600 mb-2 lg:mb-8"
+                >
                     星別レシピ一覧
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <RatingGroup recipesByStarRating={recipesByStarRating} />
+            <CardContent className="p-2 pb-25">
+                <RatingGroup 
+                recipesByStarRating={recipesByStarRating} 
+                unsetRecipesObject={unsetRecipesObject} 
+                />
             </CardContent>
 
         </Card>

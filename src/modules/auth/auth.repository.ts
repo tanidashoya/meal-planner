@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabase";
 //本番環境ではこれをオンにしてメールを送り認証されたらsupabase.auth.signInWithPasswordやsignUpメソッドが無事実行される
 //confirm-emailをオフにせずローカル環境でサインインしてたけどメールを受け取ってもconfirm-emailがローカル環境だと認証されないので認証されない。
 //だからHomeに遷移できなかったがconfirm-emailをオフにしたら無事に遷移できた。
+//名前をuserNameとして返すようにした。
 export const authRepository = {
     async signup(name:string,email:string,password:string){
         const {data,error} = await supabase.auth.signUp(
@@ -51,7 +52,9 @@ export const authRepository = {
         }
     },
 
-
+    //Supabase のセッションは ブラウザに長期間保存されるので、
+    //通常は一度ログインしたら再ログインを求められずに使い続けられる。
+    //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
     async getCurrentUser(){
         const {data,error} = await supabase.auth.getSession()
         if (error !== null){
@@ -83,5 +86,82 @@ export const authRepository = {
                 throw error;
             }
         }
+    },
+
+
+    //supabase.auth.updateUser() :「ログイン中のユーザーの認証情報（auth.usersテーブルのレコード）」を更新する関数
+    //オブジェクトdataのnameにnewNameを代入して更新する
+    //更新後のユーザー情報を返す
+    //supabase.auth.updateUser({ data: { name: newName } })
+    // 引数はオブジェクト { data: {...} }。
+    // その中の data プロパティが Supabase の user_metadata に対応しています。
+    // つまり「user_metadata.name を newName に更新してください」というリクエストを送っています。
+    //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
+    //updateNameメソッドでの返り値はグローバルステートに格納することでユーザー情報をUI上で更新するので
+    //⇒getCurrentUserの返り値とupdateNameメソッドの返り値の構造は同じでなければならない
+    async updateName(newName:string){
+        const {data,error} = await supabase.auth.updateUser({data:{name:newName}})
+        if (error != null){
+            throw new Error(error?.message)
+        }
+        return {
+            ...data.user,
+            userName:data.user.user_metadata.name
+        }
     }
 }
+
+
+/*メモ
+dataの構造
+{
+  "data": {
+    "user": {
+      "id": "f4a9c9f6-xxxx-xxxx-xxxx-0c0ec5c71a7b",
+      "aud": "authenticated",
+      "role": "authenticated",
+      "email": "test@example.com",
+      "email_confirmed_at": "2025-09-27T09:00:00Z",
+      "phone": "",
+      "confirmed_at": "2025-09-27T09:00:00Z",
+      "last_sign_in_at": "2025-09-27T09:05:00Z",
+      "app_metadata": {
+        "provider": "email",
+        "providers": ["email"]
+      },
+      "user_metadata": {
+        "name": "新しい名前"
+      },
+      "created_at": "2025-08-01T12:00:00Z",
+      "updated_at": "2025-09-27T09:05:00Z"
+    }
+  },
+  "error": null
+}
+
+
+
+更新した後の返り値の例
+{
+  "id": "f4a9c9f6-xxxx-xxxx-xxxx-0c0ec5c71a7b",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "test@example.com",
+  "email_confirmed_at": "2025-09-27T09:00:00Z",
+  "phone": "",
+  "confirmed_at": "2025-09-27T09:00:00Z",
+  "last_sign_in_at": "2025-09-27T09:05:00Z",
+  "app_metadata": {
+    "provider": "email",
+    "providers": ["email"]
+  },
+  "user_metadata": {
+    "name": "新しい名前"
+  },
+  "created_at": "2025-08-01T12:00:00Z",
+  "updated_at": "2025-09-27T09:05:00Z",
+
+  "userName": "新しい名前"   // ← ここを自分で追加した
+}
+
+*/
