@@ -86,7 +86,7 @@ export const RecipeDetail = ()=> {
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center py-8 mx-3 h-full">
+        <div className="flex flex-col items-center justify-center py-8 mx-5 h-full">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -103,13 +103,13 @@ export const RecipeDetail = ()=> {
                     <input 
                     type="text" 
                     value={newTitle} 
-                    className="text-center text-2xl lg:text-3xl font-bold mb-6 w-full" 
+                    className="text-center text-2xl lg:text-3xl mb-6 w-full font-['Inter'] font-medium text-gray-700" 
                     onChange={handleChangeTitle} 
                     onKeyDown={handleKeyDown} 
                     onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
                     />
                     <StarRatingHalfFill recipeId={targetRecipe.id} />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col mt-10">
                         <span className="text-lg">参照先：</span>
                         {isURL(targetRecipe.source) ? (
                             <a 

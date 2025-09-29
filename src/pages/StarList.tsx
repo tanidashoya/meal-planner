@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { RatingItem } from "../components/StarSort/RatingItem";
-import { Star } from "lucide-react";
+import tasteIcon from "../assets/taste_icon.png";
 
 export const StarList = () => {
 
@@ -17,12 +17,13 @@ export const StarList = () => {
     //&&：かつという意味
     return (
         <div className="font-['Inter'] flex flex-col items-center h-full pt-25 lg:pt-35">
-            <div className="flex items-center justify-center gap-1 mb-12 lg:mb-16">
+            <div className="flex items-center justify-center gap-0.8 mb-12 lg:mb-16 border-b-1 border-gray-300 pb-4">
                 {Number(star) && star !== "null" && star !== "undefined" ? Array.from({ length: Number(star) }, (_, i) => (
-                    <Star
+                    <img
                     key={i}
-                    className="lg:w-15 lg:h-12 w-7 h-7 fill-yellow-200 text-gray-400 "
-                    strokeWidth={1.0}
+                    src={tasteIcon}
+                    alt="taste icon"
+                    className="lg:w-12 lg:h-12 w-8 h-8"
                     />
                 )) : (
                     <span className="text-gray-500 text-xl lg:text-4xl">未設定</span>

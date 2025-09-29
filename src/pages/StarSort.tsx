@@ -30,12 +30,12 @@ export const StarSort = () => {
 
     console.log(unsetRecipesObject);
     return (
-        <Card className="border-0 shadow-none m-auto w-19/20 h-full lg:w-3/5 mt-10 lg:pt-30 gap-3">
+        <Card className="border-0 shadow-none m-auto w-19/20 h-full lg:w-3/5 pb-8 mt-16 lg:pt-30 gap-3">
             <CardHeader>
                 <CardTitle 
-                className="font-['Inter'] text-2xl md:text-5xl font-medium tracking-wide text-center text-gray-600 mb-2 lg:mb-8"
+                className="font-['Inter'] text-2xl md:text-5xl font-medium tracking-wide text-center text-gray-600 mb-2 lg:mb-12"
                 >
-                    星別レシピ一覧
+                    おいしさでレシピを探す
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-2 pb-25">

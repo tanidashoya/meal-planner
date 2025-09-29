@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom"
 import { UserItem } from "./UserItem"
 import { RecipeList } from "../RecipeList"
 import { Item } from "./Item"
-import { Search, PlusCircle, Star } from "lucide-react"
+import { Search, PlusCircle } from "lucide-react"
+import tasteIcon from "../../assets/taste_icon.png"
 import { Sheet } from "../ui/sheet"
 import { Button } from "../ui/button"
 import { PanelLeft } from "lucide-react"
@@ -108,7 +109,7 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                 <PlusCircle className="size-8 text-gray-500 stroke-width-1" strokeWidth={1.5} />
             </Button>
             <Button variant="outline" className="hover:bg-white !px-3 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/star-sort")}>
-                <Star className="size-8 text-gray-500 fill-yellow-200" strokeWidth={0.8}/>
+                <img src={tasteIcon} alt="taste icon" className="size-10" />
             </Button>
         </div>
     )

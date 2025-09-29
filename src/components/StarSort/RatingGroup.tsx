@@ -1,6 +1,6 @@
 import { Recipe } from "../../modules/recipes/recipe.entity";
 import { RatingItem } from "./RatingItem";
-import { Star } from "lucide-react";
+import tasteIcon from "../../assets/taste_icon.png";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 
@@ -22,20 +22,21 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
 
     return (
         <div>
-            <div>
+            <div className="mt-5">
                 {/* その配列をmapで回し、それぞれのratingとrecipeをRatingItemコンポーネントに渡す。 */}
                 {/* mapの引数では配列を分割代入している。[rating, recipe] の配列のそれぞれの要素を rating と recipe に代入している。 */}
                 {sortedRecipesByStarRating.map(([rating,recipes])=> {
                     return (
                         <div key={rating} 
-                        className="w-full lg:w-4/5 mb-6 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
+                        className="w-full lg:w-4/5 mb-8 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
                         >
-                            <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
+                            <div className="flex items-center justify-center gap-1 mb-8 lg:mb-12">
                                 {Array.from({ length: Number(rating) }, (_, i) => (
-                                    <Star
+                                    <img
                                     key={i}
-                                    className="lg:w-8 lg:h-8 w-7 h-7 fill-yellow-200 text-gray-400"
-                                    strokeWidth={1.0}
+                                    src={tasteIcon}
+                                    alt="taste icon"
+                                    className="lg:w-10 lg:h-10 w-8 h-8"
                                     />
                                 ))}
                             </div>
@@ -44,7 +45,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                             />
                             {/* 別ページに遷移するだけならLink toが一般的 */}
                             {recipes.length > 3 && (
-                                <div className="flex items-center justify-center gap-2 mt-8 lg:mt-12 mb-4">
+                                <div className="flex items-center justify-center gap-2 mt-10 lg:mt-12 mb-4">
                                     <Link to={`/star-list/${rating}`}>
                                         <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
                                             <p className=" font-['Inter'] text-sm lg:text-base">
@@ -59,7 +60,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                 })}
                 
             </div>
-            <div className="w-full lg:w-4/5 mb-6 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-8 shadow-sm lg:mb-8">
+            <div className="w-full lg:w-4/5 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-8 shadow-sm lg:mb-8">
                 <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
                     <h2 className="font-['Inter'] text-lg lg:text-2xl text-gray-500 border-b-2 border-gray-400">未設定</h2>
                 </div>
@@ -68,7 +69,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                     recipes={Object.values(unsetRecipesObject).flat().slice(0, 3)}
                 />
                 {Object.values(unsetRecipesObject).flat().length > 3 && (
-                    <div className="flex items-center justify-center gap-2 mt-8 lg:mt-12 mb-4">
+                    <div className="flex items-center justify-center gap-2 mt-10 lg:mt-12 mb-4">
                         <Link to="/star-list/null">
                             <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
                                 <p className=" font-['Inter'] text-sm lg:text-base">もっと見る（全{Object.values(unsetRecipesObject).flat().length}件）</p>
