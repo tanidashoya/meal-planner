@@ -14,6 +14,7 @@ import { SheetTrigger, SheetTitle, SheetDescription } from "../ui/sheet"
 import { SheetContent } from "../ui/sheet"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useEffect } from "react"
+import watchIcon from "../../assets/watch_icon.png";
 
 
 interface SideBarProps {
@@ -69,7 +70,8 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
         //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ
         //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒　index.cssで定義されている
         //border-r → 右の境界線を表示する
-        <div className="flex lg:flex-col items-center pt-2 mx-2 mt-2 pb-2 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 h-full">
+        //modal={false} → 裏側のページも操作可能
+        <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col items-center pt-4 mx-2 pb-2 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 bg-white lg:bg-transparent h-18 lg:h-full">
             <Sheet open={open} onOpenChange={setOpen} modal={false}>
                 <SheetTrigger asChild>
                     <Button variant="outline" className="hover:bg-white lg:m-2 !px-4 !py-6 lg:!px-3 lg:!py-5 !shadow-none !outline-none">
@@ -83,7 +85,7 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                         <SheetTitle>サイドバー</SheetTitle>
                         <SheetDescription>サイドバー</SheetDescription>
                     </VisuallyHidden>
-                    <aside className="h-screen bg-secondary border-r flex flex-col">
+                    <aside className="h-full bg-secondary border-r flex flex-col">
                         {/* flex-shrink-0: 要素のサイズを縮小しない */}
                         {/* flex-shrink-0がなければレシピが増えた際にサイドバーのサイズが縮小されてそのあとRecipeListがスクロール可能になる */}
                         <div className="flex-shrink-0">
@@ -98,7 +100,7 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                             </div>
                         </div>
                         {/* overflow-y-auto: 縦方向のスクロールを有効化 */}
-                        <div className="flex-1 overflow-y-auto">
+                        <div className="flex-1 overflow-y-auto h-full">
                             <RecipeList setOpen={setOpen}/>
                         </div>
                     </aside>
@@ -108,8 +110,11 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
             <Button variant="outline" className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/")}>
                 <PlusCircle className="size-8 text-gray-500 stroke-width-1" strokeWidth={1.5} />
             </Button>
-            <Button variant="outline" className="hover:bg-white !px-3 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/star-sort")}>
+            <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/star-sort")}>
                 <img src={tasteIcon} alt="taste icon" className="size-10" />
+            </Button>
+            <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/time-sort")}>
+                <img src={watchIcon} alt="watch icon" className="size-10" />
             </Button>
         </div>
     )

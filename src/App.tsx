@@ -10,6 +10,8 @@ import { RecipeDetail } from "./pages/RecipeDetail"
 import mealPlannerLogo from "./assets/mealPlanner.png"
 import { TasteSort } from "./pages/TasteSort"
 import { TasteList } from "./pages/TasteList"
+import { TimeSort } from "./pages/TimeSort"
+import { TimeList } from "./pages/TimeList"
 
 
 function App() {
@@ -78,19 +80,22 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout/>}>
-          <Route index element={<Home/>}/>
-          <Route path="/recipes/:id" element={<RecipeDetail/>}/>
-          <Route path="/star-sort" element={<TasteSort/>}/>
-          <Route path="/star-list/:star" element={<TasteList/>}/>
-        </Route>
-        <Route path="/signup" element={<Signup/>}/>
-        <Route path="/signin" element={<Signin/>}/>
-      </Routes>
-    </BrowserRouter>
-    
+    <div className="h-full">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout/>}>
+            <Route index element={<Home/>}/>
+            <Route path="/recipes/:id" element={<RecipeDetail/>}/>
+            <Route path="/star-sort" element={<TasteSort/>}/>
+            <Route path="/star-list/:star" element={<TasteList/>}/>
+            <Route path="/time-sort" element={<TimeSort/>}/>
+            <Route path="/time-list/:time" element={<TimeList/>}/>
+          </Route>
+          <Route path="/signup" element={<Signup/>}/>
+          <Route path="/signin" element={<Signin/>}/>
+        </Routes>
+      </BrowserRouter>
+    </div>
   )
 }
 

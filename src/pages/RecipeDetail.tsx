@@ -33,7 +33,7 @@ export const RecipeDetail = ()=> {
     }
 
 
-
+    //リロードじゃなくて追加画面に戻る方がいいかな
     const handleReload = () => {
         window.location.reload(); // ページをリロード
     };

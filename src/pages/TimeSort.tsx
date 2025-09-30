@@ -3,30 +3,31 @@ import { useMemo } from "react";
 import { Recipe } from "../modules/recipes/recipe.entity";
 import { Card, CardHeader, CardTitle, CardContent} from "../components/ui/card";
 import { RatingGroup } from "../components/TasteSort/RatingGroup";
-import tasteIcon from "../assets/taste_icon.png";
+import watchIcon from "../assets/watch_icon.png";
 
 
 
-export const TasteSort = () => {
+export const TimeSort = () => {
 
 
-    const starRating = [1,2,3,4,5];
+    const timeRating = [1,2,3,4,5];
+    const imgWatch = watchIcon;
     const recipesStore = useRecipeStore();
     const recipes = recipesStore.getAll();
-    const imgTaste = tasteIcon;
+    
 
     //5 のグループ → rating が 5 または 4.5
     // 4 のグループ → rating が 4 または 3.5
     // 3 のグループ → rating が 3 または 2.5
     // ・・・というようなオブジェクトを作成
-    const recipesByStarRating = useMemo(() => {
-        return starRating.reduce((acc,rating) => {
-            acc[rating] = recipes.filter(recipe => recipe.rating === rating)
+    const recipesByTimeRating = useMemo(() => {
+        return timeRating.reduce((acc,rating) => {
+            acc[rating] = recipes.filter(recipe => recipe.time === rating)
             return acc;
         },{} as Record<number,Recipe[]>)
-    },[recipes,starRating])
+    },[recipes,timeRating])
 
-    const unsetRecipes = recipes.filter(recipe => recipe.rating === null);
+    const unsetRecipes = recipes.filter(recipe => recipe.time === null);
     const unsetRecipesObject = {["未設定"]:unsetRecipes};
 
     console.log(unsetRecipesObject);
@@ -36,15 +37,15 @@ export const TasteSort = () => {
                 <CardTitle 
                 className="font-['Inter'] text-2xl md:text-4xl font-medium tracking-wide text-center text-gray-600 mb-2 lg:mb-12"
                 >
-                    おいしさでレシピを探す
+                    調理時間でレシピを探す
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-2 pb-25">
                 <RatingGroup 
-                recipesByRating={recipesByStarRating} 
+                recipesByRating={recipesByTimeRating} 
                 unsetRecipesObject={unsetRecipesObject} 
-                img={imgTaste}
-                type="star"
+                img={imgWatch}
+                type="time"
                 />
             </CardContent>
 

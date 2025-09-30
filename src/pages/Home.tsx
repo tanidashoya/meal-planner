@@ -41,17 +41,17 @@ export function Home(){
     //m-auto: 左右のマージンを自動で設定し、水平方向の中央揃えを行います
     // w-1/2: 幅を親要素の50%に設定します
     return(
-        <div className="flex items-center justify-center lg:min-h-full mt-10 md:mt-0">
+        <div className="flex items-center justify-center mt-10  md:mt-20">
         <Card className="border-0 shadow-none m-auto w-19/20 sm:w-9/10 h-full lg:w-3/5">
             <CardHeader>
-                <CardTitle className="text-2xl md:text-5xl font-medium tracking-wide text-center text-gray-800">
+                <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">
                     こんにちは、{currentUserStore.currentUser.userName}さん
                 </CardTitle>
-                <CardDescription className="text-lg md:text-2xl font-medium mt-10 lg:mt-16 mb-1 text-gray-600 text-center">
+                <CardDescription className="text-lg md:text-2xl font-medium mt-8 lg:mt-16 mb-1 text-gray-600 text-center">
                     新しいレシピを追加してください
                 </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3.5 border-1 border-gray-300 rounded-lg p-6 shadow-sm lg:gap-3.5">            
+            <CardContent className="flex flex-col gap-3.5 border-1 border-gray-300 rounded-lg px-6 py-8 shadow-sm lg:gap-3.5">            
                     {/* categoryの入力欄を作成する */}
                     <div className="flex items-center gap-2.5">
                         <Select 
@@ -114,7 +114,7 @@ export function Home(){
                         <div className="flex items-center gap-1 w-4/5">
                         <input type="text" 
                             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="レシピの参照先を入力（例：URL、書籍名・ページ名など）" 
+                            placeholder="参照元（例：URL、書籍など）" 
                             value={source} 
                             onChange={(e) => setSource(e.target.value)}
                         />

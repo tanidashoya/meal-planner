@@ -8,16 +8,18 @@ import { Button } from "../ui/button";
 // recipeByStarRating: {1:[{rating:1,・・・},{rating:0.5,・・・}],2:[{rating:2,・・・},{rating:1.5,・・・}]}
 interface RatingGroupProps {
     //Record<KeyType, ValueType>⇒KeyTypeとValueTypeを指定するs
-    recipesByStarRating: Record<number,Recipe[]>;
+    recipesByRating: Record<number,Recipe[]>;
     unsetRecipesObject: Record<string,Recipe[]>;
+    img: string;
+    type: "star" | "time"; // 星評価か調理時間かを区別
 }
 
-export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroupProps) => {
+export const RatingGroup = ({recipesByRating,unsetRecipesObject,img,type}:RatingGroupProps) => {
 
     // {/* Object.entries は オブジェクトを [key, value] の配列に変換する関数。 */}
     // {/* つまり、[[rating, [recipe, recipe, ...]], [rating, [recipe, recipe, ...]], ...] の配列を作成する。 */}
     // Object.entries:キー部分をつねにstring型で返すので、Number()で数値型に変換する
-    const sortedRecipesByStarRating = Object.entries(recipesByStarRating).sort((a,b) => Number(b[0]) - Number(a[0]));
+    const sortedRecipesByRating = Object.entries(recipesByRating).sort((a,b) => Number(b[0]) - Number(a[0]));
 
 
     return (
@@ -25,7 +27,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
             <div className="mt-5">
                 {/* その配列をmapで回し、それぞれのratingとrecipeをRatingItemコンポーネントに渡す。 */}
                 {/* mapの引数では配列を分割代入している。[rating, recipe] の配列のそれぞれの要素を rating と recipe に代入している。 */}
-                {sortedRecipesByStarRating.map(([rating,recipes])=> {
+                {sortedRecipesByRating.map(([rating,recipes])=> {
                     return (
                         <div key={rating} 
                         className="w-full lg:w-4/5 mb-8 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
@@ -34,7 +36,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                                 {Array.from({ length: Number(rating) }, (_, i) => (
                                     <img
                                     key={i}
-                                    src={tasteIcon}
+                                    src={img}
                                     alt="taste icon"
                                     className="lg:w-10 lg:h-10 w-8 h-8"
                                     />
@@ -46,7 +48,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                             {/* 別ページに遷移するだけならLink toが一般的 */}
                             {recipes.length > 3 && (
                                 <div className="flex items-center justify-center gap-2 mt-10 lg:mt-12 mb-4">
-                                    <Link to={`/star-list/${rating}`}>
+                                    <Link to={type === "star" ? `/star-list/${rating}` : `/time-list/${rating}`}>
                                         <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
                                             <p className=" font-['Inter'] text-sm lg:text-base">
                                                 {`もっと見る（全${recipes.length}件）`}
@@ -70,7 +72,7 @@ export const RatingGroup = ({recipesByStarRating,unsetRecipesObject}:RatingGroup
                 />
                 {Object.values(unsetRecipesObject).flat().length > 3 && (
                     <div className="flex items-center justify-center gap-2 mt-10 lg:mt-12 mb-4">
-                        <Link to="/star-list/null">
+                        <Link to={type === "star" ? "/star-list/null" : "/time-list/null"}>
                             <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
                                 <p className=" font-['Inter'] text-sm lg:text-base">もっと見る（全{Object.values(unsetRecipesObject).flat().length}件）</p>
                             </Button>

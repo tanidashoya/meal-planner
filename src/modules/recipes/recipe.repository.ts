@@ -91,7 +91,8 @@ export const recipeRepository = {
       const {data,error} = await supabase
         .from("recipes")
         //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみ取得する)
-        .select("rating")
+        // .select("rating")
+        .select("*")
         .eq("user_id",userID)
         .eq("id",id)
         .single()
