@@ -128,7 +128,7 @@ export const Layout = () => {
     // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
     // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
     return (
-        <div className="h-[100dvh] flex flex-col  lg:flex-row">
+        <div className="h-full flex flex-col  lg:flex-row">
             <div>
                 <SideBar openModal={openModal} open={open} setOpen={setOpen}/>
             </div>

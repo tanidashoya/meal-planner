@@ -101,6 +101,46 @@ export const recipeRepository = {
       return data
     },
 
+    //ratingを既存データに追加する
+    async updateTime(userID:string,id:number,time:number){
+      const {data,error} = await supabase
+        .from("recipes")
+        //.update({ ... }) の {} 内のオブジェクトは 「更新したいカラム名: 値」 のペア
+        //左側の rating → テーブルのカラム名
+        //右側の rating → 関数の引数で受け取った変数
+        //更新したいカラムを一つで固定しておく
+        .update({time:time})
+        .eq("user_id",userID)
+        .eq("id",id)
+        //seledtですべてのデータを取得しているため返り値は完全なレシピのデータをして返ってくる
+        .select()
+        //single()で返り値を配列ではなく、オブジェクトとして返ってくる
+        .single()
+      if (error != null || data == null){
+        throw new Error(error?.message)
+      }
+      //更新後のデータを返す
+      return data
+    },
+
+    //ratingを既存データからとってくる
+    //dataは{ rating: number }というオブジェクトとして返ってくる
+    async fetchTime(userID:string,id:number){
+      const {data,error} = await supabase
+        .from("recipes")
+        //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみ取得する)
+        .select("time")
+        .eq("user_id",userID)
+        .eq("id",id)
+        .single()
+      if (error != null || data == null){
+        throw new Error(error?.message)
+      }
+      return data
+    },
+
+
+    
     //レシピの評価を更新する
     //deleteは引数なしで呼ぶ
     async delete(userID:string,id:number){

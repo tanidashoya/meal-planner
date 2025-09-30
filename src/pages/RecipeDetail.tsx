@@ -2,10 +2,13 @@
 
 import { useParams } from "react-router-dom";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
-import { StarRatingHalfFill } from "../components/StarRatingHalfFill";
+import { TastePoint } from "../components/TastePoint";
+import { WatchPoint } from "../components/WatchPoint";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
 import { useEffect, useState } from "react";
+import tasteIcon from "../assets/taste_icon.png";
+import watchIcon from "../assets/watch_icon.png";
 
 
 
@@ -19,6 +22,11 @@ export const RecipeDetail = ()=> {
     //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
     const targetRecipe = recipes.filter(recipe => recipe.id == Number(id))[0];
     const [newTitle,setNewTitle] = useState(targetRecipe?.title || "");
+
+    const imgTaste = tasteIcon;
+    const tasteWord = ["悪くない","ふつう","いい感じ","うまい！","最高！！"]
+    const imgWatch= watchIcon;
+    const watchWord = ["らくちん","かんたん","ふつう","しっかり","大変！！"]
 
     const handleChangeTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
         setNewTitle(e.target.value);
@@ -103,20 +111,19 @@ export const RecipeDetail = ()=> {
                     <input 
                     type="text" 
                     value={newTitle} 
-                    className="text-center text-2xl lg:text-3xl mb-6 w-full font-['Inter'] font-medium text-gray-700" 
+                    className="text-center text-2xl lg:text-3xl w-full font-['Inter'] font-medium text-gray-700 mb-4 lg:mb-8" 
                     onChange={handleChangeTitle} 
                     onKeyDown={handleKeyDown} 
                     onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
                     />
-                    <StarRatingHalfFill recipeId={targetRecipe.id} />
-                    <div className="flex flex-col mt-10">
-                        <span className="text-lg">参照先：</span>
+                    <div className="flex flex-col  border-b-2 pb-1 mb-8 w-full lg:w-1/2 text-center lg:mb-12">
+                        {/* <span className="text-lg">参照先：</span> */}
                         {isURL(targetRecipe.source) ? (
                             <a 
                                 href={targetRecipe.source || ""} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 py-2 lg:text-lg break-all"
+                                className="text-blue-500 py-2 lg:text-lg truncate w-4/5 mx-auto lg:w-full"
                             >
                                 {targetRecipe.source}
                             </a>
@@ -125,8 +132,18 @@ export const RecipeDetail = ()=> {
                                 {targetRecipe.source}
                             </span>
                         )}
-                        
                     </div>
+                    <div className="flex flex-col items-center justify-center gap-4 lg:gap-8 lg:w-full">
+                        <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 py-2 lg:px-12 lg:py-4">
+                            <h3 className="text-base border-b-1 mb-1">あじの感想</h3>
+                            <TastePoint recipeId={targetRecipe.id} img={imgTaste} Word={tasteWord} />
+                        </div>
+                        <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 py-2 lg:px-12 lg:py-4">
+                            <h3 className="text-base border-b-1 mb-1">調理時間</h3>
+                            <WatchPoint recipeId={targetRecipe.id} img={imgWatch} Word={watchWord} />
+                        </div>
+                    </div>
+
                 </div>
                 
             )}

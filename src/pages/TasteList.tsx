@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
-import { RatingItem } from "../components/StarSort/RatingItem";
+import { RatingItem } from "../components/TasteSort/RatingItem";
 import tasteIcon from "../assets/taste_icon.png";
 
-export const StarList = () => {
+export const TasteList = () => {
 
     //URLからstarの値（文字列）を取得
     const {star} = useParams();

@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react"
-import tasteIcon from "../assets/taste_icon.png"
 import { useCurrentUserStore } from "../modules/auth/current-user.state"
 import { recipeRepository } from "../modules/recipes/recipe.repository"
 import { useRecipeStore } from "../modules/recipes/recipe.state"
 
-interface Rating {
+interface TastePointProps {
     recipeId: number
+    img?: string
+    Word?: string[]
 }
 
-export function StarRatingHalfFill({ recipeId }: Rating) {
-    const tasteWord = ["悪くない","ふつう","いい感じ","うまい！","最高！！"]
-    const starArr=[1,2,3,4,5]
+export function TastePoint({ recipeId, img, Word}: TastePointProps) {
+    
+    const ratingScale=[1,2,3,4,5]
     const {currentUser} = useCurrentUserStore();
     const recipeStore = useRecipeStore();
     //現在の評価値を保持
@@ -26,9 +27,9 @@ export function StarRatingHalfFill({ recipeId }: Rating) {
         fetchRating()
     }, [recipeId])
 
-	//第一引数star:numberは何番目の星かが渡される
+	//第一引数ratingValue:numberは何番目の星かが渡される
 	//クリックした星のonClickで実行する
-    const handleClick = (star: number) => { 
+    const handleClick = (ratingValue: number) => { 
         //新しい評価値をデータベースとグローバルステートに保存する関数定義
         const updateRating = async (newRating: number) => {
             // supabaseを更新し、更新されたレシピデータを取得
@@ -38,37 +39,38 @@ export function StarRatingHalfFill({ recipeId }: Rating) {
         }
         
         // ローカルstateを更新
-        setRating(star);
+        setRating(ratingValue);
         
         // 新しい値をデータベースに保存
-        updateRating(star);
+        updateRating(ratingValue);
     }
 
   return (
-    <div className="flex items-center gap-2 lg:gap-2 mt-8 mb-8">
+    <div className="flex items-center gap-3 lg:gap-2 mt-4 mb-10">
 	    {/*fullもhalfもboolean型の変数となる*/}
 	    {/* >= : 比較演算子で 左辺が右辺以上なら true、そうでなければ false */}
 	    {/* 色がつく星を決めている */}
-	    {/* rating:点数 star:順番に1～5が入って判定される */}
+	    {/* rating:点数 ratingValue:順番に1～5が入って判定される */}
 	    {/* && 両方ともtrueであればtrue */}
 	   
-      {starArr.map((star) => {
-        const isActive = rating >= star
+      {ratingScale.map((ratingValue) => {
+        // 
+        const isActive = rating >= ratingValue
         
         return (
           <div
-            key={star}
-            className="relative cursor-pointer w-13 h-13 lg:w-16 lg:h-16"
-            onClick={() => handleClick(star)}
+            key={ratingValue}
+            className="relative cursor-pointer w-12 h-12 lg:w-13 lg:h-13"
+            onClick={() => handleClick(ratingValue)}
           >
             {/* 星の表示 */}
             <img 
-              src={tasteIcon} 
+              src={img} 
               alt="taste icon" 
               className={`w-full h-full ${isActive ? '' : 'opacity-20'}`} 
             />
             <div className="w-full text-center">
-                <span className="text-xs lg:text-xs text-gray-500 font-bold ">{tasteWord[star-1]}</span>
+                <span className={`text-xs lg:text-xs text-gray-500 font-bold ${isActive ? '' : 'opacity-20'}`}>{Word?.[ratingValue-1]}</span>
             </div>
           </div>
 
