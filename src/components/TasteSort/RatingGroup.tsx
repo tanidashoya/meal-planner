@@ -1,6 +1,5 @@
 import { Recipe } from "../../modules/recipes/recipe.entity";
 import { RatingItem } from "./RatingItem";
-import tasteIcon from "../../assets/taste_icon.png";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 
