@@ -41,7 +41,7 @@ export function Home(){
     //m-auto: 左右のマージンを自動で設定し、水平方向の中央揃えを行います
     // w-1/2: 幅を親要素の50%に設定します
     return(
-        <div className="flex items-center justify-center mt-10  md:mt-20">
+        <div className="flex items-center justify-center mt-3  md:mt-20">
         <Card className="border-0 shadow-none m-auto w-19/20 sm:w-9/10 h-full lg:w-3/5">
             <CardHeader>
                 <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">

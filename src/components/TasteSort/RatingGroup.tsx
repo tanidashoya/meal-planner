@@ -23,21 +23,21 @@ export const RatingGroup = ({recipesByRating,unsetRecipesObject,img,type}:Rating
 
     return (
         <div>
-            <div className="mt-5">
+            <div className="mt-3">
                 {/* その配列をmapで回し、それぞれのratingとrecipeをRatingItemコンポーネントに渡す。 */}
                 {/* mapの引数では配列を分割代入している。[rating, recipe] の配列のそれぞれの要素を rating と recipe に代入している。 */}
                 {sortedRecipesByRating.map(([rating,recipes])=> {
                     return (
                         <div key={rating} 
-                        className="w-full lg:w-4/5 mb-8 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
+                        className="w-full lg:w-4/5 mb-4 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
                         >
-                            <div className="flex items-center justify-center gap-1 mb-8 lg:mb-12">
+                            <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
                                 {Array.from({ length: Number(rating) }, (_, i) => (
                                     <img
                                     key={i}
                                     src={img}
                                     alt="taste icon"
-                                    className="lg:w-10 lg:h-10 w-8 h-8"
+                                    className="lg:w-9 lg:h-9 w-7 h-7"
                                     />
                                 ))}
                             </div>

@@ -94,7 +94,7 @@ export const RecipeDetail = ()=> {
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center py-8 mx-5 h-full">
+        <div className="flex flex-col items-center justify-center py-4 lg:py-16 mx-5 h-full">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -111,7 +111,7 @@ export const RecipeDetail = ()=> {
                     <input 
                     type="text" 
                     value={newTitle} 
-                    className="text-center text-2xl lg:text-3xl w-full font-['Inter'] font-medium text-gray-700 mb-4 lg:mb-8" 
+                    className="text-center text-2xl lg:text-3xl w-full font-['Inter'] font-medium text-gray-700 mb-2 lg:mb-8" 
                     onChange={handleChangeTitle} 
                     onKeyDown={handleKeyDown} 
                     onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火

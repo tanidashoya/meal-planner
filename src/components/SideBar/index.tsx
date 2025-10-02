@@ -15,6 +15,7 @@ import { SheetContent } from "../ui/sheet"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useEffect } from "react"
 import watchIcon from "../../assets/watch_icon.png";
+import { BottomBar } from "../BottomBar";
 
 
 interface SideBarProps {
@@ -71,11 +72,11 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
         //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒　index.cssで定義されている
         //border-r → 右の境界線を表示する
         //modal={false} → 裏側のページも操作可能
-        <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col items-center pt-4 mx-2 pb-2 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 bg-white lg:bg-transparent h-18 lg:h-full">
+        <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col items-center pt-4 pb-2 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 bg-white lg:bg-transparent h-15 lg:h-full">
             <Sheet open={open} onOpenChange={setOpen} modal={false}>
                 <SheetTrigger asChild>
                     <Button variant="outline" className="hover:bg-white lg:m-2 !px-4 !py-6 lg:!px-3 lg:!py-5 !shadow-none !outline-none">
-                        <PanelLeft className="!h-8 !w-8 md:!h-7 md:!w-7 text-gray-500 " strokeWidth={1.5}/>
+                        <PanelLeft className="!h-7 !w-7 md:!h-7 md:!w-7 text-gray-500 " strokeWidth={1.5}/>
                     </Button>
                 </SheetTrigger>
                 {/* [&_svg]:h-5 [&_svg]:w-5 → アイコンのサイズを5pxにする svg:画像フォーマットの一種で、アイコンやイラストを 数式（ベクトル）で描いている画像 */}
@@ -106,16 +107,18 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                     </aside>
                 </SheetContent>
             </Sheet>
-
-            <Button variant="outline" className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/")}>
-                <PlusCircle className="size-8 text-gray-500 stroke-width-1" strokeWidth={1.5} />
-            </Button>
-            <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/star-sort")}>
-                <img src={tasteIcon} alt="taste icon" className="size-10" />
-            </Button>
-            <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/time-sort")}>
-                <img src={watchIcon} alt="watch icon" className="size-10" />
-            </Button>
+            <div className="hidden lg:flex flex-col items-center gap-2">
+                <Button variant="outline" className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/")}>
+                    <PlusCircle className="size-8 text-gray-500 stroke-width-1" strokeWidth={1.5} />
+                </Button>
+                <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/star-sort")}>
+                    <img src={tasteIcon} alt="taste icon" className="size-8" />
+                </Button>
+                <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/time-sort")}>
+                    <img src={watchIcon} alt="watch icon" className="size-8" />
+                </Button>
+            </div>
+            <BottomBar />
         </div>
     )
 }

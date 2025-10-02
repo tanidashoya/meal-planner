@@ -46,7 +46,7 @@ export function WatchPoint({ recipeId, img, Word}: TimeProps) {
     }
 
   return (
-    <div className="flex items-center gap-3 lg:gap-2 mt-4 mb-12">
+    <div className="flex items-center gap-3 lg:gap-6 mt-4 mb-4">
 	    {/*fullもhalfもboolean型の変数となる*/}
 	    {/* >= : 比較演算子で 左辺が右辺以上なら true、そうでなければ false */}
 	    {/* 色がつく星を決めている */}
@@ -59,17 +59,17 @@ export function WatchPoint({ recipeId, img, Word}: TimeProps) {
         return (
           <div
             key={ratingValue}
-            className="relative cursor-pointer w-12 h-12 lg:w-13 lg:h-13"
+            className="flex flex-col items-center justify-center relative cursor-pointer w-11.5 h-11.5 lg:w-13 lg:h-13"
             onClick={() => handleClick(ratingValue)}
           >
             {/* 星の表示 */}
             <img 
               src={img} 
               alt="watch icon" 
-              className={`w-full h-full ${isActive ? '' : 'opacity-20'}`} 
+              className={`w-7 h-7 lg:w-10 lg:h-10 ${isActive ? '' : 'opacity-20'}`} 
             />
             <div className="w-full text-center">
-                <span className={`text-xs lg:text-xs text-gray-500 font-bold ${isActive ? '' : 'opacity-20'}`}>{Word?.[ratingValue-1]}</span>
+                <span className={`text-xs lg:text-xs text-gray-600 font-medium ${isActive ? '' : 'opacity-20'}`}>{Word?.[ratingValue-1]}</span>
             </div>
           </div>
 

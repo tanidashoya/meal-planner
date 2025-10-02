@@ -12,6 +12,18 @@ import { TasteSort } from "./pages/TasteSort"
 import { TasteList } from "./pages/TasteList"
 import { TimeSort } from "./pages/TimeSort"
 import { TimeList } from "./pages/TimeList"
+import { useLocation } from "react-router-dom";
+
+export function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    // ページ遷移のたびに先頭に戻す
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 
 function App() {
@@ -82,6 +94,7 @@ function App() {
   return (
     <div className="h-full">
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Layout/>}>
             <Route index element={<Home/>}/>
