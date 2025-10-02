@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js";
 //それをExtendedUser型としてUserNameを追加している
 type ExtendedUser = User & {
     userName: string;
+    accessToken: string;
   };
 //atomの作成
 //グローバルステートを格納するための箱を作っている

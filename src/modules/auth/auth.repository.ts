@@ -23,7 +23,10 @@ export const authRepository = {
         //他の場所でdata.userが使われている場合直接書き換えると挙動がおかしくなる可能性があるのでスプレッド構文で返す
         return {
             ...data.user,
-            userName:data.user.user_metadata.name
+            userName:data.user.user_metadata.name,
+            //accessTokenを返す
+            accessToken:data.session!.access_token
+
         }
     },
 
@@ -48,7 +51,10 @@ export const authRepository = {
         }
         return {
             ...data.user,
-            userName:data.user.user_metadata.name
+            userName:data.user.user_metadata.name,
+            //accessTokenを返す
+            accessToken:data.session!.access_token
+
         }
     },
 
@@ -66,7 +72,9 @@ export const authRepository = {
         }
         return {
             ...data.session!.user,
-            userName:data.session!.user.user_metadata.name
+            userName:data.session!.user.user_metadata.name,
+            //accessTokenを返す
+            accessToken:data.session!.access_token
         }
     },
 
@@ -163,5 +171,36 @@ dataの構造
 
   "userName": "新しい名前"   // ← ここを自分で追加した
 }
+
+supabase.auth.getSession() が返す data.session は、以下のような構造
+{
+  access_token: string,       // JWT (Edge Function呼び出しに必要)
+  token_type: "bearer",       // 常に "bearer"
+  expires_in: number,         // 有効期限(秒)
+  expires_at: number,         // UNIXタイムスタンプで有効期限
+  refresh_token: string,      // リフレッシュ用トークン
+  user: {
+    id: string,               // ユーザーID (UUID)
+    aud: string,              // "authenticated"
+    role: string,             // "authenticated"
+    email: string,            // ユーザーのメールアドレス
+    email_confirmed_at: string, // メール認証済みの日時
+    phone: string | null,     // 電話番号 (未使用なら null)
+    app_metadata: {           // Supabase内部のメタ情報
+      provider: "email" | "google" | ...,
+      providers: string[]
+    },
+    user_metadata: {          // signup時に追加したカスタム情報
+      name?: string,
+      avatar_url?: string,
+      ...
+    },
+    created_at: string,       // 作成日時
+    updated_at: string        // 更新日時
+  }
+}
+
+
+
 
 */

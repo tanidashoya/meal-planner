@@ -9,6 +9,7 @@ import { recipeRepository } from "../modules/recipes/recipe.repository";
 import { useEffect, useState } from "react";
 import tasteIcon from "../assets/taste_icon.png";
 import watchIcon from "../assets/watch_icon.png";
+import { ImageOgp } from "../components/ImageOgp";
 
 
 
@@ -94,7 +95,7 @@ export const RecipeDetail = ()=> {
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center py-4 lg:py-16 mx-5 h-full">
+        <div className="flex flex-col items-center justify-center py-1 lg:py-16 mx-5 h-full">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -108,37 +109,38 @@ export const RecipeDetail = ()=> {
                 </div>
             ) : (              
                 <div className="flex flex-col items-center justify-center w-full">
+                    <ImageOgp url={targetRecipe.source || ""} />
                     <input 
                     type="text" 
                     value={newTitle} 
-                    className="text-center text-2xl lg:text-3xl w-full font-['Inter'] font-medium text-gray-700 mb-2 lg:mb-8" 
+                    className="text-center text-lg lg:text-3xl w-full font-['Inter'] truncate font-medium text-gray-700 lg:mb-8" 
                     onChange={handleChangeTitle} 
                     onKeyDown={handleKeyDown} 
                     onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
                     />
-                    <div className="flex flex-col  border-b-2 pb-1 mb-8 w-full lg:w-1/2 text-center lg:mb-12">
+                    <div className="flex flex-col  border-b-2 mb-3 w-full lg:w-1/2 text-center lg:mb-12">
                         {/* <span className="text-lg">参照先：</span> */}
                         {isURL(targetRecipe.source) ? (
                             <a 
                                 href={targetRecipe.source || ""} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 py-2 lg:text-lg truncate w-4/5 mx-auto lg:w-full"
+                                className="text-blue-500 py-1 text-sm lg:text-base truncate w-4/5 mx-auto lg:w-full"
                             >
                                 {targetRecipe.source}
                             </a>
                         ):(
-                            <span className="text-gray-700 py-3 text-lg lg:text-2xl break-all">
+                            <span className="text-gray-700 py-1 text-base lg:text-2xl break-all">
                                 {targetRecipe.source}
                             </span>
                         )}
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-4 lg:gap-8 lg:w-full">
-                        <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 py-2 lg:px-12 lg:py-4">
+                    <div className="flex flex-col items-center justify-center gap-2 lg:gap-8 lg:w-full">
+                        <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 pt-1 pb-0 lg:px-12 lg:py-4">
                             <h3 className="text-base border-b-1 mb-1">あじの感想</h3>
                             <TastePoint recipeId={targetRecipe.id} img={imgTaste} Word={tasteWord} />
                         </div>
-                        <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 py-2 lg:px-12 lg:py-4">
+                        <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 pt-1 pb-0 lg:px-12 lg:py-4">
                             <h3 className="text-base border-b-1 mb-1">調理時間</h3>
                             <WatchPoint recipeId={targetRecipe.id} img={imgWatch} Word={watchWord} />
                         </div>
