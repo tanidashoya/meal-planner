@@ -14,39 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_official_pick_items: {
+        Row: {
+          category: string | null
+          daily_id: number
+          id: number
+          rank: number | null
+          recipe_id: number
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          daily_id: number
+          id?: number
+          rank?: number | null
+          recipe_id: number
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          daily_id?: number
+          id?: number
+          rank?: number | null
+          recipe_id?: number
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_official_pick_items_daily_id_fkey"
+            columns: ["daily_id"]
+            isOneToOne: false
+            referencedRelation: "daily_official_picks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_official_pick_items_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "official_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_official_picks: {
+        Row: {
+          created_at: string
+          id: number
+          pick_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          pick_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          pick_date?: string | null
+        }
+        Relationships: []
+      }
+      official_recipes: {
+        Row: {
+          category: string | null
+          id: number
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          id?: number
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          id?: number
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           category: string | null
           created_at: string
           id: number
+          rating: number | null
           source: string | null
+          time: number | null
           title: string | null
           updated_at: string | null
           user_id: string
-          rating: number | null
-          time: number | null
         }
         Insert: {
           category?: string | null
           created_at?: string
           id?: number
+          rating?: number | null
           source?: string | null
+          time?: number | null
           title?: string | null
           updated_at?: string | null
-          user_id?: string
-          rating?: number | null
-          time?: number | null
+          user_id: string
         }
         Update: {
           category?: string | null
           created_at?: string
           id?: number
+          rating?: number | null
           source?: string | null
+          time?: number | null
           title?: string | null
           updated_at?: string | null
           user_id?: string
-          rating?: number | null
-          time?: number | null
         }
         Relationships: []
       }
@@ -55,7 +139,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      pick_random_recipes: {
+        Args: { limit_count: number }
+        Returns: {
+          category: string | null
+          id: number
+          title: string | null
+          url: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

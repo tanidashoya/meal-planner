@@ -13,6 +13,7 @@ import { TasteList } from "./pages/TasteList"
 import { TimeSort } from "./pages/TimeSort"
 import { TimeList } from "./pages/TimeList"
 import { useLocation } from "react-router-dom";
+import { Picks } from "./pages/Picks"
 
 export function ScrollToTop() {
   const { pathname } = useLocation();
@@ -103,6 +104,7 @@ function App() {
             <Route path="/star-list/:star" element={<TasteList/>}/>
             <Route path="/time-sort" element={<TimeSort/>}/>
             <Route path="/time-list/:time" element={<TimeList/>}/>
+            <Route path="/picks" element={<Picks/>}/>
           </Route>
           <Route path="/signup" element={<Signup/>}/>
           <Route path="/signin" element={<Signin/>}/>

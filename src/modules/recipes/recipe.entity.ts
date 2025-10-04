@@ -21,6 +21,7 @@ export type RecipeParams = {
   category?: string
   source?: string
   rating?: number
+  time?: number
 }
 
 //更新時のパラメータ
@@ -31,4 +32,5 @@ export type updateRecipe = {
   category?: string
   source?: string
   rating?: number
+  time?: number
 }

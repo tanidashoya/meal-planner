@@ -107,6 +107,13 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                     </aside>
                 </SheetContent>
             </Sheet>
+            
+            {/* ピックスボタン */}
+            <Button variant="outline" className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/picks")}>
+                <img src={watchIcon} alt="picks icon" className="size-8" />
+            </Button>
+
+
             <div className="hidden lg:flex flex-col items-center gap-2">
                 <Button variant="outline" className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/")}>
                     <PlusCircle className="size-8 text-gray-500 stroke-width-1" strokeWidth={1.5} />
