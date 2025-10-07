@@ -128,7 +128,7 @@ export function Home(){
                         disabled={!recipeTitle.trim() || !selectedCategory}
                     >
                         <Plus className="h-4 w-4 text-gray-500" />
-                        <span className="ml-1 text-gray-500">レシピを追加</span>
+                        <span className="ml-1 text-gray-500">Myレシピに追加</span>
                     </Button>
                 </CardContent>
             </Card>

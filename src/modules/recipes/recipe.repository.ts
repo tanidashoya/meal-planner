@@ -5,7 +5,7 @@ import {RecipeParams,updateRecipe} from "./recipe.entity"
 import {z} from "zod"
 
 
-const CategorySchema = z.enum(["肉料理","魚料理","丼・ルー料理","麵料理","小物","その他"])
+const CategorySchema = z.enum(["肉料理","魚料理","丼・ルー料理","麺料理","小物","その他"])
 
 //ingregients:材料[{name:string,amount:string,unit:string}]
 //steps:手順[手順１,手順２]

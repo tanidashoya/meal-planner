@@ -16,7 +16,7 @@ export const RecipeList = ({setOpen}:RecipeListProps) => {
 
     const {currentUser} = useCurrentUserStore();
     const recipesStore = useRecipeStore();
-    const categories = ["肉料理","魚料理","丼・ルー料理","麵料理","小物","その他"];
+    const categories = ["肉料理","魚料理","丼・ルー料理","麺料理","小物","その他"];
     const recipes = recipesStore.getAll();
     
     //params:{title?:string,category?:string,source?:string}

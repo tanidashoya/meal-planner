@@ -21,9 +21,10 @@ import { supabase } from "../lib/supabase";
 
 interface ImageOgpProps {
   url: string;
+  className?: string;
 }
 
-export const ImageOgp = ({ url }: ImageOgpProps) => {
+export const ImageOgp = ({ url, className }: ImageOgpProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
   //サーバーから返ってきたOGP情報をstateに格納・保存
@@ -45,6 +46,14 @@ export const ImageOgp = ({ url }: ImageOgpProps) => {
   const getOgpPreview = async (url: string | null) => {
     //URLかどうかを判定するバリデーション
     if (!isURL(url)) return null;
+
+    // 1️⃣ ブラウザキャッシュを確認（キャッシュがあればそれを返す）
+    //JSON.parse(cached):JSON形式の文字列をオブジェクトに変換する
+    const cacheKey = `ogp_${url}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached);
+
+    // 2️⃣ サーバーからOGP情報を取得(sessionStorageにキャッシュがなければ実行)
     //invokeで呼び出し:Supabase JS SDK が提供する Edge Function 呼び出し用メソッド
     //invokeはsupabase用のfetchでフロントエンドからバックエンド（supabase）とのデータの送受信ができる
     //認証周りの情報送信やJSON変換の情報などを自動で行ってくれる（つまり返り値はJavaScriptのオブジェクトになる）
@@ -56,7 +65,11 @@ export const ImageOgp = ({ url }: ImageOgpProps) => {
       console.error("OGP取得エラー:", error);
       return null;
     }
-  
+
+    // 3️⃣ キャッシュを保存
+    //dataオブジェクトをJSON文字列に変換してsessionStorageにcashKeyに保存
+    sessionStorage.setItem(cacheKey, JSON.stringify(data));
+
     //Edge FunctionのreturnしたJSONがそのまま入る
     return data; 
   };
@@ -87,18 +100,18 @@ export const ImageOgp = ({ url }: ImageOgpProps) => {
   
   //object-contain:img要素が枠内に収まるように全体を縮小しつつ、縦横比を維持して表示する
   return (
-    <div className="flex justify-center items-center h-40 my-4">
+    <div className={`flex justify-center items-center ${className}`}>
         {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
+            <div className={`flex justify-center items-center ${className}`}>
+                <div className={`animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600`}></div>
             </div>
         ) : (
             ogp?.image ?(
-                <div className="flex justify-center items-center h-40">
-                    <img src={ogp.image} alt={ogp.title} className="m-auto w-70 lg:w-2/5 h-40 object-contain" />
+                <div className={`flex justify-center items-center ${className}`}>
+                    <img src={ogp.image} alt={ogp.title} className={`w-full h-full object-contain`} />
                 </div>
             ) : (
-                <div className="flex justify-center items-center h-40 text-gray-500">
+                <div className={`flex justify-center items-center text-gray-500 ${className}`}>
                     <p>画像は存在しません</p>
                 </div>
             )

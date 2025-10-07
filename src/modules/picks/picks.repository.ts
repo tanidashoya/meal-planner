@@ -1,50 +1,36 @@
 import {supabase} from "../../lib/supabase"
-import {choicePicks,dailyPicks} from "./picks.entity"
 
 export const picksRepository = {
 
-    //official_recipesテーブルからランダムに5件取得
-    //オブジェクトのリネームをしている： const {data:picks,error} = await supabase
-    async randomPick() {
-        const { data: picks, error } = await supabase
-        .rpc("pick_random_recipes", { limit_count: 5 });
-      
-        if (error || !picks) throw new Error(error?.message);
-        return picks;
-      },
-      
-
-    //今の日付を取得してdaily_official_picksテーブルに保存。そのデータをdailyに格納して返す
-    async dateCreate(){
-        //日本時間で今日の日付を取得
-        const todayJst = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Tokyo" });
-        //daily_official_picksテーブルに保存
-        const {data:daily,error} = await supabase
+    //最新の日付IDを取得
+    //オブジェクトのリネームをしている
+    //ascending:falseは降順
+    //select("id")をしているから返ってくるのは{id:1}のようなオブジェクト
+    //.limit(1):SQLの実行して1つのレコードを取得
+    //.single():SQLの実行結果の中から1つのレコードを返す
+    async fetchNewDateID() {
+        const {data:lateseIdDate,error:idError} = await supabase
             .from("daily_official_picks")
-            .insert({pick_date:todayJst})
-            .select()
+            .select("id")
+            .order("id",{ascending:false})
+            .limit(1)
             .single()
-        if(error !== null || daily == null) 
-            throw new Error(error?.message)
-        return daily
+            if(idError) {
+                throw new Error("Error fetching latest date ID:", idError)
+            }
+            return lateseIdDate
     },
 
 
-    //resipe.entity.tsのように新しいファイルを作って型を定義してから作成をはじめよう
-    async picksSave(daily:dailyPicks,picks:choicePicks[]){
-        const {data:dailyPicks,error} = await supabase
+    //最新の日付IDに紐づく公式レシピを取得
+    async fetchOfficialRecipes(dailyId:number) {
+        const {data:officialRecipes,error:recipesError} = await supabase
             .from("daily_official_pick_items")
-            .insert(picks.map(pick => ({
-                daily_id: daily.id,
-                recipe_id: pick.id,
-                category: pick.category,
-                title: pick.title,
-                url: pick.url
-            })))
-            .select()
-        if(error !== null || dailyPicks == null) 
-            throw new Error(error?.message)
-        return dailyPicks
+            .select("*")
+            .eq("daily_id",dailyId)
+            if(recipesError) {
+                throw new Error("Error fetching official recipes:", recipesError)
+            }
+            return officialRecipes
     }
-
-}
+} 

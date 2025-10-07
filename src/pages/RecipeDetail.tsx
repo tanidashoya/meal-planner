@@ -109,7 +109,7 @@ export const RecipeDetail = ()=> {
                 </div>
             ) : (              
                 <div className="flex flex-col items-center justify-center w-full">
-                    <ImageOgp url={targetRecipe.source || ""} />
+                    <ImageOgp url={targetRecipe.source || ""} className="w-full h-32 mt-8 mb-4"/>
                     <input 
                     type="text" 
                     value={newTitle} 
