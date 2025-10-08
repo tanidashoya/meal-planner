@@ -19,6 +19,7 @@ export const Picks = () => {
     //初期値は空のオブジェクト
     //{ [id: number]: boolean } は、TypeScriptでいう「インデックスシグネチャ」です。// 平たく言うと：
     // “idという数値のキーに対して、値は必ずboolean型になりますよ”
+    //※※※複数の関連する状態をまとめて扱うときは「オブジェクト」が向いている
     const [isAddingRecipe, setIsAddingRecipe] = useState<{ [id: number]: boolean }>({});
 
 
