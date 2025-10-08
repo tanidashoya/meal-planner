@@ -6,15 +6,43 @@ import { useCurrentUserStore } from "../modules/auth/current-user.state"
 import { useRecipeStore } from "../modules/recipes/recipe.state"
 import { RecipeParams } from "../modules/recipes/recipe.entity"
 import { recipeRepository } from "../modules/recipes/recipe.repository"
-import { Plus } from "lucide-react"
+import { Plus, Check } from "lucide-react"
+
 export const Picks = () => {
 
     const [officialRecipes, setOfficialRecipes] = useState<dailyPicksItems[]>([])
     const {currentUser} = useCurrentUserStore()
     const recipeStore = useRecipeStore()
-    
+    // id をキーにして状態を管理(stateのオブジェクトを作成)
+    //型は{ [id: string]: boolean }というオブジェクトを作成
+    //id: stringはオブジェクトのキー、booleanはオブジェクトの値
+    //初期値は空のオブジェクト
+    //{ [id: number]: boolean } は、TypeScriptでいう「インデックスシグネチャ」です。// 平たく言うと：
+    // “idという数値のキーに対して、値は必ずboolean型になりますよ”
+    const [isAddingRecipe, setIsAddingRecipe] = useState<{ [id: number]: boolean }>({});
 
+
+
+    /*
+    この行👇
+        setIsAddingRecipe(prev => ({ ...prev, [id]: true }));
+
+        は、内部的にこんなオブジェクトを作っています👇
+        {
+        "uuid-1": true,
+        "uuid-2": false,
+        "uuid-3": true,
+        }
+
+    */
     const createRecipe = async(params:RecipeParams) => {
+        //idがnullの場合は早期return
+        if (params.id == null) {
+            return
+        }
+        //isAddingRecipeのidをキーにしてtrueにする
+        //追加しましたの判断で使う
+        setIsAddingRecipe({ ...isAddingRecipe, [params.id]: true })
         const recipes = await recipeRepository.create(currentUser!.id,params)
         if (recipes == null) {
             return
@@ -48,7 +76,7 @@ export const Picks = () => {
                 <p className="text-sm text-gray-500">※毎日午前８時に更新されます</p>
             </div>
             {officialRecipes.map((officialRecipe) => (
-                <div key={officialRecipe.id} className="mb-4 p-0 w-4/5">
+                <div key={officialRecipe.id} className="mb-2 p-0 w-4/5">
                     <div>
                         <button 
                             onClick={() => window.open(`${officialRecipe.url}`, "_blank", "noopener,noreferrer")}
@@ -61,20 +89,32 @@ export const Picks = () => {
                             <ImageOgp url={officialRecipe.url || ""} className="w-full h-28 my-0" />
                         </button>
                     </div>
+                    {/* Myレシピに追加ボタン(押したらisAddingRecipeの状態でofficialRecipe.idをキーにしてtrueにする) */}
+                    {/* その状態（オブジェクト）内に追加したIDのキーがtru担っていたら追加しました */}
                     <div className="flex justify-end mt-2 mb-4">
+                        {isAddingRecipe[officialRecipe.id] ? (
+                            <div className="flex items-center gap-1 bg-secondary-500 rounded-md px-4 py-2">
+                                <Check className="h-4 w-4 text-white-500" />
+                                <span className=" text-sm">追加しました</span>
+                            </div>
+                        ) : (
                         <button onClick={() => createRecipe({
                             title:officialRecipe.title || "", 
                             source:officialRecipe.url || "",
-                            category:officialRecipe.category || ""
+                            category:officialRecipe.category || "",
+                            id:officialRecipe.id || undefined
                             })}
                             className="flex items-center gap-1 bg-green-400 text-white px-4 py-2 rounded-md"
                             >
+                            <div className="flex items-center gap-1">
                                 <Plus className="h-4 w-4 text-white-500" />
-                                <span className="text-white text-sm">Myレシピに追加</span>
-                        </button>
+                                    <span className="text-white text-sm">Myレシピに追加</span>
+                                </div>
+                            </button>
+                        )}
                     </div>
                 </div>
-            ))} 
+            ))}
         </div>
-    )
-}
+    );
+};

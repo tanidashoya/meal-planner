@@ -5,6 +5,7 @@ import { CheckCircle, LogOut } from "lucide-react";
 import { useState } from "react";
 import { authRepository } from "@/modules/auth/auth.repository";
 import { useCurrentUserStore } from "@/modules/auth/current-user.state";
+import { ExtendedUser } from "@/modules/auth/current-user.state";
 
 interface UserItemProps {
     userName:string,
@@ -25,7 +26,7 @@ export const UserItem = ({userName,userEmail,signout}:UserItemProps) => {
     //名前を更新すると同時にグローバルステートも更新する
     const handleUpdateName = async () => {
         const updatedUser = await authRepository.updateName(newName);
-        set(updatedUser);
+        set(updatedUser as ExtendedUser);
         //名前を更新したら一応名前入力欄にも新しい名前を入れる。そもそも入っているが入れておく
         setNewName(updatedUser.userName);
     }

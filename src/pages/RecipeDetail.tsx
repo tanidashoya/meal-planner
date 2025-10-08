@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import tasteIcon from "../assets/taste_icon.png";
 import watchIcon from "../assets/watch_icon.png";
 import { ImageOgp } from "../components/ImageOgp";
-
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../components/ui/select";
 
 
 export const RecipeDetail = ()=> {
@@ -22,15 +22,30 @@ export const RecipeDetail = ()=> {
     //グローバルステートから取得したレシピデータをfilterでidが一致するものを抽出
     //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
     const targetRecipe = recipes.filter(recipe => recipe.id == Number(id))[0];
+    //Reactの制御コンポーネントでは、valueプロパティがnullやundefinedの場合はエラーになるため、空文字列として扱う
     const [newTitle,setNewTitle] = useState(targetRecipe?.title || "");
-
     const imgTaste = tasteIcon;
     const tasteWord = ["悪くない","ふつう","いい感じ","うまい！","最高！！"]
     const imgWatch= watchIcon;
     const watchWord = ["らくちん","かんたん","ふつう","しっかり","大変！！"]
 
+    //カテゴリを選択する
+    const [isSelectOpen, setIsSelectOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(targetRecipe?.category || "");
+
     const handleChangeTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
         setNewTitle(e.target.value);
+    }
+
+    //SelectコンポーネントではonValueChangeで直接更新処理を行うのが正しい
+    const handleChangeCategory = async (value:string) => {
+        setSelectedCategory(value);
+        // ここで直接更新処理を行う
+        const updatedRecipe = await recipeRepository.update(
+            currentUserStore.currentUser!.id,
+            { id: targetRecipe!.id, category: value }
+        );
+        recipeStore.set([updatedRecipe]);
     }
 
 
@@ -53,6 +68,7 @@ export const RecipeDetail = ()=> {
             e.currentTarget.blur()
         }
     }
+
 
     //引数に渡された文字列がURLかどうかを判定
     const isURL = (url: string | null) => {
@@ -90,6 +106,7 @@ export const RecipeDetail = ()=> {
         //targetRecipeが変更されたら(詳細ページが遷移したら)newTitleを更新する
         //これがないと遷移先の詳細ページのタイトルがnewtitle（一つ前の詳細ページのタイトル）になってしまう
         setNewTitle(targetRecipe?.title || "");
+        setSelectedCategory(targetRecipe?.category || "");
         loadRecipe();
     }, [id, targetRecipe, currentUserStore.currentUser]);
     
@@ -109,28 +126,69 @@ export const RecipeDetail = ()=> {
                 </div>
             ) : (              
                 <div className="flex flex-col items-center justify-center w-full">
-                    <ImageOgp url={targetRecipe.source || ""} className="w-full h-32 mt-8 mb-4"/>
-                    <input 
-                    type="text" 
-                    value={newTitle} 
-                    className="text-center text-lg lg:text-3xl w-full font-['Inter'] truncate font-medium text-gray-700 lg:mb-8" 
-                    onChange={handleChangeTitle} 
-                    onKeyDown={handleKeyDown} 
-                    onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
+                    <ImageOgp url={targetRecipe.source || ""} className="w-full h-32 mt-4 mb-5"/>
+                    <div className="flex justify-center w-full gap-2">
+                        <Select 
+                            value={selectedCategory} 
+                            onValueChange={handleChangeCategory}
+                            open={isSelectOpen}
+                            onOpenChange={setIsSelectOpen}
+                        >
+                            {/* onTouchStart */}
+                            <SelectTrigger className="w-30 bg-secondary focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500 "
+                                
+                                onTouchStart={() => {
+                                    // スマホでキーボードが開いている場合は少し遅らせて閉じる
+                                    if (document.activeElement && document.activeElement instanceof HTMLElement) {
+                                        // タッチ開始から少し待ってからキーボードを閉じる
+                                        setTimeout(() => {
+                                            if (document.activeElement instanceof HTMLElement) {
+                                                document.activeElement.blur();
+                                            }
+                                            // キーボードが閉じた後にSelectを開く
+                                            setTimeout(() => {
+                                                setIsSelectOpen(true);
+                                            }, 200);
+                                        }, 150);
+                                    } else {
+                                        // キーボードが開いていない場合は即座にSelectを開く
+                                        setIsSelectOpen(true);
+                                    }
+                                }}
+                            >
+                                <SelectValue placeholder="カテゴリの選択" className="focus:outline-none focus:ring-1 focus:!ring-blue-500" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="肉料理" className="text-lg">肉料理</SelectItem>
+                                <SelectItem value="魚料理" className="text-lg">魚料理</SelectItem>
+                                <SelectItem value="丼・ルー料理" className="text-lg">丼・ルー料理</SelectItem>
+                                <SelectItem value="麵料理" className="text-lg">麵料理</SelectItem>
+                                <SelectItem value="小物" className="text-lg">小物</SelectItem>
+                                <SelectItem value="その他" className="text-lg">その他</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <input 
+                        type="text" 
+                        value={newTitle} 
+                        className="border rounded-md pl-2 text-left text-lg lg:text-3xl w-4/5 font-['Inter'] truncate font-medium text-gray-700 lg:mb-8 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500" 
+                        onChange={handleChangeTitle} 
+                        onKeyDown={handleKeyDown} 
+                        onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
                     />
-                    <div className="flex flex-col  border-b-2 mb-3 w-full lg:w-1/2 text-center lg:mb-12">
-                        {/* <span className="text-lg">参照先：</span> */}
+                    </div>
+                    <div className="flex  border-b-2 mb-3 py-2 w-full lg:w-1/2 text-center lg:mb-12">
+                        <span className="text-sm">参照：</span>
                         {isURL(targetRecipe.source) ? (
                             <a 
                                 href={targetRecipe.source || ""} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-500 py-1 text-sm lg:text-base truncate w-4/5 mx-auto lg:w-full"
+                                className="text-blue-500 text-sm lg:text-base truncate w-4/5 mx-auto lg:w-full"
                             >
                                 {targetRecipe.source}
                             </a>
                         ):(
-                            <span className="text-gray-700 py-1 text-base lg:text-2xl break-all">
+                            <span className="text-gray-700 text-base lg:text-2xl break-all">
                                 {targetRecipe.source}
                             </span>
                         )}

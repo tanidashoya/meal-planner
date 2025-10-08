@@ -80,18 +80,21 @@ export type Database = {
       official_recipes: {
         Row: {
           category: string | null
+          description: string | null
           id: number
           title: string | null
           url: string | null
         }
         Insert: {
           category?: string | null
+          description?: string | null
           id?: number
           title?: string | null
           url?: string | null
         }
         Update: {
           category?: string | null
+          description?: string | null
           id?: number
           title?: string | null
           url?: string | null
@@ -143,6 +146,7 @@ export type Database = {
         Args: { limit_count: number }
         Returns: {
           category: string | null
+          description: string | null
           id: number
           title: string | null
           url: string | null

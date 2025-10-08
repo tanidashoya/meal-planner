@@ -3,7 +3,7 @@ import { User } from "@supabase/supabase-js";
 
 //signinやsignupメソッドでuserName:data.user.user_metadata.nameとしてuserNameを追加している
 //それをExtendedUser型としてUserNameを追加している
-type ExtendedUser = User & {
+export type ExtendedUser = User & {
     userName: string;
     accessToken: string;
   };

@@ -17,6 +17,7 @@ export type Recipe = Database["public"]["Tables"]["recipes"]["Row"]
 //データベースに保存するデータを表現する型
 //新規作成・更新時のパラメータ
 export type RecipeParams = {
+  id?: number
   title?: string
   category?: string
   source?: string
