@@ -14,6 +14,7 @@ import { TimeSort } from "./pages/TimeSort"
 import { TimeList } from "./pages/TimeList"
 import { useLocation } from "react-router-dom";
 import { Picks } from "./pages/Picks"
+import { ToastContainer } from "react-toastify"
 
 export function ScrollToTop() {
   const { pathname } = useLocation();
@@ -95,6 +96,16 @@ function App() {
   return (
     <div className="h-full">
       <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Layout/>}>

@@ -32,10 +32,10 @@ export const recipeRepository = {
           .insert(
               [
               {
-              user_id: userID,
-              title: params.title,
-              category: params.category,
-              source: params.source
+                user_id: userID,
+                title: params.title,
+                category: params.category,
+                source: params.source
               }
               ]
             )

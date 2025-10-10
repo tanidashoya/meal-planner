@@ -44,7 +44,6 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
 
   //サーバーからOGP情報を取得する関数
   const getOgpPreview = async (url: string | null) => {
-    //URLかどうかを判定するバリデーション
     if (!isURL(url)) return null;
 
     // 1️⃣ ブラウザキャッシュを確認（キャッシュがあればそれを返す）

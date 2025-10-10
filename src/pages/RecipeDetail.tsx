@@ -11,15 +11,16 @@ import tasteIcon from "../assets/taste_icon.png";
 import watchIcon from "../assets/watch_icon.png";
 import { ImageOgp } from "../components/ImageOgp";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 
 export const RecipeDetail = ()=> {
 
+    const navigate = useNavigate();
     const {id} = useParams();
     const recipeStore = useRecipeStore();
     const currentUserStore = useCurrentUserStore();
     const recipes = recipeStore.getAll();
-    //グローバルステートから取得したレシピデータをfilterでidが一致するものを抽出
     //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
     const targetRecipe = recipes.filter(recipe => recipe.id == Number(id))[0];
     //Reactの制御コンポーネントでは、valueプロパティがnullやundefinedの場合はエラーになるため、空文字列として扱う
@@ -51,12 +52,16 @@ export const RecipeDetail = ()=> {
 
     //リロードじゃなくて追加画面に戻る方がいいかな
     const handleReload = () => {
-        window.location.reload(); // ページをリロード
+        navigate("/recipes"); // ページをリロード
+        window.location.reload();
     };
 
 
     const handleUpdateTitle = async () => {
-        const updatedRecipe = await recipeRepository.update(currentUserStore.currentUser!.id,{id:targetRecipe!.id,title:newTitle});
+        const updatedRecipe = await recipeRepository.update(
+            currentUserStore.currentUser!.id,
+            {id:targetRecipe!.id,title:newTitle}
+        );
         recipeStore.set([updatedRecipe]);
     }
 
@@ -105,9 +110,9 @@ export const RecipeDetail = ()=> {
         };
         //targetRecipeが変更されたら(詳細ページが遷移したら)newTitleを更新する
         //これがないと遷移先の詳細ページのタイトルがnewtitle（一つ前の詳細ページのタイトル）になってしまう
+        loadRecipe();
         setNewTitle(targetRecipe?.title || "");
         setSelectedCategory(targetRecipe?.category || "");
-        loadRecipe();
     }, [id, targetRecipe, currentUserStore.currentUser]);
     
     //Numberを付けるのはidがstring型のため
@@ -136,11 +141,14 @@ export const RecipeDetail = ()=> {
                         >
                             {/* onTouchStart */}
                             <SelectTrigger className="w-30 bg-secondary focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500 "
-                                
+                                // タッチイベント
                                 onTouchStart={() => {
                                     // スマホでキーボードが開いている場合は少し遅らせて閉じる
+                                    //document.activeElementは現在フォーカスされている要素を取得
+                                    //スマホでキーボードが開いているかを判定する条件式（なにかにフォーカス中であればキーボードが開いていると判断）
                                     if (document.activeElement && document.activeElement instanceof HTMLElement) {
                                         // タッチ開始から少し待ってからキーボードを閉じる
+                                        //150ms待ってからキーボードを閉じる(blurメソッドでフォーカスを外す)
                                         setTimeout(() => {
                                             if (document.activeElement instanceof HTMLElement) {
                                                 document.activeElement.blur();
@@ -162,19 +170,19 @@ export const RecipeDetail = ()=> {
                                 <SelectItem value="肉料理" className="text-lg">肉料理</SelectItem>
                                 <SelectItem value="魚料理" className="text-lg">魚料理</SelectItem>
                                 <SelectItem value="丼・ルー料理" className="text-lg">丼・ルー料理</SelectItem>
-                                <SelectItem value="麵料理" className="text-lg">麵料理</SelectItem>
+                                <SelectItem value="麺料理" className="text-lg">麺料理</SelectItem>
                                 <SelectItem value="小物" className="text-lg">小物</SelectItem>
                                 <SelectItem value="その他" className="text-lg">その他</SelectItem>
                             </SelectContent>
                         </Select>
                         <input 
-                        type="text" 
-                        value={newTitle} 
-                        className="border rounded-md pl-2 text-left text-lg lg:text-3xl w-4/5 font-['Inter'] truncate font-medium text-gray-700 lg:mb-8 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500" 
-                        onChange={handleChangeTitle} 
-                        onKeyDown={handleKeyDown} 
-                        onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
-                    />
+                            type="text" 
+                            value={newTitle} 
+                            className="border rounded-md pl-2 text-left text-lg lg:text-3xl w-4/5 font-['Inter'] truncate font-medium text-gray-700 lg:mb-8 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500" 
+                            onChange={handleChangeTitle} 
+                            onKeyDown={handleKeyDown} 
+                            onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
+                        />
                     </div>
                     <div className="flex  border-b-2 mb-3 py-2 w-full lg:w-1/2 text-center lg:mb-12">
                         <span className="text-sm">参照：</span>

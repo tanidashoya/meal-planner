@@ -7,6 +7,7 @@ import { useRecipeStore } from "../modules/recipes/recipe.state"
 import { RecipeParams } from "../modules/recipes/recipe.entity"
 import { recipeRepository } from "../modules/recipes/recipe.repository"
 import { Plus, Check } from "lucide-react"
+import { toast } from "react-toastify"
 
 export const Picks = () => {
 
@@ -38,17 +39,19 @@ export const Picks = () => {
     */
     const createRecipe = async(params:RecipeParams) => {
         //idがnullの場合は早期return
-        if (params.id == null) {
-            return
-        }
+        if (!params.id) return
+        if (!currentUser) return;
         //isAddingRecipeのidをキーにしてtrueにする
         //追加しましたの判断で使う
         setIsAddingRecipe({ ...isAddingRecipe, [params.id]: true })
-        const recipes = await recipeRepository.create(currentUser!.id,params)
-        if (recipes == null) {
-            return
+        try{
+            const recipes = await recipeRepository.create(currentUser.id,params)
+            recipeStore.set([recipes])
+            toast.success("レシピの追加に成功しました")
+        }catch(error){
+            console.error(error)
+            toast.error("レシピの追加に失敗しました")
         }
-        recipeStore.set([recipes])
     }
 
 

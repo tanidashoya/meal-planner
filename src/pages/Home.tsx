@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useState } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "../components/ui/button"
+import { toast } from "react-toastify"
 
 export function Home(){
 
@@ -20,12 +21,17 @@ export function Home(){
     const [isSelectOpen, setIsSelectOpen] = useState(false)
 
     const createRecipe = async(params:RecipeParams) => {
-        const recipes = await recipeRepository.create(currentUserStore.currentUser!.id,params)
-        if (recipes == null) {
-            return
+        if (!currentUserStore.currentUser) return
+        try{
+            const recipes = await recipeRepository.create(currentUserStore.currentUser.id,params)
+            if (recipes == null) return
+            //グローバルステートに追加
+            recipeStore.set([recipes])
+            toast.success("レシピの追加に成功しました")
+        }catch(error){
+            console.error(error)
+            toast.error("レシピの追加に失敗しました")
         }
-        //グローバルステートに追加
-        recipeStore.set([recipes])
         setRecipeTitle("")
         setSource("")
         setSelectedCategory("")
