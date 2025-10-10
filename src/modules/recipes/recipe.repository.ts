@@ -24,7 +24,26 @@ export const recipeRepository = {
         if (!parsedCategory.success) {
           throw new Error("値が正しくありません")
         }
-        
+
+        //undefined → JavaScriptの内部的な「欠損」
+        // null → SQLでも理解できる「空」
+        //sourceValueがundefinedの場合はnullとして扱う
+        //任意入力OK（空欄OK）の値はundefinedになる可能性があり、undefinedはnullとして扱う
+        /*
+          他のタイトルやカテゴリは型生成で?と | null としているためundefinedとなる可能性が想定されていないため、null変換が不要
+          source も同様の型生成がされているが外部サイトのURL（任意入力）であり、undefinedになることが想定されるため、null変換が必要。
+          IDE（TypeScript言語サーバー）は「undefinedが来る可能性がある」と予測して警告を出してくれている、というのが本質です。
+        */
+        const sourceValue = params.source ?? null
+        const {data:existingData,error:existingError} = await supabase
+          .from("recipes")
+          .select("created_at")
+          .eq("user_id",userID)
+          .eq("source",sourceValue ?? "")
+          .single()
+        if (existingData != null || existingError == null) {
+          throw new Error("そのレシピは既に存在しています")
+        }
 
         //.select:実際に挿入した行を返してくれるオプション
         const { data, error } = await supabase
@@ -35,7 +54,7 @@ export const recipeRepository = {
                 user_id: userID,
                 title: params.title,
                 category: params.category,
-                source: params.source
+                source: sourceValue
               }
               ]
             )
