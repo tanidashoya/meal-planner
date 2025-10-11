@@ -2,6 +2,7 @@ import { useState } from "react";
 import { authRepository } from "../modules/auth/auth.repository";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { Link, Navigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export function Signup(){
 
@@ -12,8 +13,12 @@ export function Signup(){
 
 
     const handleSignUp = async (name:string,email:string,password:string) => {
-        const user = await authRepository.signup(name,email,password);
-        currentUserStore.set(user);
+        try{
+            const user = await authRepository.signup(name,email,password);
+            currentUserStore.set(user);
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました");
+        }
     }
 
     if (currentUserStore.currentUser != null) {

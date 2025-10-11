@@ -21,6 +21,7 @@ export const authRepository = {
             }
         )
         if (error != null || data.user == null) {
+            console.error(error?.message)
             throw new Error("サインアップに失敗しました")
         }
         //他の場所でdata.userが使われている場合直接書き換えると挙動がおかしくなる可能性があるのでスプレッド構文で返す
@@ -29,7 +30,6 @@ export const authRepository = {
             userName:data.user.user_metadata.name,
             //accessTokenを返す
             accessToken:data.session!.access_token
-
         }
     },
 
@@ -47,10 +47,15 @@ export const authRepository = {
     */
     
 
+    //早期return（if (!data.session) return; や if (!data.user) return;）だと
+    //フロント側にundefinedが返されるためグローバルステートに入れようとするとエラーが起こる可能性があった
+    //そのためnullを返すようにした
     async signin(email:string,password:string){
         const {data,error} = await supabase.auth.signInWithPassword({email,password})
-        if (!data.session) return;
+        if (!data.session) return null;
+        if (!data.user) return null;
         if (error != null || data.user == null){
+            console.error(error?.message)
             throw new Error("サインインに失敗しました")
         }
         return {
@@ -71,7 +76,8 @@ export const authRepository = {
             throw new Error("ログイン中のユーザー情報の取得に失敗しました")
         }
         //セッションがnullの場合は、ログインしていないのでnullを返す
-        if (!data.session) return
+        if (!data.session) return null;
+        if (!data.session.user) return null;
         return {
             ...data.session.user,
             userName:data.session.user.user_metadata.name,
