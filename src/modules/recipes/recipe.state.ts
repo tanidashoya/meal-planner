@@ -9,6 +9,7 @@ export const useRecipeStore = () => {
     const [recipes, setRecipes] = useAtom(recipeAtom)
     
 
+    //グローバルステートのレシピを更新する
     const set = (newRecipes:Recipe[]) => {
         setRecipes((oldRecipe)=>{
             const combinedRecipes = [...oldRecipe,...newRecipes]

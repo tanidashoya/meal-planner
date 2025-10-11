@@ -21,12 +21,12 @@ export function Home(){
     const [isSelectOpen, setIsSelectOpen] = useState(false)
 
     const createRecipe = async(params:RecipeParams) => {
-        if (!currentUserStore.currentUser) return
+        if (!currentUserStore.currentUser) return;
         try{
-            const recipes = await recipeRepository.create(currentUserStore.currentUser.id,params)
-            if (recipes == null) return
+            const recipe = await recipeRepository.create(currentUserStore.currentUser.id,params)
+            if (recipe == null) return;
             //グローバルステートに追加
-            recipeStore.set([recipes])
+            recipeStore.set([recipe])
             toast.success("レシピの追加に成功しました")
         }catch(error){
             //instanceofは左のオペランドが右のクラスに属するインスタンスかを判定してboolean値を返す
@@ -36,7 +36,7 @@ export function Home(){
         setRecipeTitle("")
         setSource("")
         setSelectedCategory("")
-        // return recipes
+        // return recipe
     } 
 
     //条件分岐の中で「この画面を表示する代わりにリダイレクトしたい」場合はNavigateを使う
