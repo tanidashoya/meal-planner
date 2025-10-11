@@ -50,14 +50,18 @@ export const authRepository = {
     //早期return（if (!data.session) return; や if (!data.user) return;）だと
     //フロント側にundefinedが返されるためグローバルステートに入れようとするとエラーが起こる可能性があった
     //そのためnullを返すようにした
+    
     async signin(email:string,password:string){
         const {data,error} = await supabase.auth.signInWithPassword({email,password})
-        if (!data.session) return null;
-        if (!data.user) return null;
-        if (error != null || data.user == null){
+        //Supabaseの仕様上、errorがあるときdataが壊れていることが多い。安全性高い。
+        //rrorを先に判定することでdataが壊れている場合はそもそもログインできていないのでエラーを投げることができる。
+        if (error != null){
             console.error(error?.message)
             throw new Error("サインインに失敗しました")
         }
+        if (!data.session) return null;
+        if (!data.user) return null;
+
         return {
             ...data.user,
             userName:data.user.user_metadata.name,
@@ -72,12 +76,14 @@ export const authRepository = {
     //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
     async getCurrentUser(){
         const {data,error} = await supabase.auth.getSession()
-        if (error !== null){
-            throw new Error("ログイン中のユーザー情報の取得に失敗しました")
+        if (error != null){
+          console.error(error?.message)
+          throw new Error("ログイン中のユーザー情報の取得に失敗しました")
         }
         //セッションがnullの場合は、ログインしていないのでnullを返す
         if (!data.session) return null;
         if (!data.session.user) return null;
+
         return {
             ...data.session.user,
             userName:data.session.user.user_metadata.name,
@@ -119,6 +125,7 @@ export const authRepository = {
     async updateName(newName:string){
         const {data,error} = await supabase.auth.updateUser({data:{name:newName}})
         if (error != null){
+            console.error(error?.message)
             throw new Error("名前の更新に失敗しました")
         }
         return {
