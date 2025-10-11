@@ -1,6 +1,7 @@
 import { atom, useAtom } from "jotai"
 import {Recipe} from "./recipe.entity"
 import {recipeRepository} from "./recipe.repository"
+import { toast } from "react-toastify"
 
 const recipeAtom = atom<Recipe[]>([])
 
@@ -30,7 +31,11 @@ export const useRecipeStore = () => {
         setRecipes((oldRecipe) => {
             return oldRecipe.filter(recipe => recipe.id != id)
         })
-        await recipeRepository.delete(userID,id)
+        try{
+            await recipeRepository.delete(userID,id)
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
+        }
     }
     
     //グローバルステートから該当するレシピを取得する

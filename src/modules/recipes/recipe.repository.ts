@@ -4,14 +4,10 @@ import {RecipeParams,updateRecipe} from "./recipe.entity"
 //「このデータはこういう形であるべき」と定義して、フロントエンドやバックエンドでチェックできる
 import {z} from "zod"
 
-
+//z.enumは特定の文字列の集合だけを許可する型を定義()
 const CategorySchema = z.enum(["肉料理","魚料理","丼・ルー料理","麺料理","小物","その他"])
 
-//ingregients:材料[{name:string,amount:string,unit:string}]
-//steps:手順[手順１,手順２]
-//paramsに渡されるのは一件追加であればオブジェクト、または複数件追加であればオブジェクトの配列
-//from("recipes")はrecipesテーブルを参照する
-//Supabase の .insert() が 基本的に配列を返す
+
 /*
 .insert() は オブジェクト単体でも配列でもOK
 でも返り値は基本「配列」なので、.single() を付けないと [ { … } ] の形で返ってくる
@@ -20,6 +16,16 @@ const CategorySchema = z.enum(["肉料理","魚料理","丼・ルー料理","麺
 export const recipeRepository = {
     async create(userID: string, params: RecipeParams) {
 
+        const isURL = (url: string | null) => {
+          try {
+            new URL(url || "");
+            return true;
+          } catch {
+            return false;
+          }
+        };
+
+        //safeParse() は 例外を投げない 代わりに、成功・失敗の結果をオブジェクトで返す
         const parsedCategory = CategorySchema.safeParse(params.category)
         if (!parsedCategory.success) {
           throw new Error("値が正しくありません")
@@ -35,32 +41,38 @@ export const recipeRepository = {
           IDE（TypeScript言語サーバー）は「undefinedが来る可能性がある」と予測して警告を出してくれている、というのが本質です。
         */
         const sourceValue = params.source ?? null
-        const {data:existingData,error:existingError} = await supabase
-          .from("recipes")
-          .select("created_at")
-          .eq("user_id",userID)
-          .eq("source",sourceValue ?? "")
-          .single()
-        if (existingData != null || existingError == null) {
-          throw new Error("そのレシピは既に存在しています")
-        }
+        //重複チェック（sourceValueが存在して、空ではなく、URLであることを確認）
+        if (sourceValue && sourceValue.trim() !== "" && isURL(sourceValue)) {
+            const {data:existingData,error:existingError} = await supabase
+              .from("recipes")
+              .select("*")
+              .eq("user_id",userID)
+              .eq("source",sourceValue ?? "")
+              .single()
+          
 
+            if (existingData != null && existingError == null) {
+              throw new Error("そのレシピは既に存在しています")
+          }
+        }
+      
         //.select:実際に挿入した行を返してくれるオプション
         const { data, error } = await supabase
           .from("recipes")
           .insert(
-              [
-              {
-                user_id: userID,
-                title: params.title,
-                category: params.category,
-                source: sourceValue
-              }
-              ]
+                {
+                  user_id: userID,
+                  title: params.title,
+                  category: params.category,
+                  source: sourceValue
+                }
             )
           .select().single()
       
-        if (error !== null) throw new Error(error?.message)
+        if (error !== null) {
+          console.error(error.message)
+          throw new Error("レシピの追加に失敗しました")
+        }
         // 単発の場合はオブジェクトを返す、複数なら配列を返す
         return data
     },
@@ -68,7 +80,6 @@ export const recipeRepository = {
     //update の引数に渡すのは「更新後にしたいデータを表すオブジェクト（またはオブジェクトの配列）」
     //params の中にある { rating: 3.5, title: "新しいタイトル" } などがそのまま更新される。
     //paramsはオブジェクトであることが前提
-    //eq(第一引数, 第二引数) は 「第一引数のカラム名に対して、第二引数の値と一致する行を選ぶ」
     async update(userID:string,params:updateRecipe){
         const {data,error} = await supabase
           .from("recipes")
@@ -77,8 +88,10 @@ export const recipeRepository = {
           .eq("id",params.id)
           .select()
           .single()
-        if (error != null || data == null)
-          throw new Error(error?.message)
+        if (error != null || data == null){
+          console.error(error?.message)
+          throw new Error("レシピの更新に失敗しました")
+        }
         return data
     },
 
@@ -98,7 +111,8 @@ export const recipeRepository = {
         //single()で返り値を配列ではなく、オブジェクトとして返ってくる
         .single()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの評価更新に失敗しました")
       }
       //更新後のデータを返す
       return data
@@ -106,55 +120,48 @@ export const recipeRepository = {
 
     //ratingを既存データからとってくる
     //dataは{ rating: number }というオブジェクトとして返ってくる
+    //関数名はfetchRatingとしているが、rating以外の指定したレシピデータを取得している
     async fetchRating(userID:string,id:number){
       const {data,error} = await supabase
         .from("recipes")
-        //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみ取得する)
-        // .select("rating")
         .select("*")
         .eq("user_id",userID)
         .eq("id",id)
         .single()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの評価取得に失敗しました")
       }
       return data
     },
 
-    //ratingを既存データに追加する
+    //timeを既存データに追加する
     async updateTime(userID:string,id:number,time:number){
       const {data,error} = await supabase
         .from("recipes")
-        //.update({ ... }) の {} 内のオブジェクトは 「更新したいカラム名: 値」 のペア
-        //左側の rating → テーブルのカラム名
-        //右側の rating → 関数の引数で受け取った変数
-        //更新したいカラムを一つで固定しておく
         .update({time:time})
         .eq("user_id",userID)
         .eq("id",id)
-        //seledtですべてのデータを取得しているため返り値は完全なレシピのデータをして返ってくる
         .select()
-        //single()で返り値を配列ではなく、オブジェクトとして返ってくる
         .single()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの時間更新に失敗しました")
       }
       //更新後のデータを返す
       return data
     },
 
-    //ratingを既存データからとってくる
-    //dataは{ rating: number }というオブジェクトとして返ってくる
     async fetchTime(userID:string,id:number){
       const {data,error} = await supabase
         .from("recipes")
-        //ratingカラムのみを取得(selectではなくselect("rating")とすることで返り値をratingカラムのみ取得する)
-        .select("time")
+        .select("*")
         .eq("user_id",userID)
         .eq("id",id)
         .single()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの時間取得に失敗しました")
       }
       return data
     },
@@ -170,7 +177,8 @@ export const recipeRepository = {
         .eq("user_id",userID)
         .eq("id",id)
       if (error != null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの削除に失敗しました")
       }
     },
 
@@ -185,7 +193,8 @@ export const recipeRepository = {
         .eq("id",id)
         .single()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの詳細取得に失敗しました")
       }
       return data
     },
@@ -194,14 +203,16 @@ export const recipeRepository = {
     //検索機能で使用する
     //findAllで取得してグローバルステートに保持したうえで検索する
     // メインページではサイドバーにユーザーのレシピ（category別）で折りたたまれるようにする
+    //Supabase の .select() は ―条件に合うデータが1件もなくても「空配列 []」を返します。
+    //null にはなりません（エラーでない限り）。
     async findAll(userID:string){
       const {data,error} = await supabase
         .from("recipes")
         .select("*")
         .eq("user_id",userID)
-        .select()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピの全件取得に失敗しました")
       }
       return data
     },
@@ -217,7 +228,8 @@ export const recipeRepository = {
         .ilike("title",`%${keyword}%`)
         .select()
       if (error != null || data == null){
-        throw new Error(error?.message)
+        console.error(error?.message)
+        throw new Error("レシピのキーワード検索に失敗しました")
       }
       return data
     }

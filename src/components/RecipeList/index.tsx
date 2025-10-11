@@ -6,6 +6,7 @@ import { useRecipeStore } from '../../modules/recipes/recipe.state';
 import { Recipe } from '../../modules/recipes/recipe.entity';
 import { useMemo } from 'react';
 import { CategoryItem } from './CategoryItem';
+import { toast } from 'react-toastify';
 
 
 interface RecipeListProps {
@@ -30,7 +31,12 @@ export const RecipeList = ({setOpen}:RecipeListProps) => {
 
     //idにはrecipesをmapで回したときのrecipe.idを渡す
     const deleteRecipe = async(id:number) => {
-        await recipesStore.delete(currentUser!.id,id);
+        if (!currentUser) return;
+        try{
+            await recipesStore.delete(currentUser.id,id);
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
+        }
     }
 
 

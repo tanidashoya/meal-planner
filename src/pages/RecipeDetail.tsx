@@ -12,6 +12,7 @@ import watchIcon from "../assets/watch_icon.png";
 import { ImageOgp } from "../components/ImageOgp";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../components/ui/select";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 export const RecipeDetail = ()=> {
@@ -42,11 +43,17 @@ export const RecipeDetail = ()=> {
     const handleChangeCategory = async (value:string) => {
         setSelectedCategory(value);
         // ここで直接更新処理を行う
-        const updatedRecipe = await recipeRepository.update(
-            currentUserStore.currentUser!.id,
-            { id: targetRecipe!.id, category: value }
-        );
-        recipeStore.set([updatedRecipe]);
+        if (!currentUserStore.currentUser) return;
+        if (!targetRecipe) return;
+        try{
+            const updatedRecipe = await recipeRepository.update(
+                currentUserStore.currentUser.id,
+                { id: targetRecipe.id, category: value }
+            );
+            recipeStore.set([updatedRecipe]);
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました");
+        }
     }
 
 
@@ -58,11 +65,18 @@ export const RecipeDetail = ()=> {
 
 
     const handleUpdateTitle = async () => {
+
+        if (!currentUserStore.currentUser) return;
+        if (!targetRecipe) return;
+        try{
         const updatedRecipe = await recipeRepository.update(
-            currentUserStore.currentUser!.id,
-            {id:targetRecipe!.id,title:newTitle}
+            currentUserStore.currentUser.id,
+            {id:targetRecipe.id,title:newTitle}
         );
-        recipeStore.set([updatedRecipe]);
+            recipeStore.set([updatedRecipe]);
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました");
+        }
     }
 
     //e.currentTarget.blur()はフォーカスを外すメソッド
@@ -100,12 +114,18 @@ export const RecipeDetail = ()=> {
     // URLを直接入力
     // 他のサイトからのリンク
     // ブラウザの戻る/進むボタン
+    //if (!targetRecipe && id && currentUserStore.currentUser) {：これはレシピのidとログインユーザーのIDが取得できているのに
+    //targetRecipeが取得できていない場合にはレシピを取得するようにしている
     useEffect(() => {
         const loadRecipe = async () => {
-            if (targetRecipe === undefined && id && currentUserStore.currentUser) {
+            if (!targetRecipe && id && currentUserStore.currentUser) {
+                try{
                 const recipes = await recipeRepository.findAll(currentUserStore.currentUser.id);
                 //LayOutを経由した場合は重複するように思えるがsetメソッドで重複を排除している
                 recipeStore.set(recipes);
+                }catch(error){
+                    toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました");
+                }
             }
         };
         //targetRecipeが変更されたら(詳細ページが遷移したら)newTitleを更新する
@@ -113,7 +133,7 @@ export const RecipeDetail = ()=> {
         loadRecipe();
         setNewTitle(targetRecipe?.title || "");
         setSelectedCategory(targetRecipe?.category || "");
-    }, [id, targetRecipe, currentUserStore.currentUser]);
+    }, [id, targetRecipe, currentUserStore.currentUser,recipeStore]);
     
     //Numberを付けるのはidがstring型のため
     return (

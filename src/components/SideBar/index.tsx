@@ -17,6 +17,8 @@ import { useEffect } from "react"
 import watchIcon from "../../assets/watch_icon.png";
 import { BottomBar } from "../BottomBar";
 import randomPicksIcon from "../../assets/random_picks.png";
+import { useRecipeStore } from "../../modules/recipes/recipe.state";
+import { toast } from "react-toastify";
 
 
 interface SideBarProps {
@@ -29,7 +31,8 @@ interface SideBarProps {
 export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
 
     const currentUserStore = useCurrentUserStore();
-    
+    const currentUser = currentUserStore.currentUser;
+    const recipeStore = useRecipeStore();
     const navigate = useNavigate();
 
     
@@ -40,10 +43,10 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
         try {
             await authRepository.signout()
             currentUserStore.set(null)
+            recipeStore.clear()
             navigate("/signin")
         } catch (error) {
-            //エラーをコンソールに出力
-            console.error('ログアウト処理でエラーが発生:', error);
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました");
         }
     }
 
@@ -63,11 +66,8 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
       }, [open, setOpen])
 
     
-    // currentUserがnullの場合は何も表示しない
-    //これがないとログアウトを押したときにJSXでcurrentUserStore.currentUserがnullになっているのにemail,userNameにアクセスしてエラーとなる
-    if (currentUserStore.currentUser == null) {
-        return;
-    }
+    // 以下の3つの条件のうち どれか1つでも falsy（=偽） ならreturn; が実行されて「後続の処理をスキップ」する
+    if (!currentUser || !currentUser.email || !currentUser.userName) return;
     
     return (
         //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ
@@ -93,8 +93,8 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                         {/* flex-shrink-0がなければレシピが増えた際にサイドバーのサイズが縮小されてそのあとRecipeListがスクロール可能になる */}
                         <div className="flex-shrink-0">
                             <UserItem 
-                                userEmail={currentUserStore.currentUser.email!} 
-                                userName={currentUserStore.currentUser.userName!} 
+                                userEmail={currentUser.email} 
+                                userName={currentUser.userName} 
                                 signout={handleSignOut}
                             />
                             

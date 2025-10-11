@@ -27,8 +27,7 @@ export function WatchPoint({ recipeId, img, Word}: TimeProps) {
             const data = await recipeRepository.fetchTime(currentUser.id,recipeId)
             setTime(data.time || 0)
           }catch(error){
-            console.error(error)
-            toast.error("調理時間の取得に失敗しました")
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
             setTime(0)
           }
         } 
@@ -45,8 +44,7 @@ export function WatchPoint({ recipeId, img, Word}: TimeProps) {
             const updatedRecipe = await recipeRepository.updateTime(currentUser.id, recipeId, newTime)
             recipeStore.set([updatedRecipe])
           }catch(error){
-            console.error(error)
-            toast.error("調理時間の更新に失敗しました")
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
             setTime(0)
           }
         }

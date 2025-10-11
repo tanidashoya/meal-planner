@@ -8,7 +8,10 @@ import { supabase } from "../../lib/supabase";
 //confirm-emailをオフにせずローカル環境でサインインしてたけどメールを受け取ってもconfirm-emailがローカル環境だと認証されないので認証されない。
 //だからHomeに遷移できなかったがconfirm-emailをオフにしたら無事に遷移できた。
 //名前をuserNameとして返すようにした。
+//✅✅✅supabaseは例外としてではなくオブジェクトとしてエラーを返ずため、try-catch文を使うエラーハンドリングはしない
 export const authRepository = {
+
+
     async signup(name:string,email:string,password:string){
         const {data,error} = await supabase.auth.signUp(
             {
@@ -18,7 +21,7 @@ export const authRepository = {
             }
         )
         if (error != null || data.user == null) {
-            throw new Error(error?.message)
+            throw new Error("サインアップに失敗しました")
         }
         //他の場所でdata.userが使われている場合直接書き換えると挙動がおかしくなる可能性があるのでスプレッド構文で返す
         return {
@@ -46,14 +49,15 @@ export const authRepository = {
 
     async signin(email:string,password:string){
         const {data,error} = await supabase.auth.signInWithPassword({email,password})
+        if (!data.session) return;
         if (error != null || data.user == null){
-            throw new Error(error?.message)
+            throw new Error("サインインに失敗しました")
         }
         return {
             ...data.user,
             userName:data.user.user_metadata.name,
             //accessTokenを返す
-            accessToken:data.session!.access_token
+            accessToken:data.session.access_token
 
         }
     },
@@ -64,17 +68,15 @@ export const authRepository = {
     async getCurrentUser(){
         const {data,error} = await supabase.auth.getSession()
         if (error !== null){
-            throw new Error(error?.message)
+            throw new Error("ログイン中のユーザー情報の取得に失敗しました")
         }
         //セッションがnullの場合は、ログインしていないのでnullを返す
-        if (data.session == null){
-            return null
-        }
+        if (!data.session) return
         return {
-            ...data.session!.user,
-            userName:data.session!.user.user_metadata.name,
+            ...data.session.user,
+            userName:data.session.user.user_metadata.name,
             //accessTokenを返す
-            accessToken:data.session!.access_token
+            accessToken:data.session.access_token
         }
     },
 
@@ -82,18 +84,19 @@ export const authRepository = {
     // try-catch文を使用してエラーを捕捉して処理を停止させないようにする
     // supabase.auth.signOutメソッドが実行できてもtry文の中の条件分岐は判定される
     // catchはsupabase.auth.signOutメソッドでエラーが発生したとき、またはtry文内でthrowされたときに実行される
+
     async signout(){
-        try {
-            const {error} = await supabase.auth.signOut()
-            if (error != null && !error.message.includes('Auth session missing')){
-                throw new Error(error?.message)
-            }
-        } catch (error: any) {
-            // セッション関連のエラーは無視してログアウト処理を続行
-            if (!error.message?.includes('Auth session missing')) {
-                throw error;
-            }
-        }
+      const {error} = await supabase.auth.signOut()
+      
+      // セッションがない場合は正常扱い（もうすでにログアウトしている場合はエラーが発生する）これは無視して正常終了する
+      if (!error || error.message.includes('Auth session missing')) {
+          return;
+      }
+      
+      // その他のエラーは投げる
+      console.error('ログアウト処理でエラーが発生:', error);
+      throw new Error(`ログアウトに失敗しました: ${error.message}`)
+  
     },
 
 
@@ -110,7 +113,7 @@ export const authRepository = {
     async updateName(newName:string){
         const {data,error} = await supabase.auth.updateUser({data:{name:newName}})
         if (error != null){
-            throw new Error(error?.message)
+            throw new Error("名前の更新に失敗しました")
         }
         return {
             ...data.user,

@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom"
 import { SideBar } from "./components/SideBar"
 import { unsubscribe } from "./lib/supabase"
 import { subscribe } from "./lib/supabase"
+import { toast } from "react-toastify"
 
 
 
@@ -33,14 +34,19 @@ export const Layout = () => {
     //最初はカテゴリーだけの表示でいいのでは？
     //検索ページで使用する
     const fetchRecipes = async() => {
-        if (currentUserStore.currentUser == null) {
-            return;
+        if (!currentUserStore.currentUser)  return;
+        try{
+            const recipes = await recipeRepository.findAll(currentUserStore.currentUser.id)
+            //recipesがnullまたは空配列の場合はグローバルステートに空配列を設定する
+            //UI側でデータがありませんみたいにできる可能性を維持
+            if (!recipes || recipes.length === 0) {
+                recipeStore.set([]);
+                return;
+            }
+            recipeStore.set(recipes)
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
         }
-        const recipes = await recipeRepository.findAll(currentUserStore.currentUser!.id)
-        if (recipes == null) {
-            return;
-        }
-        recipeStore.set(recipes)
     }
 
 
@@ -50,6 +56,9 @@ export const Layout = () => {
     // ⇒ スマホでログアウトした際にcurrentUserがnullになり、下記のuseEffectが実行されてchannelがundefinedになる
     // PCでログアウト処理をしようとしたときにchannelがundefinedになっており、クリーンアップ関数にunsubscribeを渡すとエラーになる
     // ⇒ そのためif文を追加してchannelが存在する場合のみクリーンアップ関数を実行するようにする
+    //✅ リロード（＝アプリ全体の再マウント）が起きたら、依存配列に何が入っていても useEffect は最初の一回は必ず実行される。
+    //recipe.repository.tsが保存変更された場合はcurrentUserStore.currentUserが変更されない（Layoutコンポーネントは再マウントされない）
+    // ⇒ そのためrecipeStoreが空になる
     useEffect(() => {
         
         fetchRecipes()
@@ -84,6 +93,7 @@ export const Layout = () => {
 
 
     const SearchRecipe = async(keyword:string) => {
+        if (!currentUserStore.currentUser) return;
         //キーワードが空の場合は検索結果を空にする
         //つまり検索入力欄が空文字の場合、supabaseにアクセスしないため検索結果を取得しない
         if (!keyword || keyword.trim() === "") {
@@ -91,11 +101,16 @@ export const Layout = () => {
             return
         }
         //キーワードが空でない場合は検索結果を取得する
-        const recipes = await recipeRepository.findByKeyword(currentUserStore.currentUser!.id,keyword)
-        if (recipes == null) {
-            return
+        try{
+            const recipes = await recipeRepository.findByKeyword(currentUserStore.currentUser.id,keyword)
+            if (!recipes || recipes.length === 0) {
+                setSearchResult([])
+                return
+            }
+            setSearchResult(recipes)
+        }catch(error){
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
         }
-        setSearchResult(recipes)
     }   
 
     const openModal = () => {
@@ -106,10 +121,14 @@ export const Layout = () => {
     //データベースが変更されたときに変更情報を接続されているアプリにpayloadとして送っている
     //raitingを既存のデータに追加するときにはpayload.eventTypeはUPDATEとなる ⇒ グローバスステートに追加される
     const subscribeRecipe = () => {
-        if (currentUserStore.currentUser == null) {
-            return;
-        }
-        return subscribe(currentUserStore.currentUser!.id, (payload) => {
+        //currentUserStore.currentUserがnullの場合はリアルタイム通信を行わない
+        //外側のif (!currentUserStore.currentUser) return;で購読開始段階ではcurrntUserがあるかのチェックがされている
+        //しかし、subscrive()が実行されて、実際に変更命令がフロントから送られてDB変更結果が
+        //payloadとして返ってきたときにはcurrentUserがnullになっている可能性がある（チェックされていない）
+        //そのため、内側のif (!currentUserStore.currentUser) return;でチェックする
+        if (!currentUserStore.currentUser) return;
+        return subscribe(currentUserStore.currentUser.id, (payload) => {
+            if (!currentUserStore.currentUser) return;
             console.log('リアルタイム通信受信:', payload.eventType, payload)
             if (payload.eventType === 'INSERT') {
                 console.log('INSERTイベントを受信しました')
@@ -118,8 +137,9 @@ export const Layout = () => {
                 console.log('UPDATEイベントを受信しました')
                 recipeStore.updateRating(payload.new)
             } else if (payload.eventType === 'DELETE') {
+                if (!payload.old.id) return;
                 console.log('DELETEイベントを受信しました')
-                recipeStore.delete(currentUserStore.currentUser!.id,payload.old.id!)
+                recipeStore.delete(currentUserStore.currentUser.id,payload.old.id)
             }
         })
     }

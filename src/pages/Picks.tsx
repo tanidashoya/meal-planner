@@ -49,7 +49,6 @@ export const Picks = () => {
             recipeStore.set([recipes])
             toast.success("レシピの追加に成功しました")
         }catch(error){
-            console.error(error)
             // Errorオブジェクトからメッセージを抽出してトースト表示
             // error instanceof Error は、error が Error オブジェクトかどうかをチェックする
             const message = error instanceof Error ? error.message : "不明なエラーが発生しました";

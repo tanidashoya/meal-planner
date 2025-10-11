@@ -27,8 +27,7 @@ export function TastePoint({ recipeId, img, Word}: TastePointProps) {
           const data = await recipeRepository.fetchRating(currentUser.id,recipeId)
           setRating(data.rating || 0)
         }catch(error){
-          console.error(error)
-          toast.error("評価値の取得に失敗しました")
+          toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
           setRating(0)
         }
       }
@@ -45,8 +44,7 @@ export function TastePoint({ recipeId, img, Word}: TastePointProps) {
             const updatedRecipe = await recipeRepository.updateRating(currentUser.id, recipeId, newRating)
             recipeStore.updateRating(updatedRecipe)
           }catch(error){
-            console.error(error)
-            toast.error("評価値の更新に失敗しました")
+            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
             setRating(0)
           }
         }

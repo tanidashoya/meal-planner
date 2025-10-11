@@ -29,7 +29,6 @@ export function Home(){
             recipeStore.set([recipes])
             toast.success("レシピの追加に成功しました")
         }catch(error){
-            console.error(error)
             //instanceofは左のオペランドが右のクラスに属するインスタンスかを判定してboolean値を返す
             const message = error instanceof Error ? error.message : "不明なエラーが発生しました"
             toast.error(message)
