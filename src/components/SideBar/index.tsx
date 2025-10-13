@@ -19,6 +19,8 @@ import { BottomBar } from "../BottomBar";
 import randomPicksIcon from "../../assets/random_picks.png";
 import { useRecipeStore } from "../../modules/recipes/recipe.state";
 import { toast } from "react-toastify";
+import matchRecipeIcon from "../../assets/ai_search.png";
+
 
 
 interface SideBarProps {
@@ -110,9 +112,15 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
                 </SheetContent>
             </Sheet>
             
-            {/* ピックスボタン */}
+            {/* レシピランダム提案ボタン */}
             <Button variant="outline" className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/picks")}>
                 <img src={randomPicksIcon} alt="picks icon" className="size-11" />
+            </Button>
+
+
+            {/* レシピランダム提案ボタン */}
+            <Button variant="outline" className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/match-recipe")}>
+                <img src={matchRecipeIcon} alt="picks icon" className="size-11" />
             </Button>
 
 

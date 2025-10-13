@@ -15,6 +15,7 @@ import { TimeList } from "./pages/TimeList"
 import { useLocation } from "react-router-dom";
 import { Picks } from "./pages/Picks"
 import { ToastContainer } from "react-toastify"
+import { MatchRecipe } from "./pages/MatchRecipe"
 
 export function ScrollToTop() {
   const { pathname } = useLocation();
@@ -116,6 +117,7 @@ function App() {
             <Route path="/time-sort" element={<TimeSort/>}/>
             <Route path="/time-list/:time" element={<TimeList/>}/>
             <Route path="/picks" element={<Picks/>}/>
+            <Route path="/match-recipe" element={<MatchRecipe/>}/>
           </Route>
           <Route path="/signup" element={<Signup/>}/>
           <Route path="/signin" element={<Signin/>}/>

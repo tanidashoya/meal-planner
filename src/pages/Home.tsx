@@ -95,7 +95,7 @@ export function Home(){
                                 <SelectItem value="肉料理" className="text-lg">肉料理</SelectItem>
                                 <SelectItem value="魚料理" className="text-lg">魚料理</SelectItem>
                                 <SelectItem value="丼・ルー料理" className="text-lg">丼・ルー料理</SelectItem>
-                                <SelectItem value="麵料理" className="text-lg">麵料理</SelectItem>
+                                <SelectItem value="麺料理" className="text-lg">麺料理</SelectItem>
                                 <SelectItem value="小物" className="text-lg">小物</SelectItem>
                                 <SelectItem value="その他" className="text-lg">その他</SelectItem>
                             </SelectContent>

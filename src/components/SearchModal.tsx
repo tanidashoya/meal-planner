@@ -69,7 +69,9 @@ export const SearchModal = ({isOpen,recipes,onClose,onItemSelect,onKeywordChange
           />
           {/* 検索結果をスクロールできるように */}
           <CommandList className="max-h-[30vh] md:max-h-[70vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain touch-pan-y">
-            <CommandEmpty className="text-center text-lg p-4 text-gray-500">条件に一致するノートがありません</CommandEmpty>
+            <CommandEmpty className="text-center text-lg p-4 text-gray-500">
+              <span>条件に一致するノートがありません</span>
+            </CommandEmpty>
             <CommandGroup>
               {sortedRecipes?.map((recipe) => (
                 <CommandItem
