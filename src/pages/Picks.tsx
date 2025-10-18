@@ -78,18 +78,18 @@ export const Picks = () => {
     return (
         <div className="flex flex-col items-center justify-center gap-2 mt-12 mb-16">
             <div className="mb-8">
-                <p className="text-2xl font-bold mb-2">今日のレシピ5選</p>
-                <p className="text-sm text-gray-500">※毎日午前８時に更新されます</p>
-            </div>
+                <p className="text-2xl font-bold mb-2 text-center">今日のおすすめレシピ</p>
+                <p className="text-sm text-gray-500 text-center">※毎日午前８時に更新されます</p>
+            </div>  
             {officialRecipes.map((officialRecipe) => (
-                <div key={officialRecipe.id} className="mb-2 p-0 w-4/5">
+                <div key={officialRecipe.id} className="mb-2 p-0 w-9/10">
                     <div>
                         <button 
                             onClick={() => window.open(`${officialRecipe.url}`, "_blank", "noopener,noreferrer")}
                             className="block w-full p-4 focus:!outline-none border !border-gray-300 !shadow-sm overflow-hidden rounded-lg hover:bg-gray-50"
                         >
                             <div className="flex flex-col items-center justify-center gap-2 mb-4 w-full p-0">
-                                <span className="block font-medium truncate w-full">{officialRecipe.title}</span>
+                                <span className="block font-medium break-all w-full text-left text-base">{officialRecipe.title}</span>
                                 <span className="block text-blue-500 font-medium text-sm truncate w-full">{officialRecipe.url}</span>
                             </div>
                             <ImageOgp url={officialRecipe.url || ""} className="w-full h-28 my-0" />
@@ -115,8 +115,8 @@ export const Picks = () => {
                             <div className="flex items-center gap-1">
                                 <Plus className="h-4 w-4 text-white-500" />
                                     <span className="text-white text-sm">Myレシピに追加</span>
-                                </div>
-                            </button>
+                            </div>
+                        </button>
                         )}
                     </div>
                 </div>
