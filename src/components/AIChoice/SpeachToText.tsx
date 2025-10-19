@@ -79,6 +79,9 @@ export const SpeechToText = () => {
 	//mediaRecorder.onstop：ここに登録した関数が自動で発火する
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
+    if (mediaRecorderRef.current?.stream) {
+        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      }
     setRecording(false);
   };
 
