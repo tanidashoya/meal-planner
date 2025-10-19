@@ -17,6 +17,19 @@ import { Picks } from "./pages/Picks"
 import { ToastContainer } from "react-toastify"
 import { MatchRecipe } from "./pages/MatchRecipe"
 
+
+function useViewportHeightFix() {
+  useEffect(() => {
+    const setVh = () => {
+      // innerHeightをもとにCSS変数 --vh を常に正しく再設定
+      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+    };
+    setVh(); // 初期設定
+    window.addEventListener("resize", setVh);
+    return () => window.removeEventListener("resize", setVh);
+  }, []);
+}
+
 export function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -30,6 +43,8 @@ export function ScrollToTop() {
 
 
 function App() {
+
+  useViewportHeightFix();
   const [isLoading,setIsLoading] = useState(true)
   const currentUserStore = useCurrentUserStore();
 
@@ -94,8 +109,10 @@ function App() {
     )
   }
 
+  
+
   return (
-    <div className="h-full">
+    <div className="h-[calc(var(--vh)*100)] overflow-hidden">
       <BrowserRouter>
       <ToastContainer
         position="top-right"
