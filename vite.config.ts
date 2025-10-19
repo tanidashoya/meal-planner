@@ -24,6 +24,15 @@ import { fileURLToPath, URL } from "node:url"
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    host: true,
+    port: 5173,
+  },
+  preview: {
+    host: true,
+    port: 10000,
+    allowedHosts: ["meal-planner-v17f.onrender.com"], // ← ここを追加！
+  },
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } // @ → src
   }
