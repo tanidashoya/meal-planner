@@ -100,7 +100,7 @@ function App() {
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
         {/* 要素に 点滅（パルス）アニメーション を付けます。背景色や文字色が「ふわっ → 薄く → ふわっ」と繰り返し変化するような効果。 */}
         <div className="animate-pulse md:mb-4">
-          <img src={mealPlannerLogo} alt="Meal Planner" className="h-60 w-auto" />
+          <img src={mealPlannerLogo} alt="MealPlanner" className="h-40 w-auto mb-12" />
         </div> 
         {/* animate-spin：円が回転するアニメーション */}
         {/* rounded-full：要素の角を 完全な円形にする。h-8 w-8 と組み合わせると「直径 2rem (＝32px) の円」になる。 */}
@@ -109,7 +109,6 @@ function App() {
     )
   }
 
-  
 
   return (
     <div className="h-[calc(var(--vh)*100)] overflow-hidden">
