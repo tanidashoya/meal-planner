@@ -15,7 +15,6 @@ import ArrowRight from "../assets/arrow_right.png";
 
 export const MatchRecipe = () => {
 
-    const [data, setData] = useState<any[]>([]);
     const [searchText, setSearchText] = useState("");
     const [mode, setMode] = useState<"free" | "strict">("free");
     const aiChoiceStore = useAiChoiceStore();
@@ -49,7 +48,6 @@ export const MatchRecipe = () => {
         }
         aiChoiceStore.set(data);
         console.log(data);
-        setData(data);
         setHasSearched(true);
         setIsLoading(false);
         return data;
@@ -67,7 +65,6 @@ export const MatchRecipe = () => {
             toast.success("こちらのレシピが見つかりました");
         }
         aiChoiceStore.set(data);
-        setData(data);
         setHasSearched(true);
         setIsLoading(false);
         return;
