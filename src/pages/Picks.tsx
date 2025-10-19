@@ -76,7 +76,7 @@ export const Picks = () => {
     //window.open：JavaScript で新しいウィンドウ（またはタブ）を開くための関数
     //
     return (
-        <div className="flex flex-col items-center justify-center gap-2 mt-12 mb-16">
+        <div className="flex flex-col items-center justify-center gap-2 mt-28 mb-16">
             <div className="mb-8">
                 <p className="text-2xl font-bold mb-2 text-center">今日のおすすめレシピ</p>
                 <p className="text-sm text-gray-500 text-center">※毎日午前８時に更新されます</p>

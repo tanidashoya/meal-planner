@@ -148,13 +148,13 @@ export const Layout = () => {
     // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
     // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
     return (
-        <div className="h-full flex flex-col  lg:flex-row">
+        <div className="h-[100dvh] flex flex-col lg:flex-row">
             <div>
                 <SideBar openModal={openModal} open={open} setOpen={setOpen}/>
             </div>
             {/* h-full:親要素の高さに合わせて縦いっぱいに広がる */}
-            {/* つまりh-fullは親要素の高さ（ここではh-[100dvh]）に合わせるということ */}
-            <main className="flex-1 overflow-y-auto h-full pt-15 lg:pt-0 lg:ml-20">
+            {/* つまりh-fullは親要素の高さ（ここではh-screen）に合わせるということ */}
+            <main className="flex-1 overflow-y-auto h-full lg:pt-0 lg:ml-20">
                 <Outlet/>
                 <SearchModal
                     isOpen = {isShowModal}

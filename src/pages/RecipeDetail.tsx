@@ -137,7 +137,7 @@ export const RecipeDetail = ()=> {
     
     //Numberを付けるのはidがstring型のため
     return (
-        <div className="flex flex-col items-center justify-center py-1 lg:py-16 mx-5 h-full">
+        <div className="flex flex-col items-center justify-center mx-5 h-full">
             {targetRecipe === undefined ? (
                 <div className="text-center">
                     <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -151,7 +151,7 @@ export const RecipeDetail = ()=> {
                 </div>
             ) : (              
                 <div className="flex flex-col items-center justify-center w-full">
-                    <ImageOgp url={targetRecipe.source || ""} className="w-full h-32 mt-4 mb-5"/>
+                    <ImageOgp url={targetRecipe.source || ""} className="w-full h-32 mb-5"/>
                     <div className="flex justify-center w-full gap-2">
                         <Select 
                             value={selectedCategory} 

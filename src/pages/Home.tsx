@@ -48,17 +48,17 @@ export function Home(){
     //m-auto: 左右のマージンを自動で設定し、水平方向の中央揃えを行います
     // w-1/2: 幅を親要素の50%に設定します
     return(
-        <div className="flex items-center justify-center mt-7  md:mt-20">
-        <Card className="border-0 shadow-none m-auto w-19/20 sm:w-9/10 h-full lg:w-3/5">
-            <CardHeader>
-                <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">
-                    こんにちは、{currentUserStore.currentUser.userName}さん
-                </CardTitle>
-                <CardDescription className="text-lg md:text-2xl font-medium mt-8 lg:mt-16 mb-1 text-gray-600 text-center">
-                    新しいレシピを追加してください
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3.5 border-1 border-gray-300 rounded-lg px-6 py-8 shadow-sm lg:gap-3.5">            
+        <div className="h-full flex items-center justify-center">
+            <Card className="border-0 shadow-none w-19/20 sm:w-9/10 lg:w-3/5">
+                <CardHeader>
+                    <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">
+                        こんにちは、{currentUserStore.currentUser.userName}さん
+                    </CardTitle>
+                    <CardDescription className="text-lg md:text-2xl font-medium mt-8 lg:mt-16 mb-1 text-gray-600 text-center">
+                        新しいレシピを追加してください
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3.5 border-1 border-gray-300 rounded-lg px-6 py-8 shadow-sm lg:gap-3.5">            
                     {/* categoryの入力欄を作成する */}
                     <div className="flex items-center gap-2.5">
                         <Select 
@@ -68,8 +68,8 @@ export function Home(){
                             onOpenChange={setIsSelectOpen}
                         >
                             {/* onTouchStart */}
-                            <SelectTrigger className="w-[170px] bg-secondary focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500 "
-                                
+                            <SelectTrigger 
+                                className="w-[170px] bg-secondary focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500"
                                 onTouchStart={() => {
                                     // スマホでキーボードが開いている場合は少し遅らせて閉じる
                                     if (document.activeElement && document.activeElement instanceof HTMLElement) {
@@ -107,7 +107,8 @@ export function Home(){
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-1">
                             <div className="w-4/5">
-                                <input type="text" 
+                                <input 
+                                    type="text" 
                                     className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                                     placeholder="レシピのタイトルを入力" 
                                     value={recipeTitle} 
@@ -117,14 +118,14 @@ export function Home(){
                             <div className="text-red-500 ml-2 text-base md:text-lg">※必須</div>
                         </div>
 
-
                         <div className="flex items-center gap-1 w-4/5">
-                        <input type="text" 
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="参照元（例：URL、書籍など）" 
-                            value={source} 
-                            onChange={(e) => setSource(e.target.value)}
-                        />
+                            <input 
+                                type="text" 
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="参照元（例：URL、書籍など）" 
+                                value={source} 
+                                onChange={(e) => setSource(e.target.value)}
+                            />
                         </div>
                     </div>
 

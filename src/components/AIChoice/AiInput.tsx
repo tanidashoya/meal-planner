@@ -11,9 +11,9 @@ interface AiInputProps {
 
 export const AiInput = ({ mode, setMode, handleChange, aiWord, handleClick }: AiInputProps) => {
     return (
-        <div>
-            <h2 className="text-2xl font-bold mb-6">AIによるレシピ探索</h2>
-            <div className="border py-6 px-3 rounded-md shadow-md">
+        <div className="w-full">
+            <h2 className="text-2xl font-bold mb-6 text-center w-full">AIによるレシピ探索</h2>
+            <div className="py-6 px-3 rounded-md">
                 <div className="flex flex-row items-center justify-center">
                     <input type="text" 
                         className="mb-6 w-full p-2 rounded-md border-2 border-gray-300  
