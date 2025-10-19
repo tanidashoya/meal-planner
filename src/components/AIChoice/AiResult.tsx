@@ -25,7 +25,7 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSea
                     animate={{ opacity: 1, y: 10 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <p className="text-sm text-gray-500 text-center font-bold text-xl mt-8 mb-6">こんなレシピはどう？(全{aiChoice.length}件)</p>
+                    <p className="text-sm text-gray-500 text-center font-bold text-xl mt-4 mb-12">こんなレシピはどう？(全{aiChoice.length}件)</p>
                     {aiChoice.map((recipe: aiChoice, index: number) => (
                         <div key={recipe.id}>
                             <motion.a
@@ -42,7 +42,7 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSea
                                 className="block"
                             >
                                 <div className="flex flex-row mb-1">
-                                    <span className="text-sm text-gray-700 truncate">{index + 1}．{recipe.title}</span>
+                                    <span className="text-sm text-gray-700 break-all font-bold">{index + 1}．{recipe.title}</span>
                                 </div>
                                 
                                 <div className="flex flex-row gap-2 border p-2 rounded-md justify-center items-center">
@@ -71,8 +71,8 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSea
                                         <span className=" text-sm">追加しました</span>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center gap-1">
-                                        <img src={ArrowRight} alt="arrow-right" className="w-6 h-6 mr-2" />
+                                    <div className="flex items-center gap-1 mb-4">
+                                        <img src={ArrowRight} alt="arrow-right" className="w-6 h-6 mr-2 opacity-60" />
                                         <button 
                                             onClick={() => addRecipeToFavorite({
                                                 title: recipe.title || "", 
@@ -110,7 +110,7 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSea
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <p className="animate-pulse text-sm text-gray-500 text-center font-bold text-xl mt-8 mb-2">AIが探索中...</p>
+                            <p className="animate-pulse text-sm text-gray-500 text-center font-bold text-xl mt-4 mb-2">AIが探索中...</p>
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                         </motion.div>
                     )
