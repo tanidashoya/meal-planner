@@ -48,14 +48,27 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+  
     (async () => {
       if (!url) return;
       setIsLoading(true);
-      const data = await getOgpPreview(url);
-      setOgp(data);
-      setIsLoading(false);
+      try {
+        const data = await getOgpPreview(url);
+        if (isMounted) setOgp(data); // ✅ アンマウント後なら更新しない
+      } catch (err) {
+        console.error("OGP取得エラー:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
     })();
+  
+    // ✅ クリーンアップ関数
+    return () => {
+      isMounted = false;
+    };
   }, [url]);
+  
 
   return (
     <div className={`flex justify-center items-center ${className}`}>

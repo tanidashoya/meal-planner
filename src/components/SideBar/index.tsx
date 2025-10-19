@@ -20,7 +20,7 @@ import randomPicksIcon from "../../assets/random_picks.png";
 import { useRecipeStore } from "../../modules/recipes/recipe.state";
 import { toast } from "react-toastify";
 import matchRecipeIcon from "../../assets/ai_search.png";
-
+import { useAiChoiceStore } from "../../modules/aiChoice/ai-choice.state";
 
 
 interface SideBarProps {
@@ -32,6 +32,8 @@ interface SideBarProps {
 
 export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
 
+    //AI処理中どうかの判定に使うグローバルステート
+    const aiChoiceStore = useAiChoiceStore();
     const currentUserStore = useCurrentUserStore();
     const currentUser = currentUserStore.currentUser;
     const recipeStore = useRecipeStore();
@@ -118,11 +120,16 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
             </Button>
 
 
-            {/* レシピランダム提案ボタン */}
-            <Button variant="outline" className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/match-recipe")}>
-                <img src={matchRecipeIcon} alt="picks icon" className="size-11" />
-            </Button>
-
+            {/* レシピAI探索ボタン */}
+            {aiChoiceStore.aiSearchLoading ? (
+                <div className="!px-2 !ml-2 !shadow-none rounded-md flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+            ) : (
+                <Button variant="outline" className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/match-recipe")}>
+                    <img src={matchRecipeIcon} alt="picks icon" className="size-11" />
+                </Button>
+            )}
 
             <div className="hidden lg:flex flex-col items-center gap-2">
                 <Button variant="outline" className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none" onClick={() => navigate("/")}>

@@ -1,0 +1,121 @@
+import { aiChoice } from "../../modules/aiChoice/aichoice.entity";
+import { motion } from "framer-motion";
+import { ImageOgp } from "../ImageOgp";
+import { RecipeParams } from "../../modules/recipes/recipe.entity";
+import { Check } from "lucide-react";
+import ArrowRight from "../../assets/arrow_right.png";
+import { Plus } from "lucide-react";
+
+interface AiResultProps {
+    aiChoice: aiChoice[];
+    isAddingRecipe: { [id: number]: boolean };
+    addRecipeToFavorite: (params: RecipeParams) => void;
+    hasSearched: boolean;
+    isLoading: boolean;
+}
+
+
+export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSearched, isLoading }: AiResultProps) => {
+
+    return (
+        <div className="flex flex-col gap-4 w-full">
+            {Array.isArray(aiChoice) && aiChoice.length > 0 ? (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 10 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <p className="text-sm text-gray-500 text-center font-bold text-xl mt-8 mb-6">こんなレシピはどう？(全{aiChoice.length}件)</p>
+                    {aiChoice.map((recipe: aiChoice, index: number) => (
+                        <div key={recipe.id}>
+                            <motion.a
+                                href={recipe.url || ""}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                initial={{ opacity: 0, filter: "blur(8px)" }} // 最初は完全に透明＋ぼかし
+                                animate={{ opacity: [0, 0.5, 1], filter: ["blur(8px)", "blur(2px)", "blur(0px)"] }} // 徐々にクリアに
+                                transition={{
+                                    delay: index * 0.30, // 1つずつ少し遅れて出る
+                                    duration: 0.8,
+                                    ease: [0.22, 1, 0.36, 1], // ゆっくり自然なカーブ
+                                }}
+                                className="block"
+                            >
+                                <div className="flex flex-row mb-1">
+                                    <span className="text-sm text-gray-700 truncate">{index + 1}．{recipe.title}</span>
+                                </div>
+                                
+                                <div className="flex flex-row gap-2 border p-2 rounded-md justify-center items-center">
+                                    <ImageOgp url={recipe.url || ""} className="w-37" />
+                                    <div className="flex flex-1 flex-col gap-1 w-1/2">
+                                        <span className="text-sm bleak-all text-gray-500">{recipe.title}</span>
+                                        <span className="text-sm truncate text-blue-500 font-medium">
+                                            {recipe.url}
+                                        </span>
+                                    </div>
+                                </div>
+                            </motion.a>
+                            <motion.div     
+                                initial={{ opacity: 0, filter: "blur(8px)" }} // 最初は完全に透明＋ぼかし
+                                animate={{ opacity: [0, 0.5, 1], filter: ["blur(8px)", "blur(2px)", "blur(0px)"] }} // 徐々にクリアに
+                                transition={{
+                                    delay: index * 0.30, // 1つずつ少し遅れて出る
+                                    duration: 0.8,
+                                    ease: [0.22, 1, 0.36, 1], // ゆっくり自然なカーブ
+                                }}
+                                className="flex justify-end mt-2 mb-4"
+                            >
+                                {isAddingRecipe[recipe.id] ? (
+                                    <div className="flex items-center gap-1 bg-secondary-500 rounded-md px-4 py-2">
+                                        <Check className="h-4 w-4 text-white-500" />
+                                        <span className=" text-sm">追加しました</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-1">
+                                        <img src={ArrowRight} alt="arrow-right" className="w-6 h-6 mr-2" />
+                                        <button 
+                                            onClick={() => addRecipeToFavorite({
+                                                title: recipe.title || "", 
+                                                source: recipe.url || "",
+                                                category: recipe.category || "",
+                                                id: recipe.id || undefined
+                                            })}
+                                            className="flex items-center gap-1 bg-green-400 text-white px-1 py-2 mr-4 rounded-md"
+                                        >
+                                            <div className="flex items-center gap-1">
+                                                <Plus className="h-4 w-4 text-white-500" />
+                                                <span className="text-white text-sm">Myレシピに追加</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                )}
+                            </motion.div>
+                        </div>
+                    ))}
+                </motion.div>
+            ) : (
+                hasSearched ? (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <p className="text-sm text-gray-500 text-center font-bold text-xl mt-8 mb-6">レシピが見つかりませんでした</p>
+                    </motion.div>
+                ) : (
+                    isLoading && (
+                        <motion.div
+                            key="loading"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <p className="animate-pulse text-sm text-gray-500 text-center font-bold text-xl mt-8 mb-2">AIが探索中...</p>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                        </motion.div>
+                    )
+                )
+            )}
+        </div>
+    )
+}
