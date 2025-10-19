@@ -31,10 +31,10 @@ export const TasteSort = () => {
 
     console.log(unsetRecipesObject);
     return (
-        <Card className="border-0 shadow-none m-auto lg:w-3/5 w-19/20 h-full pb-8 mt-10 gap-3">
+        <Card className="border-0 shadow-none m-auto lg:w-3/5 w-19/20 h-full pb-8 mt-12 gap-3">
             <CardHeader>
                 <CardTitle 
-                className="font-['Inter'] text-xl md:text-4xl font-medium tracking-wide text-center text-gray-600 lg:mb-12"
+                className="font-['Inter'] text-xl md:text-4xl font-medium tracking-wide text-center text-gray-600 lg:mb-12 font-bold"
                 >
                     おいしさでレシピを探す
                 </CardTitle>

@@ -9,6 +9,7 @@ import { useState } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { toast } from "react-toastify"
+import mealPlanner from "../assets/mealPlanner.png"
 
 export function Home(){
 
@@ -49,16 +50,16 @@ export function Home(){
     // w-1/2: 幅を親要素の50%に設定します
     return(
         <div className="h-full flex items-center justify-center overflow-hidden">
-            <Card className="border-0 shadow-none w-19/20 sm:w-9/10 lg:w-3/5">
+            <Card className="border-0 shadow-none w-19/20 sm:w-9/10 lg:w-3/5 gap-2">
                 <CardHeader>
                     <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">
-                        こんにちは、{currentUserStore.currentUser.userName}さん
+                        <img src={mealPlanner} alt="mealPlanner" className="h-30 m-auto" />
                     </CardTitle>
-                    <CardDescription className="text-lg md:text-2xl font-medium mt-8 lg:mt-16 mb-1 text-gray-600 text-center">
-                        新しいレシピを追加してください
+                    <CardDescription className="text-base md:text-2xl font-medium lg:mt-16 text-gray-500 text-center mb-4">
+                        新しいレシピを追加しよう！
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3.5 border-1 border-gray-300 rounded-lg px-6 py-8 shadow-sm lg:gap-3.5">            
+                <CardContent className="flex flex-col gap-3.5 border-2 border-gray-300 rounded-lg px-6 py-6 shadow-sm lg:gap-3.5">            
                     {/* categoryの入力欄を作成する */}
                     <div className="flex items-center gap-2.5">
                         <Select 

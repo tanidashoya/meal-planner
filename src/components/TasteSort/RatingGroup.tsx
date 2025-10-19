@@ -29,7 +29,7 @@ export const RatingGroup = ({recipesByRating,unsetRecipesObject,img,type}:Rating
                 {sortedRecipesByRating.map(([rating,recipes])=> {
                     return (
                         <div key={rating} 
-                        className="w-full lg:w-4/5 mb-4 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
+                        className="w-full lg:w-4/5 mb-8 mx-auto border-2 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
                         >
                             <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
                                 {Array.from({ length: Number(rating) }, (_, i) => (
