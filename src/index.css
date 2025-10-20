@@ -74,9 +74,10 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100dvh;
+  background-color: #ffffff;
   /* padding-top: env(safe-area-inset-top);:画面の上端（ノッチやステータスバー）の高さ分だけ、上に余白を自動で追加する。; */
-  /* padding-top: env(safe-area-inset-top);
-  margin: 0; */
+  padding-top: env(safe-area-inset-top);
+  margin: 0; 
   overflow-x: hidden;
 }
 

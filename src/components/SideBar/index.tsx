@@ -78,7 +78,7 @@ export const SideBar = ({openModal,open,setOpen}:SideBarProps) => {
         //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒　index.cssで定義されている
         //border-r → 右の境界線を表示する
         //modal={false} → 裏側のページも操作可能
-        <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col items-center py-2 pt-2 pb-1 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 bg-white lg:bg-transparent lg:h-full">
+        <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col items-center pb-2 pt-3 pb-1 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 bg-white lg:bg-transparent lg:h-full">
             <Sheet open={open} onOpenChange={setOpen} modal={false}>
                 <SheetTrigger asChild>
                     <Button variant="outline" className="ml-2 hover:bg-white lg:m-2 !px-4 !py-6 lg:!px-3 lg:!py-5 !shadow-none !outline-none">

@@ -70,7 +70,7 @@ export function Home(){
                         >
                             {/* onTouchStart */}
                             <SelectTrigger 
-                                className="w-[170px] bg-secondary focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500"
+                                className="w-[170px] bg-gray-100 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500"
                                 onTouchStart={() => {
                                     // スマホでキーボードが開いている場合は少し遅らせて閉じる
                                     if (document.activeElement && document.activeElement instanceof HTMLElement) {
@@ -133,11 +133,11 @@ export function Home(){
                     {/* createRecipeメソッドにはparams:RecipeParams型のオブジェクトを渡す */}
                     <Button 
                         onClick={() => createRecipe({title: recipeTitle, category: selectedCategory, source: source})}
-                        className="w-[150px] mt-8 bg-secondary"
+                        className="w-[180px] mt-8 bg-green-500 mx-auto "
                         disabled={!recipeTitle.trim() || !selectedCategory}
                     >
-                        <Plus className="h-4 w-4 text-gray-500" />
-                        <span className="ml-1 text-gray-500">Myレシピに追加</span>
+                        <Plus className="h-4 w-4 text-white" />
+                        <span className="text-white pr-2">Myレシピに追加</span>
                     </Button>
                 </CardContent>
             </Card>
