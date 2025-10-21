@@ -48,12 +48,11 @@ function App() {
   const [isLoading,setIsLoading] = useState(true)
   const currentUserStore = useCurrentUserStore();
 
-  const fetchCurrentUser = async() => {
-    const currentUser = await authRepository.getCurrentUser()
-    currentUserStore.set(currentUser)
-  }
-
   useEffect(() => {
+    const fetchCurrentUser = async() => {
+      const currentUser = await authRepository.getCurrentUser()
+      currentUserStore.set(currentUser)
+    }
     //sessionStorageはブラウザに保存されているデータ
     //sessionStorageはブラウザを再読み込みしてもデータが保持される
     //localStorageはブラウザを再読み込みするとデータが消える

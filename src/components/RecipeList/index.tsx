@@ -60,7 +60,7 @@ export const RecipeList = ({setOpen}:RecipeListProps) => {
             return acc;
         }, {} as Record<string, Recipe[]>);
         //依存配列（[recipesStore.getAll()]）に変更（レシピに追加や削除などの変化があれば実行）
-    }, [recipes]);
+    }, [recipes,categories]);
 
 
     //keyの役割：リストをレンダリングするときに、どの要素がどれなのかをReactが識別するための目印

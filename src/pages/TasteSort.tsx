@@ -10,7 +10,7 @@ import tasteIcon from "../assets/taste_icon.png";
 export const TasteSort = () => {
 
 
-    const starRating = [1,2,3,4,5];
+    
     const recipesStore = useRecipeStore();
     const recipes = recipesStore.getAll();
     const imgTaste = tasteIcon;
@@ -20,11 +20,12 @@ export const TasteSort = () => {
     // 3 のグループ → rating が 3 または 2.5
     // ・・・というようなオブジェクトを作成
     const recipesByStarRating = useMemo(() => {
+        const starRating = [1,2,3,4,5];
         return starRating.reduce((acc,rating) => {
             acc[rating] = recipes.filter(recipe => recipe.rating === rating)
             return acc;
         },{} as Record<number,Recipe[]>)
-    },[recipes,starRating])
+    },[recipes])
 
     const unsetRecipes = recipes.filter(recipe => recipe.rating === null);
     const unsetRecipesObject = {["未設定"]:unsetRecipes};

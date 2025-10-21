@@ -30,28 +30,7 @@ export const Layout = () => {
     //サイドバーの開閉を管理するuseState
     const [open, setOpen] = useState(false)
 
-    //すべてのレシピを取得（する必要がない気がする・・・）
-    //最初はカテゴリーだけの表示でいいのでは？
-    //検索ページで使用する
-    const fetchRecipes = async() => {
-        if (!currentUserStore.currentUser)  return;
-        try{
-            const recipes = await recipeRepository.findAll(currentUserStore.currentUser.id)
-            //recipesがnullまたは空配列の場合はグローバルステートに空配列を設定する
-            //UI側でデータがありませんみたいにできる可能性を維持
-            if (!recipes || recipes.length === 0) {
-                recipeStore.set([]);
-                return;
-            }
-            recipeStore.set(recipes)
-        }catch(error){
-            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
-        }
-    }
-
-
-
-//channelを作っておけばsubscribeの.onメソッドの第二引数で定義されているtableや指定の場所に変化があれば第三引数で渡されたcallback関数が実行されるということ
+    //channelを作っておけばsubscribeの.onメソッドの第二引数で定義されているtableや指定の場所に変化があれば第三引数で渡されたcallback関数が実行されるということ
     //スマホでログアウトしてPCでログアウトしようとしたときのエラー対応のためクリーンアップ関数にif文を追加
     // ⇒ スマホでログアウトした際にcurrentUserがnullになり、下記のuseEffectが実行されてchannelがundefinedになる
     // PCでログアウト処理をしようとしたときにchannelがundefinedになっており、クリーンアップ関数にunsubscribeを渡すとエラーになる
@@ -60,6 +39,51 @@ export const Layout = () => {
     //recipe.repository.tsが保存変更された場合はcurrentUserStore.currentUserが変更されない（Layoutコンポーネントは再マウントされない）
     // ⇒ そのためrecipeStoreが空になる
     useEffect(() => {
+        //すべてのレシピを取得（する必要がない気がする・・・）
+        //最初はカテゴリーだけの表示でいいのでは？
+        //検索ページで使用する
+        const fetchRecipes = async() => {
+            if (!currentUserStore.currentUser)  return;
+            try{
+                const recipes = await recipeRepository.findAll(currentUserStore.currentUser.id)
+                //recipesがnullまたは空配列の場合はグローバルステートに空配列を設定する
+                //UI側でデータがありませんみたいにできる可能性を維持
+                if (!recipes || recipes.length === 0) {
+                    recipeStore.set([]);
+                    return;
+                }
+                recipeStore.set(recipes)
+            }catch(error){
+                toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
+            }
+        }
+
+        //payloadは「どのように変更されるかを定義している」のではなく、「実際に変更が起きた後の結果情報」
+        //データベースが変更されたときに変更情報を接続されているアプリにpayloadとして送っている
+        //raitingを既存のデータに追加するときにはpayload.eventTypeはUPDATEとなる ⇒ グローバスステートに追加される
+        const subscribeRecipe = () => {
+            //currentUserStore.currentUserがnullの場合はリアルタイム通信を行わない
+            //外側のif (!currentUserStore.currentUser) return;で購読開始段階ではcurrntUserがあるかのチェックがされている
+            //しかし、subscrive()が実行されて、実際に変更命令がフロントから送られてDB変更結果が
+            //payloadとして返ってきたときにはcurrentUserがnullになっている可能性がある（チェックされていない）
+            //そのため、内側のif (!currentUserStore.currentUser) return;でチェックする
+            if (!currentUserStore.currentUser) return;
+            return subscribe(currentUserStore.currentUser.id, (payload) => {
+                if (!currentUserStore.currentUser) return;
+                console.log('リアルタイム通信受信:', payload.eventType, payload)
+                if (payload.eventType === 'INSERT') {
+                    console.log('INSERTイベントを受信しました')
+                    recipeStore.set([payload.new])
+                } else if (payload.eventType === 'UPDATE') {
+                    console.log('UPDATEイベントを受信しました')
+                    recipeStore.updateRating(payload.new)
+                } else if (payload.eventType === 'DELETE') {
+                    if (!payload.old.id) return;
+                    console.log('DELETEイベントを受信しました')
+                    recipeStore.delete(currentUserStore.currentUser.id,payload.old.id)
+                }
+            })
+        }
         
         fetchRecipes()
         const channel = subscribeRecipe()
@@ -115,33 +139,6 @@ export const Layout = () => {
 
     const openModal = () => {
         setIsShowModal(true)
-    }
-
-    //payloadは「どのように変更されるかを定義している」のではなく、「実際に変更が起きた後の結果情報」
-    //データベースが変更されたときに変更情報を接続されているアプリにpayloadとして送っている
-    //raitingを既存のデータに追加するときにはpayload.eventTypeはUPDATEとなる ⇒ グローバスステートに追加される
-    const subscribeRecipe = () => {
-        //currentUserStore.currentUserがnullの場合はリアルタイム通信を行わない
-        //外側のif (!currentUserStore.currentUser) return;で購読開始段階ではcurrntUserがあるかのチェックがされている
-        //しかし、subscrive()が実行されて、実際に変更命令がフロントから送られてDB変更結果が
-        //payloadとして返ってきたときにはcurrentUserがnullになっている可能性がある（チェックされていない）
-        //そのため、内側のif (!currentUserStore.currentUser) return;でチェックする
-        if (!currentUserStore.currentUser) return;
-        return subscribe(currentUserStore.currentUser.id, (payload) => {
-            if (!currentUserStore.currentUser) return;
-            console.log('リアルタイム通信受信:', payload.eventType, payload)
-            if (payload.eventType === 'INSERT') {
-                console.log('INSERTイベントを受信しました')
-                recipeStore.set([payload.new])
-            } else if (payload.eventType === 'UPDATE') {
-                console.log('UPDATEイベントを受信しました')
-                recipeStore.updateRating(payload.new)
-            } else if (payload.eventType === 'DELETE') {
-                if (!payload.old.id) return;
-                console.log('DELETEイベントを受信しました')
-                recipeStore.delete(currentUserStore.currentUser.id,payload.old.id)
-            }
-        })
     }
 
     // h-hull:ビューポートの高さを100%にする

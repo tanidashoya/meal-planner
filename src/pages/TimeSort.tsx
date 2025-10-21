@@ -10,7 +10,7 @@ import watchIcon from "../assets/watch_icon.png";
 export const TimeSort = () => {
 
 
-    const timeRating = [1,2,3,4,5];
+    
     const imgWatch = watchIcon;
     const recipesStore = useRecipeStore();
     const recipes = recipesStore.getAll();
@@ -21,11 +21,12 @@ export const TimeSort = () => {
     // 3 のグループ → rating が 3 または 2.5
     // ・・・というようなオブジェクトを作成
     const recipesByTimeRating = useMemo(() => {
+        const timeRating = [1,2,3,4,5];
         return timeRating.reduce((acc,rating) => {
             acc[rating] = recipes.filter(recipe => recipe.time === rating)
             return acc;
         },{} as Record<number,Recipe[]>)
-    },[recipes,timeRating])
+    },[recipes])
 
     const unsetRecipes = recipes.filter(recipe => recipe.time === null);
     const unsetRecipesObject = {["未設定"]:unsetRecipes};
