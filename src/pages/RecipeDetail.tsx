@@ -101,6 +101,7 @@ export const RecipeDetail = ()=> {
             new URL(url || "");
             return true;
         } catch (error) {
+            console.error("エラー内容:", error);
             return false;
         }
     };
