@@ -18,8 +18,6 @@ import { subscribe } from "./lib/supabase"
 import { toast } from "react-toastify"
 
 
-
-
 export const Layout = () => {
 
     const currentUserStore = useCurrentUserStore();

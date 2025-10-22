@@ -8,12 +8,14 @@ import { RecipeParams } from "../modules/recipes/recipe.entity"
 import { recipeRepository } from "../modules/recipes/recipe.repository"
 import { Plus, Check } from "lucide-react"
 import { toast } from "react-toastify"
+import { motion } from "framer-motion"
 
 export const Picks = () => {
 
     const [officialRecipes, setOfficialRecipes] = useState<dailyPicksItems[]>([])
     const {currentUser} = useCurrentUserStore()
     const recipeStore = useRecipeStore()
+    const [isLoading, setIsLoading] = useState(false)
     // id をキーにして状態を管理(stateのオブジェクトを作成)
     //型は{ [id: string]: boolean }というオブジェクトを作成
     //id: stringはオブジェクトのキー、booleanはオブジェクトの値
@@ -62,16 +64,17 @@ export const Picks = () => {
     //useEffect 内で宣言した変数（ここでは officialRecipes）は、「その関数（useEffect内）」のスコープにだけ有効
     //だからuseStateで保持する必要がある
     useEffect(() => {
-        const fetchPicksData = async () => {
+        (async () => {
+            setIsLoading(true)
             const dailyId = await picksRepository.fetchNewDateID()
             const officialRecipes = await picksRepository.fetchOfficialRecipes(dailyId.id)
             if (officialRecipes == null) {
                 return
             }
             setOfficialRecipes(officialRecipes)
+            setIsLoading(false)
             // console.log("officialRecipes:", officialRecipes)
-        }
-        fetchPicksData()
+        })()
     },[])
     
     //window.open：JavaScript で新しいウィンドウ（またはタブ）を開くための関数
@@ -82,8 +85,22 @@ export const Picks = () => {
                 <p className="text-2xl font-bold mb-2 text-center">今日のおすすめレシピ</p>
                 <p className="text-sm text-gray-500 text-center">※毎日午前８時に更新されます</p>
             </div>  
-            {officialRecipes.map((officialRecipe) => (
-                <div key={officialRecipe.id} className="mb-2 p-0 w-9/10">
+            {isLoading ? (
+                <div className="flex items-center justify-center my-20">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+            ) : (
+                officialRecipes.map((officialRecipe,index) => (
+                <motion.div
+                  key={officialRecipe.id}
+                  className="mb-2 p-0 w-9/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.2, // ← ここがポイント（1つずつ0.2秒遅らせる）
+                  }}
+                >
                     <div>
                         <button 
                             onClick={() => window.open(`${officialRecipe.url}`, "_blank", "noopener,noreferrer")}
@@ -120,8 +137,9 @@ export const Picks = () => {
                         </button>
                         )}
                     </div>
-                </div>
-            ))}
+                </motion.div>
+                ))
+            )}
         </div>
     );
 };
