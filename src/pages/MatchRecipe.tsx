@@ -72,7 +72,7 @@ export const MatchRecipe = () => {
         }
     }
 
-    const addRecipeToFavorite = async(params:RecipeParams) => {
+    const addRecipeToMyRecipe = async(params:RecipeParams) => {
         //idがnullの場合は早期return
         if (!params.id) return
         if (!currentUser) return;
@@ -104,7 +104,7 @@ export const MatchRecipe = () => {
             <AiResult 
                 aiChoice={aiChoiceStore.aiChoice} 
                 isAddingRecipe={isAddingRecipe} 
-                addRecipeToFavorite={addRecipeToFavorite} 
+                addRecipeToMyRecipe={addRecipeToMyRecipe} 
                 hasSearched={aiChoiceStore.HasSearched} 
                 isLoading={aiChoiceStore.aiSearchLoading} 
             />

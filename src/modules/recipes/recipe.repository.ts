@@ -25,12 +25,17 @@ export const recipeRepository = {
           }
         };
 
+        if (!params.category) {
+          throw new Error("カテゴリは必須です")
+        }
+        if (!params.title) {
+          throw new Error("タイトルは必須です")
+        }
         //safeParse() は 例外を投げない 代わりに、成功・失敗の結果をオブジェクトで返す
         const parsedCategory = CategorySchema.safeParse(params.category)
         if (!parsedCategory.success) {
           throw new Error("値が正しくありません")
         }
-
         //undefined → JavaScriptの内部的な「欠損」
         // null → SQLでも理解できる「空」
         //sourceValueがundefinedの場合はnullとして扱う
@@ -49,8 +54,6 @@ export const recipeRepository = {
               .eq("user_id",userID)
               .eq("source",sourceValue ?? "")
               .single()
-          
-
             if (existingData != null && existingError == null) {
               throw new Error("そのレシピは既に存在しています")
           }

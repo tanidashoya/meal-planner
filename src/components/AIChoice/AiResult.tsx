@@ -9,16 +9,17 @@ import { Plus } from "lucide-react";
 interface AiResultProps {
     aiChoice: aiChoice[];
     isAddingRecipe: { [id: number]: boolean };
-    addRecipeToFavorite: (params: RecipeParams) => void;
+    addRecipeToMyRecipe: (params: RecipeParams) => void;
     hasSearched: boolean;
     isLoading: boolean;
 }
 
 
-export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSearched, isLoading }: AiResultProps) => {
+export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToMyRecipe, hasSearched, isLoading }: AiResultProps) => {
 
     return (
         <div className="flex flex-col gap-4 w-full">
+            {/* aiChoiceが配列であり、かつ要素が0より大きい場合は以下のモーションを表示 */}
             {Array.isArray(aiChoice) && aiChoice.length > 0 ? (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -74,7 +75,7 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToFavorite, hasSea
                                     <div className="flex items-center gap-1 mb-4">
                                         <img src={ArrowRight} alt="arrow-right" className="w-6 h-6 mr-2 opacity-60" />
                                         <button 
-                                            onClick={() => addRecipeToFavorite({
+                                            onClick={() => addRecipeToMyRecipe({
                                                 title: recipe.title || "", 
                                                 source: recipe.url || "",
                                                 category: recipe.category || "",

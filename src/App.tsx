@@ -47,7 +47,6 @@ function App() {
   useViewportHeightFix();
   const [isLoading,setIsLoading] = useState(true)
   const currentUserStore = useCurrentUserStore();
-
   useEffect(() => {
     const fetchCurrentUser = async() => {
       const currentUser = await authRepository.getCurrentUser()
@@ -90,6 +89,7 @@ function App() {
     }
     
     loadData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   //isLoadingがtrueの場合はここでJSXを返すので下のBrowserRouterは表示されない
@@ -98,8 +98,9 @@ function App() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
         {/* 要素に 点滅（パルス）アニメーション を付けます。背景色や文字色が「ふわっ → 薄く → ふわっ」と繰り返し変化するような効果。 */}
-        <div className="animate-pulse md:mb-4">
-          <img src={mealPlannerLogo} alt="MealPlanner" className="h-40 w-auto mb-12" />
+        <div className="animate-pulse mb-12 md:mb-4 flex flex-col items-center justify-center">
+          <img src={mealPlannerLogo} alt="MealPlanner" className="h-40 w-auto mb-4" />
+          <span className="text-2xl font-bold text-center">おうちごはん</span>
         </div> 
         {/* animate-spin：円が回転するアニメーション */}
         {/* rounded-full：要素の角を 完全な円形にする。h-8 w-8 と組み合わせると「直径 2rem (＝32px) の円」になる。 */}

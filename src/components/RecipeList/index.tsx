@@ -17,7 +17,7 @@ export const RecipeList = ({setOpen}:RecipeListProps) => {
 
     const {currentUser} = useCurrentUserStore();
     const recipesStore = useRecipeStore();
-    const categories = ["肉料理","魚料理","丼・ルー料理","麺料理","小物","その他"];
+    const categories = useMemo(() => ["肉料理","魚料理","丼・ルー料理","麺料理","小物","その他"], []);
     const recipes = recipesStore.getAll();
     
     //params:{title?:string,category?:string,source?:string}
@@ -161,7 +161,7 @@ categories.map(...) が実行されると、categories の 先頭から1つず�
 key の役割 → Reactがリスト要素を一意に識別して、効率よく再レンダリングするための目印
 レンダリングの流れ → categories の先頭から順に category に値が入り、そのたびに <CategoryItem> が生成されて配列として返される
 
-※※　mapの中で1つずつCategoryItemを生成するが、それをまとめて一気にレンダリングする　※※
+※※mapの中で1つずつCategoryItemを生成するが、それをまとめて一気にレンダリングする※※
 */
 
 
@@ -183,7 +183,7 @@ return
 これは実際には以下のように解釈されます：
 結果：undefinedが返される
 
-2. ()で囲むことで解決
+2.()で囲むことで解決
 
 return(
     <CategoryItem
