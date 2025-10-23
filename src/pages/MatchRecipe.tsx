@@ -93,7 +93,9 @@ export const MatchRecipe = () => {
             // エラー時のローディング状態（setIsAddingRecipe）をリセット（必須）
             setIsAddingRecipe(prev => {
                 const newState = { ...prev };
-                delete newState[params.id]; // このレシピIDのキーを削除
+                if (params.id !== undefined) {
+                    delete newState[params.id]; // このレシピIDのキーを削除
+                }
                 return newState;
             });
             
