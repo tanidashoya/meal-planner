@@ -90,7 +90,7 @@ export const Picks = () => {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
             ) : (
-                officialRecipes.map((officialRecipe,index) => (
+                officialRecipes.map((officialRecipe) => (
                 <motion.div
                   key={officialRecipe.id}
                   className="mb-2 p-0 w-9/10"
@@ -98,7 +98,7 @@ export const Picks = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
                     duration: 0.5,
-                    delay: index * 0.2, // ← ここがポイント（1つずつ0.2秒遅らせる）
+                    delay: 0.2, 
                   }}
                 >
                     <div>
@@ -126,10 +126,10 @@ export const Picks = () => {
                             title:officialRecipe.title || "", 
                             source:officialRecipe.url || "",
                             category:officialRecipe.category || "",
-                            id:officialRecipe.id || undefined
+                            id:officialRecipe.id
                             })}
                             className="flex items-center gap-1 bg-green-400 text-white px-4 py-2 rounded-md"
-                            >
+                        >
                             <div className="flex items-center gap-1">
                                 <Plus className="h-4 w-4 text-white-500" />
                                     <span className="text-white text-sm">Myレシピに追加</span>

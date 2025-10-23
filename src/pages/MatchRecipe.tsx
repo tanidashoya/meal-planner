@@ -73,9 +73,15 @@ export const MatchRecipe = () => {
     }
 
     const addRecipeToMyRecipe = async(params:RecipeParams) => {
-        //idがnullの場合は早期return
-        if (!params.id) return
-        if (!currentUser) return;
+        //idがnullやundefinedの場合は早期return
+        if (!params.id) {
+            toast.error("レシピIDが見つかりません");
+            return;
+        }
+        if (!currentUser) {
+            toast.error("ユーザーが正しく認証されていません");
+            return;
+        }
         //isAddingRecipeのidをキーにしてtrueにする
         //追加しましたの判断で使う
         setIsAddingRecipe({ ...isAddingRecipe, [params.id]: true })
@@ -84,6 +90,13 @@ export const MatchRecipe = () => {
             recipeStore.set([recipes])
             toast.success("レシピの追加に成功しました")
         }catch(error){
+            // エラー時のローディング状態（setIsAddingRecipe）をリセット（必須）
+            setIsAddingRecipe(prev => {
+                const newState = { ...prev };
+                delete newState[params.id]; // このレシピIDのキーを削除
+                return newState;
+            });
+            
             // Errorオブジェクトからメッセージを抽出してトースト表示
             // error instanceof Error は、error が Error オブジェクトかどうかをチェックする
             const message = error instanceof Error ? error.message : "不明なエラーが発生しました";

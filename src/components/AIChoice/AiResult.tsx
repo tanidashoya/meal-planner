@@ -30,15 +30,22 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToMyRecipe, hasSea
                     {aiChoice.map((recipe: aiChoice, index: number) => (
                         <div key={recipe.id}>
                             <motion.a
-                                href={recipe.url || ""}
+                                href={recipe.url || ""}  
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                initial={{ opacity: 0, filter: "blur(8px)" }} // 最初は完全に透明＋ぼかし
-                                animate={{ opacity: [0, 0.5, 1], filter: ["blur(8px)", "blur(2px)", "blur(0px)"] }} // 徐々にクリアに
+                                //initialはmotion.aが表示される前の最初の状態を指定
+                                initial={{ opacity: 0, filter: "blur(8px)" }} // 最初は完全に透明＋ぼかし⇒opacity:0は透明、filter: "blur(8px)"は8px分のぼかし
+                                //animateはmotion.aが表示される際の状態を指定
+                                animate={{ opacity: [0, 0.5, 1], filter: ["blur(8px)", "blur(2px)", "blur(0px)"] }} // 徐々にクリアに⇒opacity: [0, 0.5, 1]は透明から0.5まで徐々に表示、filter: ["blur(8px)", "blur(2px)", "blur(0px)"]は8px分のぼかしから2px分のぼかし、0px分のぼかしに徐々に変化
+                                //transition:アニメーションの時間的な動き方を設定
+                                //delay:アニメーションの遅延時間を設定
+                                //duration:アニメーションの持続時間を設定
+                                //ease:アニメーションのイージングを設定
+                                //initial⇒animateの状態変化をどのようにするかを設定
                                 transition={{
-                                    delay: index * 0.30, // 1つずつ少し遅れて出る
-                                    duration: 0.8,
-                                    ease: [0.22, 1, 0.36, 1], // ゆっくり自然なカーブ
+                                    delay: 0.30, // 1つずつ少し遅れて出る（delayはアニメーションが始まるまでの待機時間）
+                                    duration: 0.8, // アニメーションの持続時間(initial → animate への変化にかかる時間)
+                                    ease: [0.22, 1, 0.36, 1], // ゆっくり自然なカーブ(easeはアニメーションの速度カーブ)
                                 }}
                                 className="block"
                             >
@@ -60,7 +67,7 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToMyRecipe, hasSea
                                 initial={{ opacity: 0, filter: "blur(8px)" }} // 最初は完全に透明＋ぼかし
                                 animate={{ opacity: [0, 0.5, 1], filter: ["blur(8px)", "blur(2px)", "blur(0px)"] }} // 徐々にクリアに
                                 transition={{
-                                    delay: index * 0.30, // 1つずつ少し遅れて出る
+                                    delay: 0.30, // 1つずつ少し遅れて出る
                                     duration: 0.8,
                                     ease: [0.22, 1, 0.36, 1], // ゆっくり自然なカーブ
                                 }}
@@ -79,7 +86,7 @@ export const AiResult = ({ aiChoice, isAddingRecipe, addRecipeToMyRecipe, hasSea
                                                 title: recipe.title || "", 
                                                 source: recipe.url || "",
                                                 category: recipe.category || "",
-                                                id: recipe.id || undefined
+                                                id: recipe.id
                                             })}
                                             className="flex items-center gap-1 bg-green-400 text-white px-1 py-2 mr-4 rounded-md"
                                         >
