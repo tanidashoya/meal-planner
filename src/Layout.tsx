@@ -4,166 +4,168 @@
 // ⇒searchModal開閉切り替え
 // ⇒ノートの詳細への遷移
 
-import { Outlet } from "react-router-dom"
-import { useCurrentUserStore } from "./modules/auth/current-user.state"
-import { useRecipeStore } from "./modules/recipes/recipe.state"
-import { recipeRepository } from "./modules/recipes/recipe.repository"
-import { useState,useEffect } from "react"
-import { SearchModal } from "./components/SearchModal"
-import { Recipe } from "./modules/recipes/recipe.entity"
-import { useNavigate } from "react-router-dom"
-import { SideBar } from "./components/SideBar"
-import { unsubscribe } from "./lib/supabase"
-import { subscribe } from "./lib/supabase"
-import { toast } from "react-toastify"
-
+import { Outlet } from "react-router-dom";
+import { useCurrentUserStore } from "./modules/auth/current-user.state";
+import { useRecipeStore } from "./modules/recipes/recipe.state";
+import { recipeRepository } from "./modules/recipes/recipe.repository";
+import { useState, useEffect } from "react";
+import { SearchModal } from "./components/SearchModal";
+import { Recipe } from "./modules/recipes/recipe.entity";
+import { useNavigate } from "react-router-dom";
+import { SideBar } from "./components/SideBar";
+import { unsubscribe } from "./lib/supabase";
+import { subscribe } from "./lib/supabase";
+import { toast } from "react-toastify";
 
 export const Layout = () => {
+  const currentUserStore = useCurrentUserStore();
+  const recipeStore = useRecipeStore();
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [searchResult, setSearchResult] = useState<Recipe[]>([]);
+  const navigate = useNavigate();
+  //サイドバーの開閉を管理するuseState
+  const [open, setOpen] = useState(false);
 
-    const currentUserStore = useCurrentUserStore();
-    const recipeStore = useRecipeStore();
-    const [isShowModal,setIsShowModal] = useState(false);
-    const [searchResult,setSearchResult] = useState<Recipe[]>([]);
-    const navigate = useNavigate();
-    //サイドバーの開閉を管理するuseState
-    const [open, setOpen] = useState(false)
-
-    //channelを作っておけばsubscribeの.onメソッドの第二引数で定義されているtableや指定の場所に変化があれば第三引数で渡されたcallback関数が実行されるということ
-    //スマホでログアウトしてPCでログアウトしようとしたときのエラー対応のためクリーンアップ関数にif文を追加
-    // ⇒ スマホでログアウトした際にcurrentUserがnullになり、下記のuseEffectが実行されてchannelがundefinedになる
-    // PCでログアウト処理をしようとしたときにchannelがundefinedになっており、クリーンアップ関数にunsubscribeを渡すとエラーになる
-    // ⇒ そのためif文を追加してchannelが存在する場合のみクリーンアップ関数を実行するようにする
-    //✅ リロード（＝アプリ全体の再マウント）が起きたら、依存配列に何が入っていても useEffect は最初の一回は必ず実行される。
-    //recipe.repository.tsが保存変更された場合はcurrentUserStore.currentUserが変更されない（Layoutコンポーネントは再マウントされない）
-    // ⇒ そのためrecipeStoreが空になる
-    useEffect(() => {
-        //すべてのレシピを取得（する必要がない気がする・・・）
-        //最初はカテゴリーだけの表示でいいのでは？
-        //検索ページで使用する
-        const fetchRecipes = async() => {
-            if (!currentUserStore.currentUser)  return;
-            try{
-                const recipes = await recipeRepository.findAll(currentUserStore.currentUser.id)
-                //recipesがnullまたは空配列の場合はグローバルステートに空配列を設定する
-                //UI側でデータがありませんみたいにできる可能性を維持
-                if (!recipes || recipes.length === 0) {
-                    recipeStore.set([]);
-                    return;
-                }
-                recipeStore.set(recipes)
-            }catch(error){
-                toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
-            }
+  //channelを作っておけばsubscribeの.onメソッドの第二引数で定義されているtableや指定の場所に変化があれば第三引数で渡されたcallback関数が実行されるということ
+  //スマホでログアウトしてPCでログアウトしようとしたときのエラー対応のためクリーンアップ関数にif文を追加
+  // ⇒ スマホでログアウトした際にcurrentUserがnullになり、下記のuseEffectが実行されてchannelがundefinedになる
+  // PCでログアウト処理をしようとしたときにchannelがundefinedになっており、クリーンアップ関数にunsubscribeを渡すとエラーになる
+  // ⇒ そのためif文を追加してchannelが存在する場合のみクリーンアップ関数を実行するようにする
+  //✅ リロード（＝アプリ全体の再マウント）が起きたら、依存配列に何が入っていても useEffect は最初の一回は必ず実行される。
+  //recipe.repository.tsが保存変更された場合はcurrentUserStore.currentUserが変更されない（Layoutコンポーネントは再マウントされない）
+  // ⇒ そのためrecipeStoreが空になる
+  useEffect(() => {
+    //すべてのレシピを取得（する必要がない気がする・・・）
+    //最初はカテゴリーだけの表示でいいのでは？
+    //検索ページで使用する
+    const fetchRecipes = async () => {
+      if (!currentUserStore.currentUser) return;
+      try {
+        const recipes = await recipeRepository.findAll(
+          currentUserStore.currentUser.id
+        );
+        //recipesがnullまたは空配列の場合はグローバルステートに空配列を設定する
+        //UI側でデータがありませんみたいにできる可能性を維持
+        if (!recipes || recipes.length === 0) {
+          recipeStore.set([]);
+          return;
         }
+        recipeStore.set(recipes);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "不明なエラーが発生しました"
+        );
+      }
+    };
 
-        //payloadは「どのように変更されるかを定義している」のではなく、「実際に変更が起きた後の結果情報」
-        //データベースが変更されたときに変更情報を接続されているアプリにpayloadとして送っている
-        //raitingを既存のデータに追加するときにはpayload.eventTypeはUPDATEとなる ⇒ グローバスステートに追加される
-        const subscribeRecipe = () => {
-            //currentUserStore.currentUserがnullの場合はリアルタイム通信を行わない
-            //外側のif (!currentUserStore.currentUser) return;で購読開始段階ではcurrntUserがあるかのチェックがされている
-            //しかし、subscrive()が実行されて、実際に変更命令がフロントから送られてDB変更結果が
-            //payloadとして返ってきたときにはcurrentUserがnullになっている可能性がある（チェックされていない）
-            //そのため、内側のif (!currentUserStore.currentUser) return;でチェックする
-            if (!currentUserStore.currentUser) return;
-            return subscribe(currentUserStore.currentUser.id, (payload) => {
-                if (!currentUserStore.currentUser) return;
-                console.log('リアルタイム通信受信:', payload.eventType, payload)
-                if (payload.eventType === 'INSERT') {
-                    console.log('INSERTイベントを受信しました')
-                    recipeStore.set([payload.new])
-                } else if (payload.eventType === 'UPDATE') {
-                    console.log('UPDATEイベントを受信しました')
-                    recipeStore.updateRating(payload.new)
-                } else if (payload.eventType === 'DELETE') {
-                    if (!payload.old.id) return;
-                    console.log('DELETEイベントを受信しました')
-                    recipeStore.delete(currentUserStore.currentUser.id,payload.old.id)
-                }
-            })
-        }
-        
-        fetchRecipes()
-        const channel = subscribeRecipe()
-        //クリーンアップ関数
-        return () => {
-            if (channel) {
-                unsubscribe(channel)
-            }
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[currentUserStore.currentUser])
- 
-    
-    const moveToDetail = (recipeID:number) => {
-        navigate(`/recipes/${recipeID}`)
-        setOpen(false)
-    }
-
-    //検索窓の開閉のショートカットキー
-    useEffect(() => {
-        const handleSearchModal = (e: KeyboardEvent) => {
-          if (e.ctrlKey && e.key === "o") {
-            e.preventDefault()
-            setIsShowModal(prev => !prev)
-          }
-        }
-        window.addEventListener("keydown", handleSearchModal)
-        return () => window.removeEventListener("keydown", handleSearchModal)
-    }, [])
-
-    
-
-
-    const SearchRecipe = async(keyword:string) => {
+    //payloadは「どのように変更されるかを定義している」のではなく、「実際に変更が起きた後の結果情報」
+    //データベースが変更されたときに変更情報を接続されているアプリにpayloadとして送っている
+    //raitingを既存のデータに追加するときにはpayload.eventTypeはUPDATEとなる ⇒ グローバスステートに追加される
+    const subscribeRecipe = () => {
+      //currentUserStore.currentUserがnullの場合はリアルタイム通信を行わない
+      //外側のif (!currentUserStore.currentUser) return;で購読開始段階ではcurrntUserがあるかのチェックがされている
+      //しかし、subscrive()が実行されて、実際に変更命令がフロントから送られてDB変更結果が
+      //payloadとして返ってきたときにはcurrentUserがnullになっている可能性がある（チェックされていない）
+      //そのため、内側のif (!currentUserStore.currentUser) return;でチェックする
+      if (!currentUserStore.currentUser) return;
+      return subscribe(currentUserStore.currentUser.id, (payload) => {
         if (!currentUserStore.currentUser) return;
-        //キーワードが空の場合は検索結果を空にする
-        //つまり検索入力欄が空文字の場合、supabaseにアクセスしないため検索結果を取得しない
-        if (!keyword || keyword.trim() === "") {
-            setSearchResult([])
-            return
+        console.log("リアルタイム通信受信:", payload.eventType, payload);
+        if (payload.eventType === "INSERT") {
+          console.log("INSERTイベントを受信しました");
+          recipeStore.set([payload.new]);
+        } else if (payload.eventType === "UPDATE") {
+          console.log("UPDATEイベントを受信しました");
+          recipeStore.updateRating(payload.new);
+        } else if (payload.eventType === "DELETE") {
+          if (!payload.old.id) return;
+          console.log("DELETEイベントを受信しました");
+          recipeStore.delete(currentUserStore.currentUser.id, payload.old.id);
         }
-        //キーワードが空でない場合は検索結果を取得する
-        try{
-            const recipes = await recipeRepository.findByKeyword(currentUserStore.currentUser.id,keyword)
-            if (!recipes || recipes.length === 0) {
-                setSearchResult([])
-                return
-            }
-            setSearchResult(recipes)
-        }catch(error){
-            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
-        }
-    }   
+      });
+    };
 
-    const openModal = () => {
-        setIsShowModal(true)
+    fetchRecipes();
+    const channel = subscribeRecipe();
+    //クリーンアップ関数
+    return () => {
+      if (channel) {
+        unsubscribe(channel);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserStore.currentUser]);
+
+  const moveToDetail = (recipeID: number) => {
+    navigate(`/recipes/${recipeID}`);
+    setOpen(false);
+  };
+
+  //検索窓の開閉のショートカットキー
+  useEffect(() => {
+    const handleSearchModal = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "o") {
+        e.preventDefault();
+        setIsShowModal((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleSearchModal);
+    return () => window.removeEventListener("keydown", handleSearchModal);
+  }, []);
+
+  const SearchRecipe = async (keyword: string) => {
+    if (!currentUserStore.currentUser) return;
+    //キーワードが空の場合は検索結果を空にする
+    //つまり検索入力欄が空文字の場合、supabaseにアクセスしないため検索結果を取得しない
+    if (!keyword || keyword.trim() === "") {
+      setSearchResult([]);
+      return;
     }
+    //キーワードが空でない場合は検索結果を取得する
+    try {
+      const recipes = await recipeRepository.findByKeyword(
+        currentUserStore.currentUser.id,
+        keyword
+      );
+      if (!recipes || recipes.length === 0) {
+        setSearchResult([]);
+        return;
+      }
+      setSearchResult(recipes);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "不明なエラーが発生しました"
+      );
+    }
+  };
 
-    // h-hull:ビューポートの高さを100%にする
-    // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
-    // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
-    return (
-        <div className="h-[100dvh] flex flex-col lg:flex-row">
-            <div>
-                <SideBar openModal={openModal} open={open} setOpen={setOpen}/>
-            </div>
-            {/* h-full:親要素の高さに合わせて縦いっぱいに広がる */}
-            {/* つまりh-fullは親要素の高さ（ここではh-screen）に合わせるということ */}
-            <main className="flex-1 h-full pt-15 pb-12 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto">
-                <Outlet/>
-                <SearchModal
-                    isOpen = {isShowModal}
-                    recipes = {searchResult}
-                    onClose = {() => setIsShowModal(false)}
-                    onItemSelect = {moveToDetail}
-                    onKeywordChanged = {SearchRecipe}
-                />
-            </main>
-        </div>
-    )
-}
+  const openModal = () => {
+    setIsShowModal(true);
+  };
 
+  // h-hull:ビューポートの高さを100%にする
+  // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
+  // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
+  return (
+    <div className="h-[100dvh] flex flex-col lg:flex-row">
+      <div>
+        <SideBar openModal={openModal} open={open} setOpen={setOpen} />
+      </div>
+      {/* h-full:親要素の高さに合わせて縦いっぱいに広がる */}
+      {/* つまりh-fullは親要素の高さ（ここではh-screen）に合わせるということ */}
+      <main className="flex-1 h-full pt-15 pb-12 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col">
+        <Outlet />
+        <SearchModal
+          isOpen={isShowModal}
+          recipes={searchResult}
+          onClose={() => setIsShowModal(false)}
+          onItemSelect={moveToDetail}
+          onKeywordChanged={SearchRecipe}
+        />
+      </main>
+    </div>
+  );
+};
 
 /*
 flex-1

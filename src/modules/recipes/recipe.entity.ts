@@ -1,7 +1,6 @@
 // note.entity.ts は独自で作った型定義を入れていくファイル
 
-import {Database} from "../../../database.types"
-
+import { Database } from "../../../database.types";
 
 // 出典の型定義
 // export type RecipeSource =
@@ -11,27 +10,27 @@ import {Database} from "../../../database.types"
 // メインのRecipe型（Database型を拡張）
 // データベースから取得したデータを表現する型
 
-export type Recipe = Database["public"]["Tables"]["recipes"]["Row"]
+export type Recipe = Database["public"]["Tables"]["recipes"]["Row"];
 
 // Repository用の型（オプショナル版）
 //データベースに保存するデータを表現する型
 //新規作成・更新時のパラメータ
 export type RecipeParams = {
-  id?: number
-  title?: string
-  category?: string
-  source?: string
-  rating?: number
-  time?: number
-}
+  id?: number;
+  title?: string;
+  category?: string;
+  source?: string;
+  rating?: number;
+  time?: number;
+};
 
 //更新時のパラメータ
 //idは必須
 export type updateRecipe = {
-  id: number
-  title?: string
-  category?: string
-  source?: string
-  rating?: number
-  time?: number
-}
+  id: number;
+  title?: string;
+  category?: string;
+  source?: string;
+  rating?: number;
+  time?: number;
+};
