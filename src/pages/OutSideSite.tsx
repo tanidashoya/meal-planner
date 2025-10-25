@@ -1,4 +1,4 @@
-import kuraIcon from "../assets/kura_icon.png";
+import kuraIcon from "../assets/kura_icon.webp";
 
 export const OutSideSite = () => {
   return (
