@@ -222,6 +222,18 @@ button[data-slot="collapsible-trigger"]:focus-visible {
   }
 }
 
+/* 通常のブラウザでの基本設定 */
+html,
+body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root {
+  min-height: 100vh;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* PWA専用のスクロール問題対策 */
 @media (display-mode: standalone) {
   html,
@@ -230,6 +242,10 @@ button[data-slot="collapsible-trigger"]:focus-visible {
     height: 100vh;
     position: fixed;
     width: 100%;
+    /* iOS Chrome専用の追加対策 */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
   }
 
   #root {
@@ -238,11 +254,63 @@ button[data-slot="collapsible-trigger"]:focus-visible {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     position: relative;
+    /* iOS Chrome専用の追加対策 */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
-  /* Pull-to-Refreshを無効化 */
+  /* Pull-to-Refreshを完全に無効化 */
   body {
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* iOS Chrome専用の追加対策（PWA内でのみ適用） */
+  @supports (-webkit-touch-callout: none) {
+    html,
+    body {
+      position: fixed;
+      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+    }
+
+    #root {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+  }
+
+  /* Android Chrome専用の追加対策（PWA内でのみ適用） */
+  @supports (display-mode: standalone) and (pointer: coarse) {
+    html,
+    body {
+      position: fixed;
+      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      overscroll-behavior-y: none;
+    }
+
+    #root {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      overscroll-behavior-y: contain;
+    }
   }
 }
