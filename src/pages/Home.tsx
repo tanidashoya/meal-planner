@@ -21,7 +21,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { toast } from "react-toastify";
-import mealPlanner from "../assets/mealPlanner.png";
+import mealPlanner from "../assets/mealPlanner.webp";
 
 export function Home() {
   const currentUserStore = useCurrentUserStore();

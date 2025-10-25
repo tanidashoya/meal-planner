@@ -8,7 +8,7 @@ import {
   CardContent,
 } from "../components/ui/card";
 import { RatingGroup } from "../components/TasteSort/RatingGroup";
-import tasteIcon from "../assets/taste_icon.png";
+import tasteIcon from "../assets/taste_icon.webp";
 
 export const TasteSort = () => {
   const recipesStore = useRecipeStore();

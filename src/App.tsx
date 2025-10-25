@@ -7,7 +7,7 @@ import { authRepository } from "./modules/auth/auth.repository";
 import { useEffect, useState } from "react";
 import { useCurrentUserStore } from "./modules/auth/current-user.state";
 import { RecipeDetail } from "./pages/RecipeDetail";
-import mealPlannerLogo from "./assets/mealPlanner.png";
+import mealPlannerLogo from "./assets/mealPlanner.webp";
 import { TasteSort } from "./pages/TasteSort";
 import { TasteList } from "./pages/TasteList";
 import { TimeSort } from "./pages/TimeSort";

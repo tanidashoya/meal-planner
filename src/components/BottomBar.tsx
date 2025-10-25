@@ -1,10 +1,10 @@
 import { Button } from "./ui/button";
 import { PlusCircle } from "lucide-react";
-import tasteIcon from "@/assets/taste_icon.png";
-import watchIcon from "@/assets/watch_icon.png";
+import tasteIcon from "@/assets/taste_icon.webp";
+import watchIcon from "@/assets/watch_icon.webp";
 import { useNavigate } from "react-router-dom";
-import unratedIcon from "@/assets/unrated_icon.png";
-import allIcon from "@/assets/all_recipes.png";
+import unratedIcon from "@/assets/unrated_icon.webp";
+import allIcon from "@/assets/all_recipes.webp";
 
 export const BottomBar = () => {
   const navigate = useNavigate();

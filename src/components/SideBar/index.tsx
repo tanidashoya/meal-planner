@@ -6,7 +6,7 @@ import { UserItem } from "./UserItem";
 import { RecipeList } from "../RecipeList";
 import { Item } from "./Item";
 import { Search, PlusCircle } from "lucide-react";
-import tasteIcon from "../../assets/taste_icon.png";
+import tasteIcon from "../../assets/taste_icon.webp";
 import { Sheet } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { PanelLeft } from "lucide-react";
@@ -14,14 +14,14 @@ import { SheetTrigger, SheetTitle, SheetDescription } from "../ui/sheet";
 import { SheetContent } from "../ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useEffect } from "react";
-import watchIcon from "../../assets/watch_icon.png";
+import watchIcon from "../../assets/watch_icon.webp";
 import { BottomBar } from "../BottomBar";
-import randomPicksIcon from "../../assets/random_picks.png";
+import randomPicksIcon from "../../assets/random_picks.webp";
 import { useRecipeStore } from "../../modules/recipes/recipe.state";
 import { toast } from "react-toastify";
-import matchRecipeIcon from "../../assets/ai_search.png";
+import matchRecipeIcon from "../../assets/ai_search.webp";
 import { useAiChoiceStore } from "../../modules/aiChoice/ai-choice.state";
-import outsideSiteIcon from "../../assets/outside_site.png";
+import outsideSiteIcon from "../../assets/outside_site.webp";
 
 interface SideBarProps {
   openModal: () => void;
