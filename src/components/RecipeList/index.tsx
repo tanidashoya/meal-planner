@@ -1,88 +1,78 @@
 //サイドバーに表示するレシピのリストに関して機能の実装
 // （子コンポーネントとしてCategoryItem.tsxとRecipeItem.tsxを作成）
 
-import { useCurrentUserStore } from '../../modules/auth/current-user.state';
-import { useRecipeStore } from '../../modules/recipes/recipe.state';
-import { Recipe } from '../../modules/recipes/recipe.entity';
-import { useMemo } from 'react';
-import { CategoryItem } from './CategoryItem';
-import { toast } from 'react-toastify';
-
+import { useCurrentUserStore } from "../../modules/auth/current-user.state";
+import { useRecipeStore } from "../../modules/recipes/recipe.state";
+import { Recipe } from "../../modules/recipes/recipe.entity";
+import { useMemo } from "react";
+import { CategoryItem } from "./CategoryItem";
+import { toast } from "react-toastify";
 
 interface RecipeListProps {
-    setOpen: (open: boolean) => void;
+  setOpen: (open: boolean) => void;
 }
 
-export const RecipeList = ({setOpen}:RecipeListProps) => {
+export const RecipeList = ({ setOpen }: RecipeListProps) => {
+  const { currentUser } = useCurrentUserStore();
+  const recipesStore = useRecipeStore();
+  const categories = useMemo(
+    () => ["肉料理", "魚料理", "丼・ルー料理", "麺料理", "小物", "その他"],
+    []
+  );
+  const recipes = recipesStore.getAll();
 
-    const {currentUser} = useCurrentUserStore();
-    const recipesStore = useRecipeStore();
-    const categories = useMemo(() => ["肉料理","魚料理","丼・ルー料理","麺料理","小物","その他"], []);
-    const recipes = recipesStore.getAll();
-    
-    //params:{title?:string,category?:string,source?:string}
-    // const createRecipe = async(param:RecipeParams) => {
-    //     const data = await recipeRepository.create(currentUser!.id,param);
-    //     if (data == null) {
-    //         return;
-    //     }
-    //     recipesStore.set([data]);
-    // }
-
-    //idにはrecipesをmapで回したときのrecipe.idを渡す
-    const deleteRecipe = async(id:number) => {
-        if (!currentUser) return;
-        try{
-            await recipesStore.delete(currentUser.id,id);
-        }catch(error){
-            toast.error(error instanceof Error ? error.message : "不明なエラーが発生しました")
-        }
+  //idにはrecipesをmapで回したときのrecipe.idを渡す
+  const deleteRecipe = async (id: number) => {
+    if (!currentUser) return;
+    try {
+      await recipesStore.delete(currentUser.id, id);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "不明なエラーが発生しました"
+      );
     }
+  };
 
+  // カテゴリ別にレシピをグループ化（メモ化でパフォーマンス向上）
+  //reduce は 配列を1つの値にまとめるためのメソッド(繰り返し処理)
+  //acc はカテゴリ別のレシピをためていくオブジェクト
+  //category は ["肉料理","魚料理",...] の要素
+  //⇒categoryはcategoreis配列の中身の要素が順に入る
+  //useMemo()：再レンダリング時に第二引数の依存配列が変わらない限り実行されない（メモ化）⇒重たい処理を減らす
+  //useEffectとuseMemo()の最大の違いの一つはuseMemoは値を返すことができる
+  const recipesByCategory = useMemo(() => {
+    //全レシピ取得
+    //オブジェクトaccのcategoryキーを追加
+    //⇒recipesの条件に合うデータを追加
+    //一つ目のreturn:useMemoの第一引数に渡したcallback（callback: 「他の関数に渡して、その関数の中で呼んでもらう」関数）の戻り値
+    //reduceの第二引数では初期値を決める
+    return categories.reduce((acc, category) => {
+      acc[category] = recipes.filter((recipe) => recipe.category === category);
+      //reduce のcallbackで、次のループに渡す acc
+      return acc;
+    }, {} as Record<string, Recipe[]>);
+    //依存配列（[recipesStore.getAll()]）に変更（レシピに追加や削除などの変化があれば実行）
+  }, [recipes, categories]);
 
-    // カテゴリ別にレシピをグループ化（メモ化でパフォーマンス向上）
-    //reduce は 配列を1つの値にまとめるためのメソッド(繰り返し処理)
-    //acc はカテゴリ別のレシピをためていくオブジェクト
-    //category は ["肉料理","魚料理",...] の要素
-    //⇒categoryはcategoreis配列の中身の要素が順に入る
-    //useMemo()：再レンダリング時に第二引数の依存配列が変わらない限り実行されない（メモ化）⇒重たい処理を減らす
-    //useEffectとuseMemo()の最大の違いの一つはuseMemoは値を返すことができる
-    const recipesByCategory = useMemo(() => {
-        //全レシピ取得
-        //オブジェクトaccのcategoryキーを追加
-        //⇒recipesの条件に合うデータを追加
-        //一つ目のreturn:useMemoの第一引数に渡したcallback（callback: 「他の関数に渡して、その関数の中で呼んでもらう」関数）の戻り値
-        //reduceの第二引数では初期値を決める
-        return categories.reduce((acc, category) => {
-            acc[category] = recipes.filter(recipe => 
-            recipe.category === category);
-            //reduce のcallbackで、次のループに渡す acc
-            return acc;
-        }, {} as Record<string, Recipe[]>);
-        //依存配列（[recipesStore.getAll()]）に変更（レシピに追加や削除などの変化があれば実行）
-    }, [recipes,categories]);
-
-
-    //keyの役割：リストをレンダリングするときに、どの要素がどれなのかをReactが識別するための目印
-    //returnの後に()をつけるのは JavaScriptの自動セミコロン挿入（ASI）問題を回避するため（下部に説明）
-    return(
-        <div>
-            {categories.map(category => {
-                return(
-                    <CategoryItem
-                        key={category}
-                        setOpen={setOpen}
-                        category={category}
-                        recipes={recipesByCategory[category]}
-                        // onCreateRecipe={createRecipe}
-                        onDeleteRecipe={deleteRecipe}
-                    />
-                )
-            })}
-        </div>
-    )
-}
-
+  //keyの役割：リストをレンダリングするときに、どの要素がどれなのかをReactが識別するための目印
+  //returnの後に()をつけるのは JavaScriptの自動セミコロン挿入（ASI）問題を回避するため（下部に説明）
+  return (
+    <div>
+      {categories.map((category) => {
+        return (
+          <CategoryItem
+            key={category}
+            setOpen={setOpen}
+            category={category}
+            recipes={recipesByCategory[category]}
+            // onCreateRecipe={createRecipe}
+            onDeleteRecipe={deleteRecipe}
+          />
+        );
+      })}
+    </div>
+  );
+};
 
 /*
 
@@ -163,8 +153,6 @@ key の役割 → Reactがリスト要素を一意に識別して、効率よく
 
 ※※mapの中で1つずつCategoryItemを生成するが、それをまとめて一気にレンダリングする※※
 */
-
-
 
 /*
 return後の()の理由
