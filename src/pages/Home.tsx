@@ -175,7 +175,7 @@ export function Home() {
                 source: source,
               })
             }
-            className="w-[180px] mt-8 bg-green-500 mx-auto "
+            className="w-[180px] mt-4 bg-green-500 mx-auto "
             disabled={!recipeTitle.trim() || !selectedCategory}
           >
             <Plus className="h-4 w-4 text-white" />

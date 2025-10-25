@@ -17,6 +17,8 @@ import { Picks } from "./pages/Picks";
 import { ToastContainer } from "react-toastify";
 import { MatchRecipe } from "./pages/MatchRecipe";
 import { OutSideSite } from "./pages/OutSideSite";
+import { UnratedRecipes } from "./pages/UnratedRecipes";
+import { AllRecipes } from "./pages/AllRecipes";
 
 function useViewportHeightFix() {
   useEffect(() => {
@@ -141,6 +143,8 @@ function App() {
             <Route path="/picks" element={<Picks />} />
             <Route path="/match-recipe" element={<MatchRecipe />} />
             <Route path="/outside-site" element={<OutSideSite />} />
+            <Route path="/unrated-recipes" element={<UnratedRecipes />} />
+            <Route path="/all-recipes" element={<AllRecipes />} />
           </Route>
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
