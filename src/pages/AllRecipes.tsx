@@ -21,9 +21,9 @@ export const AllRecipes = () => {
   };
 
   return (
-    <div className="font-['Inter'] flex flex-col items-center h-full pt-25 lg:pt-35">
-      <h2 className="font-['Inter'] text-xl font-bold text-gray-600">
-        すべてのレシピ
+    <div className="font-['Inter'] flex flex-col items-center h-full pb-16 mt-18 mb-24">
+      <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-12">
+        すべてのレシピ一覧
       </h2>
       <RatingItem recipes={recipes} deleteRecipe={deleteRecipe} />
     </div>

@@ -115,7 +115,7 @@ export const MatchRecipe = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 mb-24 mt-14 ">
+    <div className="flex flex-col items-center justify-center px-4 mb-24 mt-18 ">
       <AiInput
         mode={mode}
         setMode={setMode}
