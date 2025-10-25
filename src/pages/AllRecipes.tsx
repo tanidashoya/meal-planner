@@ -21,7 +21,7 @@ export const AllRecipes = () => {
   };
 
   return (
-    <div className="font-['Inter'] flex flex-col items-center min-h-screen mt-18 mb-48">
+    <div className="font-['Inter'] flex flex-col items-center min-h-screen mt-18 mb-40">
       <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-12">
         Myレシピ一覧（全{recipes.length}件）
       </h2>

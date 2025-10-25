@@ -119,7 +119,10 @@ function App() {
   }
 
   return (
-    <div className="h-[calc(var(--vh)*100)] overflow-hidden">
+    <div
+      id="root"
+      className="h-[calc(var(--vh)*100)] overflow-y-auto overscroll-contain"
+    >
       <BrowserRouter>
         <ToastContainer
           position="top-right"

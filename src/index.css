@@ -6,8 +6,7 @@
 /* 簡潔に言うとtailwindcssが提供しているcssを扱えるようにする */
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('<https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap>');
-
+@import url("<https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap>");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -77,7 +76,7 @@ body {
   background-color: #ffffff;
   /* padding-top: env(safe-area-inset-top);:画面の上端（ノッチやステータスバー）の高さ分だけ、上に余白を自動で追加する。; */
   padding-top: env(safe-area-inset-top);
-  margin: 0; 
+  margin: 0;
   overflow-x: hidden;
 }
 
@@ -106,8 +105,6 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
-
-
 
 /* ダイアログの閉じるボタンのpaddingを削除 */
 /*dialog.tsx70行目付近のdata-slot="dialog-close"のbuttonに対してpaddingを削除*/
@@ -222,5 +219,30 @@ button[data-slot="collapsible-trigger"]:focus-visible {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* PWA専用のスクロール問題対策 */
+@media (display-mode: standalone) {
+  html,
+  body {
+    overflow: hidden;
+    height: 100vh;
+    position: fixed;
+    width: 100%;
+  }
+
+  #root {
+    overflow-y: auto;
+    height: 100vh;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+
+  /* Pull-to-Refreshを無効化 */
+  body {
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
   }
 }
