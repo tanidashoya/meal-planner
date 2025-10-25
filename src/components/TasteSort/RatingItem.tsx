@@ -1,5 +1,5 @@
 import { Recipe } from "../../modules/recipes/recipe.entity";
-import { Trash2, Utensils } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import meatIcon from "../../assets/meat.webp";
 import fishIcon from "../../assets/fish.webp";

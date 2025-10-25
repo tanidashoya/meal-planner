@@ -1,6 +1,6 @@
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { useNavigate } from "react-router-dom";
-import { Trash2, Utensils } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { toast } from "react-toastify";
 import meatIcon from "../assets/meat.webp";
