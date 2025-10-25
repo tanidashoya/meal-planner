@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Trash2, Utensils } from "lucide-react";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { toast } from "react-toastify";
+import meatIcon from "../assets/meat.webp";
+import fishIcon from "../assets/fish.webp";
+import donIcon from "../assets/don.webp";
+import menIcon from "../assets/men.webp";
+import kozareIcon from "../assets/kozara.webp";
+import otherIcon from "../assets/other.webp";
 
 export const UnratedRecipes = () => {
   const recipesStore = useRecipeStore();
@@ -41,10 +47,52 @@ export const UnratedRecipes = () => {
           className="flex gap-3 lg:gap-6 justify-center items-center mb-5 lg:mb-8 cursor-pointer"
           onClick={() => moveToDetail(recipe.id)}
         >
-          <Utensils
+          {/* <Utensils
             className="w-5 h-5 lg:w-7 lg:h-7 fill-gray-200 text-gray-400"
             strokeWidth={1.0}
-          />
+          /> */}
+          {recipe.category === "肉料理" && (
+            <img
+              src={meatIcon}
+              alt="meat icon"
+              className="w-7 h-7 lg:w-7 lg:h-7"
+            />
+          )}
+          {recipe.category === "魚料理" && (
+            <img
+              src={fishIcon}
+              alt="fish icon"
+              className="w-7 h-7 lg:w-7 lg:h-7"
+            />
+          )}
+          {recipe.category === "丼・ルー料理" && (
+            <img
+              src={donIcon}
+              alt="dish icon"
+              className="w-7 h-7 lg:w-7 lg:h-7"
+            />
+          )}
+          {recipe.category === "麺料理" && (
+            <img
+              src={menIcon}
+              alt="noodle icon"
+              className="w-7 h-7 lg:w-7 lg:h-7"
+            />
+          )}
+          {recipe.category === "小物" && (
+            <img
+              src={kozareIcon}
+              alt="kozare icon"
+              className="w-7 h-7 lg:w-7 lg:h-7"
+            />
+          )}
+          {recipe.category === "その他" && (
+            <img
+              src={otherIcon}
+              alt="other icon"
+              className="w-7 h-7 lg:w-7 lg:h-7"
+            />
+          )}
           <h3 className="font-['Inter'] text-base lg:text-2xl text-gray-700 truncate">
             {recipe.title}
           </h3>

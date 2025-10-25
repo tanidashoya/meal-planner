@@ -4,7 +4,7 @@ export const OutSideSite = () => {
   return (
     <div className="flex flex-col gap-4 items-center justify-center h-full">
       <p className="text-2xl font-bold mb-8 tracking-wider">
-        外部サイトへのリンク
+        外部サイトでレシピを探す
       </p>
       <div className="flex flex-col gap-10 items-center justify-center">
         <div className="flex flex-col gap-2 items-center justify-center">

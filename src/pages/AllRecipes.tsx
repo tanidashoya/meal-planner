@@ -21,11 +21,15 @@ export const AllRecipes = () => {
   };
 
   return (
-    <div className="font-['Inter'] flex flex-col items-center h-full pb-16 mt-18 mb-24">
+    <div className="font-['Inter'] flex flex-col items-center min-h-screen mt-18 mb-48">
       <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-12">
-        すべてのレシピ一覧
+        Myレシピ一覧（全{recipes.length}件）
       </h2>
-      <RatingItem recipes={recipes} deleteRecipe={deleteRecipe} />
+      <RatingItem
+        recipes={recipes}
+        deleteRecipe={deleteRecipe}
+        className="border-1 border-gray-300 rounded-md py-7 px-9 gap-6 lg:p-10"
+      />
     </div>
   );
 };
