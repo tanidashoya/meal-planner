@@ -235,17 +235,20 @@ body {
 }
 
 /* PWA専用のスクロール問題対策 */
+/* PWA（Progressive Web App）とは、Webアプリケーションをモバイルアプリのようにインストールできるようにする技術 */
+/* display-mode: standalone → アプリとしてインストールされた場合のみ適用 */
+/* position: fixed; 要素を画面（ビューポート）に対して固定する*/
 @media (display-mode: standalone) {
   html,
   body {
-    overflow: hidden;
+    overflow: hidden; /*スクロール自体を無効(内部の要素（例：#root や特定のコンポーネント）に overflow-y: auto を指定すれば、その部分だけはスクロール可能です。)*/
     height: 100vh;
-    position: fixed;
+    position: fixed; /*ページを「固定」します。スクロールしてもその位置に固定されたままになる指定。代わりに、内部の要素（例：#root）をスクロール対象にする*/
     width: 100%;
     /* iOS Chrome専用の追加対策 */
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: none;
-    overscroll-behavior-y: none;
+    overscroll-behavior: none; /*Pull-to-Refresh（引っ張って更新）や、上下端での“跳ね返り”を防ぎ*/
+    overscroll-behavior-y: none; /*Pull-to-Refresh（引っ張って更新）や、上下端での“跳ね返り”を防ぎ(縦方向限定)*/
   }
 
   #root {
@@ -260,6 +263,10 @@ body {
   }
 
   /* Pull-to-Refreshを完全に無効化 */
+  /* -webkit-overflow-scrolling: touch; → iOSのみ、スクロール時のアニメーションを滑らかにするための設定 */
+  /* -webkit-touch-callout: none; → iOSのみ、長押し時のメニュー（コピー／共有／画像を保存）を表示しないようにするための設定 */
+  /* -webkit-user-select: none; → iOSのみ、テキスト選択を無効にするための設定 */
+  /* user-select: none; → テキスト選択を無効にするための設定 */
   body {
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
@@ -268,7 +275,19 @@ body {
     user-select: none;
   }
 
+  /* ユーザーが入力したテキストに関しては選択を有効にする（デフォルトは無効） */
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   /* iOS Chrome専用の追加対策（PWA内でのみ適用） */
+  /*
+  @supports() は「CSSで機能が使えるブラウザかどうか」を条件分岐する文。
+  (-webkit-touch-callout: none) は Safari系（WebKit系）ブラウザだけがサポートする性質です。
+  → つまり、「iOSのSafariやChrome（PWA含む）だけに適用
+  */
   @supports (-webkit-touch-callout: none) {
     html,
     body {
@@ -277,7 +296,7 @@ body {
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: none;
     }
-
+    /* position: fixed; の場合はtop等の指定は画面（ブラウザの表示領域＝ビューポート）に対する位置指定になる */
     #root {
       position: fixed;
       top: 0;
@@ -291,6 +310,8 @@ body {
   }
 
   /* Android Chrome専用の追加対策（PWA内でのみ適用） */
+  /* display-mode: standalone → アプリとしてインストールされた場合のみ適用 */
+  /* pointer: coarse → タッチデバイス（スマホ、タブレット）の場合のみ適用 */
   @supports (display-mode: standalone) and (pointer: coarse) {
     html,
     body {
