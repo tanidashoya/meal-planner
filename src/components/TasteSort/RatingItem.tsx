@@ -36,7 +36,7 @@ export const RatingItem = ({
         return (
           <div
             key={index}
-            className="flex gap-3 lg:gap-6 justify-center items-center cursor-pointer"
+            className="flex gap-3 lg:gap-6 justify-center items-center"
           >
             {/* <Utensils
               className="w-5 h-5 lg:w-7 lg:h-7 fill-gray-200 text-gray-400"
@@ -84,14 +84,20 @@ export const RatingItem = ({
                 className="w-7 h-7 lg:w-7 lg:h-7"
               />
             )}
-            <div className="flex-1" onClick={() => moveToDetail(recipe.id)}>
+            <div
+              className="flex-1 cursor-pointer"
+              onClick={() => moveToDetail(recipe.id)}
+            >
               <h3 className="font-['Inter'] text-base lg:text-2xl text-gray-700 truncate">
                 {recipe.title}
               </h3>
             </div>
             <Trash2
-              className="w-5 h-5 text-gray-500"
-              onClick={() => deleteRecipe(recipe.id)}
+              className="w-5 h-5 text-gray-500 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteRecipe(recipe.id);
+              }}
             />
           </div>
         );

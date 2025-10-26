@@ -19,7 +19,7 @@ import { BottomBar } from "../BottomBar";
 import randomPicksIcon from "../../assets/random_picks.webp";
 import { useRecipeStore } from "../../modules/recipes/recipe.state";
 import { toast } from "react-toastify";
-import matchRecipeIcon from "../../assets/ai_search.webp";
+import matchRecipeIcon from "../../assets/ai_search.png";
 import { useAiChoiceStore } from "../../modules/aiChoice/ai-choice.state";
 import outsideSiteIcon from "../../assets/outside_site.webp";
 
