@@ -10,18 +10,12 @@ import {
   CardTitle,
   CardContent,
 } from "../components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { toast } from "react-toastify";
 import mealPlanner from "../assets/mealPlanner.webp";
+import { SelectCategory } from "../components/SelectCategory";
 
 export function Home() {
   const currentUserStore = useCurrentUserStore();
@@ -75,69 +69,18 @@ export function Home() {
         </CardHeader>
         <CardContent className="flex flex-col gap-3.5 border-2 border-gray-300 rounded-lg px-6 py-6 shadow-sm lg:gap-3.5">
           {/* categoryの入力欄を作成する */}
-          <div className="flex items-center gap-2.5">
-            <Select
-              value={selectedCategory}
-              onValueChange={(value) => setSelectedCategory(value)}
-              open={isSelectOpen}
-              onOpenChange={setIsSelectOpen}
-            >
-              {/* onTouchStart */}
-              <SelectTrigger
-                className="w-[170px] bg-gray-100 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500"
-                onTouchStart={() => {
-                  // スマホでキーボードが開いている場合は少し遅らせて閉じる
-                  if (
-                    document.activeElement &&
-                    document.activeElement instanceof HTMLElement
-                  ) {
-                    // タッチ開始から少し待ってからキーボードを閉じる
-                    setTimeout(() => {
-                      if (document.activeElement instanceof HTMLElement) {
-                        document.activeElement.blur();
-                      }
-                      // キーボードが閉じた後にSelectを開く
-                      setTimeout(() => {
-                        setIsSelectOpen(true);
-                      }, 200);
-                    }, 150);
-                  } else {
-                    // キーボードが開いていない場合は即座にSelectを開く
-                    setIsSelectOpen(true);
-                  }
-                }}
-              >
-                <SelectValue
-                  placeholder="カテゴリの選択"
-                  className="focus:outline-none focus:ring-1 focus:!ring-blue-500"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="肉料理" className="text-lg">
-                  肉料理
-                </SelectItem>
-                <SelectItem value="魚料理" className="text-lg">
-                  魚料理
-                </SelectItem>
-                <SelectItem value="丼・ルー料理" className="text-lg">
-                  丼・ルー料理
-                </SelectItem>
-                <SelectItem value="麺料理" className="text-lg">
-                  麺料理
-                </SelectItem>
-                <SelectItem value="小物" className="text-lg">
-                  小物
-                </SelectItem>
-                <SelectItem value="その他" className="text-lg">
-                  その他
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-1">
+            <SelectCategory
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              isSelectOpen={isSelectOpen}
+              setIsSelectOpen={setIsSelectOpen}
+              className="w-[170px]"
+            />
             <span className="text-red-500 ml-2 text-base md:text-lg">
               ※必須
             </span>
           </div>
-
           {/* recipeTitleの入力欄・参照元の入力欄を作成する */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-1">
