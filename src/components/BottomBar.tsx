@@ -16,10 +16,7 @@ export const BottomBar = () => {
         className="flex flex-col items-center hover:bg-white !px-3 !py-6 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
         onClick={() => navigate("/")}
       >
-        <PlusCircle
-          className="size-7 text-gray-500 stroke-width-1"
-          strokeWidth={1.5}
-        />
+        <PlusCircle className="size-7 text-gray-500" strokeWidth={1.5} />
         <span className="text-gray-500 text-[11px]">レシピ追加</span>
       </Button>
       <Button

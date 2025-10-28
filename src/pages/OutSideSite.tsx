@@ -28,7 +28,7 @@ export const OutSideSite = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <div className="w-[200px] h-[40px] border-1 border-gray-300 rounded-md flex items-center justify-center">
+            <div className="w-[200px] h-[40px] border border-gray-300 rounded-md flex items-center justify-center">
               <img
                 src={kuraIcon}
                 alt="クラシル｜料理レシピ動画サービス"
@@ -45,7 +45,7 @@ export const OutSideSite = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <div className="w-[200px] h-[40px] border-1 border-gray-300 rounded-md flex items-center justify-center">
+            <div className="w-[200px] h-[40px] border border-gray-300 rounded-md flex items-center justify-center">
               <span className="text-lg font-bold text-yellow-600">
                 デリッシュキッチン
               </span>

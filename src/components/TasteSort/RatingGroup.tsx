@@ -50,7 +50,7 @@ export const RatingGroup = ({
               key={rating}
               className="w-full lg:w-4/5 mb-8 mx-auto border-2 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
             >
-              <div className="flex items-center justify-center gap-2 mb-10 lg:mb-12 border-b-1 border-gray-300 pb-2 w-3/5 mx-auto">
+              <div className="flex items-center justify-center gap-2 mb-10 lg:mb-12 border-b border-gray-300 pb-2 w-3/5 mx-auto">
                 {Array.from({ length: Number(rating) }, (_, i) => (
                   <img
                     key={i}
@@ -86,7 +86,7 @@ export const RatingGroup = ({
           );
         })}
       </div>
-      {/* <div className="w-full lg:w-4/5 mx-auto border-1 border-gray-300 rounded-md p-5 lg:p-8 shadow-sm lg:mb-8">
+      {/* <div className="w-full lg:w-4/5 mx-auto border border-gray-300 rounded-md p-5 lg:p-8 shadow-sm lg:mb-8">
         <div className="flex items-center justify-center gap-2 mb-8 lg:mb-12">
           <h2 className="font-['Inter'] text-lg lg:text-2xl text-gray-500 border-b-2 border-gray-400">
             未設定

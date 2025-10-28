@@ -1,95 +1,105 @@
-import { useState } from "react"
-import { Recipe } from "../modules/recipes/recipe.entity"
-import { CommandDialog, Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, } from "@/components/ui/command"
+import { useState } from "react";
+import { Recipe } from "../modules/recipes/recipe.entity";
+import {
+  CommandDialog,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
 
 interface SearchModalProps {
-    isOpen:boolean,
-    recipes:Recipe[],
-    onClose:() => void,
-    onItemSelect:(recipeId:number) => void,
-    onKeywordChanged:(keyword:string) => void,
+  isOpen: boolean;
+  recipes: Recipe[];
+  onClose: () => void;
+  onItemSelect: (recipeId: number) => void;
+  onKeywordChanged: (keyword: string) => void;
 }
 
-export const SearchModal = ({isOpen,recipes,onClose,onItemSelect,onKeywordChanged}:SearchModalProps) => {
-    //キーワード入力欄の状態を管理する
-    const [keyword,setKeyword] = useState("")
-    
-    const handleKeywordChanged = (value: string) => {
-        setKeyword(value)
-        onKeywordChanged(value)
-        if (keyword == "") {
-          onKeywordChanged("")
-        }
+export const SearchModal = ({
+  isOpen,
+  recipes,
+  onClose,
+  onItemSelect,
+  onKeywordChanged,
+}: SearchModalProps) => {
+  //キーワード入力欄の状態を管理する
+  const [keyword, setKeyword] = useState("");
+
+  const handleKeywordChanged = (value: string) => {
+    setKeyword(value);
+    onKeywordChanged(value);
+    if (keyword == "") {
+      onKeywordChanged("");
     }
-    
-    // モーダルを閉じる時にキーワードをクリアする関数
-    const handleClose = () => {
-        setKeyword("")
-        onKeywordChanged("")
-        onClose()
+  };
+
+  // モーダルを閉じる時にキーワードをクリアする関数
+  const handleClose = () => {
+    setKeyword("");
+    onKeywordChanged("");
+    onClose();
+  };
+
+  const handleItemSelect = (recipeId: number) => {
+    onItemSelect(recipeId);
+    handleClose();
+  };
+
+  // レシピをタイトルでソートする
+  //sort((a,b)):
+  // 負の値 (< 0)
+  // → a が b より前にくる
+  // 正の値 (> 0)
+  // → a が b より後ろにくる
+  // 0
+  // → 順序を変えない（同じ扱い）
+  //sort自体が内部で繰り返しを行うメソッド
+  const sortedRecipes = [...recipes].sort((a, b) => {
+    if (a.title && b.title) {
+      //localeCompare():言語ルールに従ってaがbより前にくる場合は負の値、後ろにくる場合は正の値、同じ場合は0を返す
+      return a.title.localeCompare(b.title);
     }
+    return 0;
+  });
 
-    const handleItemSelect = (recipeId:number) => {
-      onItemSelect(recipeId)
-      handleClose()
-    }
-
-    // レシピをタイトルでソートする
-    //sort((a,b)):
-    // 負の値 (< 0)
-    // → a が b より前にくる
-    // 正の値 (> 0)
-    // → a が b より後ろにくる
-    // 0
-    // → 順序を変えない（同じ扱い）
-    //sort自体が内部で繰り返しを行うメソッド
-    const sortedRecipes = [...recipes].sort((a,b)=> {
-      if(a.title && b.title){
-        //localeCompare():言語ルールに従ってaがbより前にくる場合は負の値、後ろにくる場合は正の値、同じ場合は0を返す
-        return a.title.localeCompare(b.title)
-      }
-      return 0
-    })
-
-
-
-    return (
-      //open:モーダルが開いているかどうか
-      //onOpenChange:モーダルが開いたり閉じたりした時に実行される関数
-      <CommandDialog open={isOpen} onOpenChange={handleClose}>
-        <Command shouldFilter={false}>
-          {/* キーワードを入力するとonValueChangeが実行される(普通のコンポーネントのonChangeと同じ) */}
-          {/* CommandItemコンポーネントのonSelectプロパティはユーザーがマウスクリック、Enterキー、方向キー + Enterキー（キーボードナビゲーション）で実行される */}
-          <CommandInput
-            placeholder={'キーワードで検索'}
-            value={keyword}
-            //onValueChange:キーワードが入力された時に実行される関数
-            onValueChange={handleKeywordChanged}
-            className="text-lg"
-          />
-          {/* 検索結果をスクロールできるように */}
-          <CommandList className="max-h-[30vh] md:max-h-[70vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain touch-pan-y">
-            <CommandEmpty className="text-center text-lg p-4 text-gray-500">
-              <span>条件に一致するノートがありません</span>
-            </CommandEmpty>
-            <CommandGroup>
-              {sortedRecipes?.map((recipe) => (
-                <CommandItem
-                  key={recipe.id}
-                  title={recipe.title ?? '無題'}
-                  onSelect={() => handleItemSelect(recipe.id)}
-                  
-                >
-                  <span className="text-lg">{recipe.title ?? '無題'}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </CommandDialog>
-    )
-}
-
+  return (
+    //open:モーダルが開いているかどうか
+    //onOpenChange:モーダルが開いたり閉じたりした時に実行される関数
+    <CommandDialog open={isOpen} onOpenChange={handleClose}>
+      <Command shouldFilter={false}>
+        {/* キーワードを入力するとonValueChangeが実行される(普通のコンポーネントのonChangeと同じ) */}
+        {/* CommandItemコンポーネントのonSelectプロパティはユーザーがマウスクリック、Enterキー、方向キー + Enterキー（キーボードナビゲーション）で実行される */}
+        <CommandInput
+          placeholder={"キーワードで検索"}
+          value={keyword}
+          //onValueChange:キーワードが入力された時に実行される関数
+          onValueChange={handleKeywordChanged}
+          className="text-lg"
+        />
+        {/* 検索結果をスクロールできるように */}
+        <CommandList className="max-h-[30vh] md:max-h-[70vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain touch-pan-y">
+          <CommandEmpty className="text-center text-lg p-4 text-gray-500">
+            <span>条件に一致するノートがありません</span>
+          </CommandEmpty>
+          <CommandGroup>
+            {sortedRecipes?.map((recipe) => (
+              <CommandItem
+                key={recipe.id}
+                title={recipe.title ?? "無題"}
+                onSelect={() => handleItemSelect(recipe.id)}
+              >
+                <span className="text-lg">{recipe.title ?? "無題"}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    </CommandDialog>
+  );
+};
 
 /*
 CommandDialog:

@@ -1,5 +1,6 @@
 import { SpeechToText } from "./SpeachToText";
 import aiIcon from "../../assets/ai_search.png";
+import { motion } from "framer-motion";
 
 interface AiInputProps {
   mode: "free" | "strict";
@@ -18,9 +19,24 @@ export const AiInput = ({
 }: AiInputProps) => {
   return (
     <div className="w-full flex flex-col items-center justify-center mt-[-12px]">
-      <img src={aiIcon} alt="ai icon" className="h-24 m-auto" />
+      <motion.img
+        src={aiIcon}
+        alt="ai icon"
+        className="h-28 m-auto"
+        animate={{
+          y: [0, -5, 0],
+          // x: [0, 2, 0, -1, 0],
+          // rotate: [0, 1, -2, 0],
+        }}
+        transition={{
+          duration: 3, // 1往復にかかる時間
+          repeat: Infinity, // 永久に繰り返す
+          repeatType: "mirror", //アニメーションが往復する（行って戻る）
+          ease: "easeInOut", // ゆっくり往復
+        }}
+      />
       <span className="text-base font-medium text-center w-full text-gray-500 mt-2">
-        何を食べたいですか？
+        食べたいものはなんですか？
       </span>
       <div className="py-5 px-3 rounded-md border-2 border-gray-300 mt-3">
         <div className="flex flex-row items-center justify-center">
@@ -97,7 +113,7 @@ export const AiInput = ({
             onClick={() => handleClick()}
             className="w-3/5 mx-auto bg-green-500 text-white px-4 py-2 rounded-md  shadow-md"
           >
-            AI探索を開始
+            AI検索を開始
           </button>
         </div>
       </div>

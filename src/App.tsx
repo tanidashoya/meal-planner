@@ -120,7 +120,7 @@ function App() {
 
   return (
     <div
-      id="root"
+      id="app"
       className="h-[calc(var(--vh)*100)] overflow-y-auto overscroll-contain"
     >
       <BrowserRouter>

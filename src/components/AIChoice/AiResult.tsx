@@ -5,6 +5,7 @@ import { RecipeParams } from "../../modules/recipes/recipe.entity";
 import { Check } from "lucide-react";
 import ArrowRight from "../../assets/arrow_right.png";
 import { Plus } from "lucide-react";
+import downArrow from "../../assets/down_arrow.png";
 
 interface AiResultProps {
   aiChoice: aiChoice[];
@@ -30,9 +31,16 @@ export const AiResult = ({
           animate={{ opacity: 1, y: 10 }}
           transition={{ duration: 0.5 }}
         >
-          <p className="text-sm text-gray-500 text-center font-bold text-xl mt-4 mb-12">
-            こんなレシピはどう？(全{aiChoice.length}件)
-          </p>
+          <div className="flex flex-row justify-center items-center mt-4 mb-12 gap-2">
+            <p className="text-gray-500 text-center font-bold text-lg ">
+              こんなレシピはどう？(全{aiChoice.length}件)
+            </p>
+            <img
+              src={downArrow}
+              alt="down arrow"
+              className="w-8 h-8 animate-pulse"
+            />
+          </div>
           {aiChoice.map((recipe: aiChoice, index: number) => (
             <div key={recipe.id}>
               <motion.a
@@ -65,7 +73,7 @@ export const AiResult = ({
                 </div>
 
                 <div className="flex flex-row gap-2 border p-2 rounded-md justify-center items-center">
-                  <ImageOgp url={recipe.url || ""} className="w-37" />
+                  <ImageOgp url={recipe.url || ""} className="w-[148px]" />
                   <div className="flex flex-1 flex-col gap-1 w-1/2">
                     <span className="text-sm bleak-all text-gray-500">
                       {recipe.title}
@@ -144,7 +152,7 @@ export const AiResult = ({
             transition={{ duration: 0.5 }}
           >
             <p className="animate-pulse text-sm text-gray-500 text-center font-bold text-xl mt-4 mb-2">
-              AIが探索中...
+              AIが検索中...
             </p>
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           </motion.div>

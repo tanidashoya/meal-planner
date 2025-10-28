@@ -229,7 +229,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-#root {
+#app {
   min-height: 100vh;
   -webkit-overflow-scrolling: touch;
 }
@@ -251,7 +251,7 @@ body {
     overscroll-behavior-y: none; /*Pull-to-Refresh（引っ張って更新）や、上下端での“跳ね返り”を防ぎ(縦方向限定)*/
   }
 
-  #root {
+  #app {
     overflow-y: auto;
     height: 100vh;
     overscroll-behavior: contain;
@@ -297,7 +297,7 @@ body {
       overscroll-behavior: none;
     }
     /* position: fixed; の場合はtop等の指定は画面（ブラウザの表示領域＝ビューポート）に対する位置指定になる */
-    #root {
+    #app {
       position: fixed;
       top: 0;
       left: 0;
@@ -322,7 +322,7 @@ body {
       overscroll-behavior-y: none;
     }
 
-    #root {
+    #app {
       position: fixed;
       top: 0;
       left: 0;

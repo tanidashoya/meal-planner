@@ -97,7 +97,7 @@ export const Picks = () => {
         officialRecipes.map((officialRecipe) => (
           <motion.div
             key={officialRecipe.id}
-            className="mb-2 p-0 w-9/10"
+            className="mb-2 p-0 w-[90%]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{

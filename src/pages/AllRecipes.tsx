@@ -47,7 +47,7 @@ export const AllRecipes = () => {
   };
 
   return (
-    <Card className="border-0 shadow-none m-auto lg:w-3/5 w-19/20 h-full pb-8 mt-12 gap-3">
+    <Card className="border-0 shadow-none m-auto lg:w-3/5 w-[95%] h-full pb-8 mt-12 gap-3">
       <CardContent className="p-2 pb-28">
         <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-8 text-center">
           Myレシピ一覧（全{recipes.length}件）
@@ -58,7 +58,7 @@ export const AllRecipes = () => {
             setSelectedCategory={handleChangeCategory}
             isSelectOpen={isSelectOpen}
             setIsSelectOpen={setIsSelectOpen}
-            className="w-44"
+            className="w-[176px]"
             showAllOption={true}
           />
         </div>
@@ -69,7 +69,7 @@ export const AllRecipes = () => {
             placeholder="レシピタイトルで検索"
             value={searchText}
             onChange={handleChange}
-            className="border-1 border-gray-400 rounded-md py-2 px-4 gap-6 lg:p-10"
+            className="border border-gray-400 rounded-md py-2 px-4 gap-6 lg:p-10"
           />
         </div>
         <RatingItem

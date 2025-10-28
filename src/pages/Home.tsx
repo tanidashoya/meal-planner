@@ -58,10 +58,14 @@ export function Home() {
   // w-1/2: 幅を親要素の50%に設定します
   return (
     <div className="h-full max-h-full flex items-center justify-center overflow-hidden">
-      <Card className="border-0 shadow-none w-19/20 sm:w-9/10 lg:w-3/5 gap-2">
+      <Card className="border-0 shadow-none w-[95%] sm:w-[90%] lg:w-3/5 gap-2">
         <CardHeader>
           <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">
-            <img src={mealPlanner} alt="mealPlanner" className="h-30 m-auto" />
+            <img
+              src={mealPlanner}
+              alt="mealPlanner"
+              className="h-[120px] m-auto"
+            />
           </CardTitle>
           <CardDescription className="text-base md:text-2xl font-medium lg:mt-16 text-gray-500 text-center mb-4">
             新しいレシピを追加しよう！

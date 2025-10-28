@@ -60,7 +60,7 @@ export const RecipeDetail = () => {
 
   //リロードじゃなくて追加画面に戻る方がいいかな
   const handleReload = () => {
-    navigate("/recipes"); // ページをリロード
+    navigate("/"); // ページをリロード
     window.location.reload();
   };
 
@@ -196,7 +196,7 @@ export const RecipeDetail = () => {
           </div>
           <div className="flex flex-col items-center justify-center gap-2 lg:gap-8 lg:w-full">
             <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 pt-1 pb-0 lg:px-12 lg:py-4">
-              <h3 className="text-base border-b-1 mb-1">あじの感想</h3>
+              <h3 className="text-base border-b mb-1">あじの感想</h3>
               <TastePoint
                 recipeId={targetRecipe.id}
                 img={imgTaste}
@@ -204,7 +204,7 @@ export const RecipeDetail = () => {
               />
             </div>
             <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 pt-1 pb-0 lg:px-12 lg:py-4">
-              <h3 className="text-base border-b-1 mb-1">調理時間</h3>
+              <h3 className="text-base border-b mb-1">調理時間</h3>
               <WatchPoint
                 recipeId={targetRecipe.id}
                 img={imgWatch}

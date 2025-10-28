@@ -75,7 +75,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒index.cssで定義されている
     //border-r → 右の境界線を表示する
     //modal={false} → 裏側のページも操作可能
-    <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col  items-center pb-2 pt-4 pb-1 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border-1 bg-white lg:bg-transparent lg:h-full">
+    <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col  items-center pb-2 pt-4 pb-1 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border bg-white lg:bg-transparent lg:h-full">
       <Sheet open={open} onOpenChange={setOpen} modal={false}>
         <SheetTrigger asChild>
           <Button
@@ -92,7 +92,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         {/* Shadcn UI が内部で使っている Lucide アイコンも svg */}
         <SheetContent
           side="left"
-          className="w-80 md:w-70"
+          className="w-80 md:w-[280px]"
           onEscapeKeyDown={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
@@ -110,7 +110,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
                 signout={handleSignOut}
               />
 
-              <div className="hover:bg-primary/5 mb-4 w-2/3 border-1 ml-2 rounded-3xl bg-white">
+              <div className="hover:bg-primary/5 mb-4 w-2/3 border ml-2 rounded-3xl bg-white">
                 <Item label="Myレシピ検索" icon={Search} onClick={openModal} />
               </div>
             </div>
@@ -142,7 +142,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
           onClick={() => navigate("/match-recipe")}
         >
-          <img src={matchRecipeIcon} alt="picks icon" className="size-13" />
+          <img src={matchRecipeIcon} alt="picks icon" className="size-[52px]" />
         </Button>
       )}
       {/* 外部サイトへのリンクボタン */}
@@ -160,10 +160,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
           onClick={() => navigate("/")}
         >
-          <PlusCircle
-            className="size-8 text-gray-500 stroke-width-1"
-            strokeWidth={1.5}
-          />
+          <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
         </Button>
         <Button
           variant="outline"
