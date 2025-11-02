@@ -57,7 +57,6 @@ export const SpeechToText = () => {
     //  file: (Blobオブジェクト: audio/webm)
     //}
     mediaRecorder.onstop = async () => {
-      setIsProcessing(true);
       const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       const formData = new FormData();
       formData.append("file", blob, "audio.webm");
@@ -123,15 +122,15 @@ export const SpeechToText = () => {
         .forEach((track) => track.stop());
     }
     setRecording(false);
+    // オーバーレイが一瞬消えないように、すぐに処理中状態にする
+    setIsProcessing(true);
   };
 
   return (
     <div className="m-0">
       <button onClick={recording ? stopRecording : startRecording}>
         <MicIcon
-          className={`size-8 border-[1px] border-gray-300 rounded-md p-1 ${
-            recording ? "text-red-500" : "text-green-500"
-          }`}
+          className={`size-8 ${recording ? "text-red-500" : "text-green-500"}`}
         />
       </button>
       {(recording || isProcessing) && (
