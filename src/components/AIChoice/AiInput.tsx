@@ -18,7 +18,7 @@ export const AiInput = ({
   handleClick,
 }: AiInputProps) => {
   return (
-    <div className="w-full flex flex-col items-center justify-center mt-[-12px] relative">
+    <div className="w-full flex flex-col items-center justify-center mt-[-12px]">
       <motion.img
         src={aiIcon}
         alt="ai icon"

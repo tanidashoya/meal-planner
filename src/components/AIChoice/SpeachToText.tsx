@@ -8,6 +8,8 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY;
 
 export const SpeechToText = () => {
+  //音声文字起こし処理中かどうかを制御する状態
+  const [isProcessing, setIsProcessing] = useState(false);
   //録音中かどうかを制御する状態
   const [recording, setRecording] = useState(false);
   //出力されたテキストを管理する状態(※※※※※本番ではグローバルステートに入れる)
@@ -55,6 +57,7 @@ export const SpeechToText = () => {
     //  file: (Blobオブジェクト: audio/webm)
     //}
     mediaRecorder.onstop = async () => {
+      setIsProcessing(true);
       const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       const formData = new FormData();
       formData.append("file", blob, "audio.webm");
@@ -117,6 +120,7 @@ export const SpeechToText = () => {
         .forEach((track) => track.stop());
     }
     setRecording(false);
+    setIsProcessing(false);
   };
 
   return (
@@ -126,7 +130,12 @@ export const SpeechToText = () => {
           className={`size-6 ${recording ? "text-red-500" : "text-green-500"}`}
         />
       </button>
-      {recording && <Recording stopRecording={stopRecording} />}
+      {recording && (
+        <Recording stopRecording={stopRecording} isProcessing={isProcessing} />
+      )}
+      {/* {!recording && (
+        <Recording stopRecording={stopRecording} isProcessing={isProcessing} />
+      )} */}
     </div>
   );
 };
