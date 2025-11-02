@@ -4,6 +4,9 @@ import { useAiChoiceStore } from "../../modules/aiChoice/ai-choice.state";
 import { MicIcon } from "lucide-react";
 import { Recording } from "./Recording";
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY;
+
 export const SpeechToText = () => {
   //録音中かどうかを制御する状態
   const [recording, setRecording] = useState(false);
@@ -56,15 +59,41 @@ export const SpeechToText = () => {
       const formData = new FormData();
       formData.append("file", blob, "audio.webm");
 
-      const { data, error } = await supabase.functions.invoke("transcribe", {
-        body: formData, // ← Blob付きのFormDataでもOK
-      });
+      try {
+        // supabase.functions.invoke()は通常のJSON送信には便利だが、
+        // FormData（ファイル送信）には対応していないため、通常のfetchを使用
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const token = session?.access_token;
 
-      if (error) {
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/transcribe`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              apikey: SUPABASE_API_KEY,
+            },
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Transcribe error:", response.statusText);
+          return;
+        }
+
+        const result = await response.json();
+        console.log("Response data:", result);
+        console.log("Text extracted:", result?.text);
+
+        if (result?.text) {
+          aiChoiceStore.setAiWord(result.text);
+        }
+      } catch (error) {
         console.error("Transcribe error:", error);
-        return;
       }
-      aiChoiceStore.setAiWord(data.text);
     };
 
     mediaRecorder.start();
