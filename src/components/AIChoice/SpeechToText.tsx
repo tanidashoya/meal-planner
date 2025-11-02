@@ -33,7 +33,9 @@ export const SpeechToText = () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream);
     //mediaRecorderRef.current = mediaRecorder;：参照先オブジェクトが同じ
+    //再レンダリングしても保持できるようにしている
     mediaRecorderRef.current = mediaRecorder;
+    //録音データ（音声チャンク）を空にリセットしておく
     audioChunksRef.current = [];
 
     //mediaRecorder.ondataavailable:これはオブジェクトのプロパティ
@@ -41,34 +43,53 @@ export const SpeechToText = () => {
     //登録するためのプロパティ
     //録音中に生成される音声データ（小さな断片＝チャンク）を配列にためていく処理を格納
     //「一定時間ごと」または「録音が停止したとき」に ondataavailable が発火
+    //new Blob(
+    //   第1引数: データの配列（ここでは音声チャンクを格納した配列）,
+    //   第2引数: オプション（MIMEタイプなど）
+    // )
+    //e.data:音声チャンクを格納したBlobオブジェクト
+    //audioChunksRef.current.push(e.data);：音声チャンクを配列に追加
+    //録音中順次ondataavailableが発火して、録音した音声チャンク（Blobオブジェクト）をaudioChunk配列に追加していく
+    //audioChunksRef.current = [Blob1, Blob2, Blob3, Blob4,・・・]⇒メディアレコーダーから Blob が返るためBlob型のオブジェクトが格納されていく
     mediaRecorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
 
     //onstop:録音を止まったときに実行する関数を登録するプロパティ
     //録音がとまったあとに自動で発火する。
     //const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-    //⇒「録音した複数の音声データを1つの .webm ファイル（第二引数で指定）にまとめる」
+    //Blobクラスのインスタンスを作成（Blobは非テキストデータを保持しておくためのオブジェクト）
+    //⇒第一引数：データの配列（ここでは音声チャンクを格納した配列）⇒この時バイナリデータとして結合される
+    //⇒第二引数：オプション（MIMEタイプなど）「audio/webm」はWebM形式の音声ファイル
     //const formData = new FormData();：サーバーに送る準備（送信用のオブジェクト作成）
     //append （オブジェクトにデータを追加）の引数はこの3つ👇
     //"file"：サーバー側でこの項目を識別するための「名前」
     //blob：実際のデータ（ここでは録音した音声ファイル）
     //"audio.webm"：ファイル名として送られる文字列（任意）
-    //⇒
-    //FormData {
-    //  file: (Blobオブジェクト: audio/webm)
-    //}
     mediaRecorder.onstop = async () => {
       const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+      //BlobではJSONで送れないのでFormDataを使用してサーバーに送る（FormDataはファイルを送信するためのオブジェクト）
       const formData = new FormData();
       formData.append("file", blob, "audio.webm");
+      // ⇒ FormDataにエントリを追加
+      //  "file" = キー
+      //  blob = 実際のデータ
+      //  "audio.webm" = ファイル名
 
+      // supabase.functions.invoke()は通常のJSON送信には便利だが、
+      // FormData（ファイル送信）には対応していないため、通常のfetchを使用
+      //dataの中のsessionを取得して、access_tokenを取得して、Authorizationヘッダーに追加
       try {
-        // supabase.functions.invoke()は通常のJSON送信には便利だが、
-        // FormData（ファイル送信）には対応していないため、通常のfetchを使用
         const {
           data: { session },
         } = await supabase.auth.getSession();
         const token = session?.access_token;
 
+        //fetch：サーバーにデータを取りに行く関数
+        //第1引数：URL（ここではSupabaseのFunctionsのURL）
+        //第2引数：オプション（メソッド、ヘッダー、ボディ）
+        //method：メソッド（ここではPOST）
+        //headers：ヘッダー（ここではAuthorizationヘッダーとapikeyヘッダー）
+        //body：ボディ（ここではformData）
+        //response：サーバーからのレスポンス
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/transcribe`,
           {
@@ -87,6 +108,7 @@ export const SpeechToText = () => {
           return;
         }
 
+        //.json()はサーバーなどから帰ってきたJSON文字列をオブジェクトに変換するメソッド
         const result = await response.json();
         console.log("Response data:", result);
         console.log("Text extracted:", result?.text);
@@ -122,14 +144,15 @@ export const SpeechToText = () => {
   //mediaRecorder.onstop：ここに登録した関数が自動で発火する
   const stopRecording = () => {
     //録音を停止⇒onstop(録音が停止したときに発火する非同期関数)が発火する
+    //stop()メソッドで録音は停止するが、マイクは動き続けるので下部のコードで停止する
     mediaRecorderRef.current?.stop();
     //マイクの使用を停止
     //mediaRecorderRef.current?.stream：マイクの使用を停止
     //mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());：マイクの使用を停止
     if (mediaRecorderRef.current?.stream) {
       mediaRecorderRef.current.stream
-        .getTracks()
-        .forEach((track) => track.stop());
+        .getTracks() //stream内の全てのトラック（マイクからの音声データの流れ）
+        .forEach((track) => track.stop()); //各トラックを停止⇒マイクの使用を停止
     }
     setRecording(false);
     // オーバーレイが一瞬消えないように、すぐに処理中状態にする

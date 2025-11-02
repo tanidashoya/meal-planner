@@ -1,4 +1,4 @@
-import { SpeechToText } from "./SpeachToText";
+import { SpeechToText } from "./SpeechToText";
 import aiIcon from "../../assets/ai_search.png";
 import { motion } from "framer-motion";
 
