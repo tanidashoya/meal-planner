@@ -91,8 +91,17 @@ export const SpeechToText = () => {
         console.log("Response data:", result);
         console.log("Text extracted:", result?.text);
 
+        // 無音時のノイズレスポンスを除外
+        const noiseResponses = [
+          "ご視聴ありがとうございました",
+          "Thank you for watching",
+        ];
+
         if (result?.text) {
-          aiChoiceStore.setAiWord(result.text);
+          const trimmedText = result.text.trim();
+          if (trimmedText && !noiseResponses.includes(trimmedText)) {
+            aiChoiceStore.setAiWord(trimmedText);
+          }
         }
         setIsProcessing(false);
       } catch (error) {
@@ -112,6 +121,7 @@ export const SpeechToText = () => {
   //.stop() はその中身（MediaRecorderインスタンス）のメソッド
   //mediaRecorder.onstop：ここに登録した関数が自動で発火する
   const stopRecording = () => {
+    //録音を停止⇒onstop(録音が停止したときに発火する非同期関数)が発火する
     mediaRecorderRef.current?.stop();
     //マイクの使用を停止
     //mediaRecorderRef.current?.stream：マイクの使用を停止
