@@ -81,9 +81,11 @@ export const SpeechToText = () => {
             body: formData,
           }
         );
+        setIsProcessing(false);
 
         if (!response.ok) {
           console.error("Transcribe error:", response.statusText);
+          setIsProcessing(false);
           return;
         }
 
@@ -96,6 +98,7 @@ export const SpeechToText = () => {
         }
       } catch (error) {
         console.error("Transcribe error:", error);
+        setIsProcessing(false);
       }
     };
 
@@ -120,14 +123,15 @@ export const SpeechToText = () => {
         .forEach((track) => track.stop());
     }
     setRecording(false);
-    setIsProcessing(false);
   };
 
   return (
-    <div>
+    <div className="m-0">
       <button onClick={recording ? stopRecording : startRecording}>
         <MicIcon
-          className={`size-6 ${recording ? "text-red-500" : "text-green-500"}`}
+          className={`size-8 border-[1px] border-gray-300 rounded-md p-1 ${
+            recording ? "text-red-500" : "text-green-500"
+          }`}
         />
       </button>
       {recording && (

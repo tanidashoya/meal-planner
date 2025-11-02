@@ -38,11 +38,11 @@ export const AiInput = ({
       <span className="text-base font-medium text-center w-full text-gray-500 mt-2">
         食べたいものはなんですか？
       </span>
-      <div className="py-5 px-3 rounded-md border-2 border-gray-300 mt-3">
-        <div className="flex flex-row items-center justify-center">
+      <div className="py-5 px-3 rounded-md border-2 border-gray-300 mt-3 ">
+        <div className="flex flex-row items-center justify-center mb-4 gap-1">
           <input
             type="text"
-            className="mb-4 w-full p-2 rounded-md border-2 border-gray-300  
+            className="w-full p-2 rounded-md border-2 border-gray-300  
                                 focus:!outline-none 
                                 focus-visible:!outline-none 
                                 focus:!ring-1 
