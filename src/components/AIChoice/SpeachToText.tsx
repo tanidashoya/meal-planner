@@ -81,7 +81,6 @@ export const SpeechToText = () => {
             body: formData,
           }
         );
-        setIsProcessing(false);
 
         if (!response.ok) {
           console.error("Transcribe error:", response.statusText);
@@ -96,6 +95,7 @@ export const SpeechToText = () => {
         if (result?.text) {
           aiChoiceStore.setAiWord(result.text);
         }
+        setIsProcessing(false);
       } catch (error) {
         console.error("Transcribe error:", error);
         setIsProcessing(false);
@@ -134,12 +134,9 @@ export const SpeechToText = () => {
           }`}
         />
       </button>
-      {recording && (
+      {(recording || isProcessing) && (
         <Recording stopRecording={stopRecording} isProcessing={isProcessing} />
       )}
-      {/* {!recording && (
-        <Recording stopRecording={stopRecording} isProcessing={isProcessing} />
-      )} */}
     </div>
   );
 };
