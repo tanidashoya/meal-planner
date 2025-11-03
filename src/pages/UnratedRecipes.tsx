@@ -3,12 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { toast } from "react-toastify";
-import meatIcon from "../assets/meat.webp";
-import fishIcon from "../assets/fish.webp";
-import donIcon from "../assets/don.webp";
-import menIcon from "../assets/men.webp";
-import kozareIcon from "../assets/kozara.webp";
-import otherIcon from "../assets/other.webp";
 import { RecipeIcon } from "../components/RecipeIcon";
 
 export const UnratedRecipes = () => {
