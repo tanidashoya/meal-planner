@@ -2,17 +2,22 @@ import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { toast } from "react-toastify";
 import { RatingItem } from "../components/TasteSort/RatingItem";
-import { useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { SelectCategory } from "../components/SelectCategory";
+import { useAllRecipesStore } from "../modules/AllRecipes/all-recipes.state";
 
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
   const { currentUser } = useCurrentUserStore();
-  const [searchText, setSearchText] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("全てのレシピ");
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const {
+    searchText,
+    setSearchText,
+    selectedCategory,
+    setSelectedCategory,
+    isSelectOpen,
+    setIsSelectOpen,
+  } = useAllRecipesStore();
   const filteredRecipes = recipes.filter((recipe) => {
     // 検索テキストとカテゴリのフィルタリング
     //searchText.trim() === "" はsearchTextが空文字列かどうかを判定:空文字列の場合はtrueを返す⇒検索テキストが空の場合は全てのレシピを返す
@@ -69,7 +74,7 @@ export const AllRecipes = () => {
             placeholder="レシピタイトルで検索"
             value={searchText}
             onChange={handleChange}
-            className="border border-gray-400 rounded-md py-2 px-4 gap-6 lg:p-10"
+            className="border border-gray-400 rounded-md py-2 px-4 gap-6 lg:p-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <RatingItem
