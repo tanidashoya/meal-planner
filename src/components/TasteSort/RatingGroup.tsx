@@ -48,7 +48,7 @@ export const RatingGroup = ({
           return (
             <div
               key={rating}
-              className="w-full lg:w-4/5 mb-8 mx-auto border-2 border-gray-300 rounded-md p-5 lg:p-10 shadow-sm lg:mb-12"
+              className="w-full lg:w-4/5 mb-8 mx-auto border-2 border-gray-300 rounded-md py-5 lg:p-10 shadow-sm lg:mb-12"
             >
               <div className="flex items-center justify-center gap-2 mb-10 lg:mb-12 border-b border-gray-300 pb-2 w-3/5 mx-auto">
                 {Array.from({ length: Number(rating) }, (_, i) => (

@@ -153,7 +153,7 @@ export const Layout = () => {
       </div>
       {/* h-full:親要素の高さに合わせて縦いっぱいに広がる */}
       {/* つまりh-fullは親要素の高さ（ここではh-screen）に合わせるということ */}
-      <main className="flex-1 h-full pt-15 pb-12 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col">
+      <main className="flex-1 h-full pt-15 pb-20 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col">
         <Outlet />
         <SearchModal
           isOpen={isShowModal}

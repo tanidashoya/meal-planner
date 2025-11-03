@@ -18,6 +18,10 @@ export const TasteList = () => {
   );
   const { currentUser } = useCurrentUserStore();
   const deleteRecipe = async (id: number) => {
+    // 確認ダイアログを表示
+    if (!window.confirm("本当に削除しますか？")) {
+      return; // キャンセルした場合は何もしない
+    }
     if (!currentUser) return;
     try {
       await recipesStore.delete(currentUser.id, id);
@@ -30,7 +34,7 @@ export const TasteList = () => {
   };
   //&&：かつという意味
   return (
-    <div className="font-['Inter'] flex flex-col items-center h-full pt-25 lg:pt-35">
+    <div className="font-['Inter'] flex flex-col items-center w-full pt-25 lg:pt-35 pb-20 lg:pb-0">
       <div className="flex items-center justify-center gap-2 mb-12 lg:mb-16 border-b border-gray-300 pb-4 gap-2">
         {Array.from({ length: Number(star) }, (_, i) => (
           <img

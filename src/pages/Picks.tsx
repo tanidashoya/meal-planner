@@ -55,7 +55,7 @@ export const Picks = () => {
       const message =
         error instanceof Error ? error.message : "不明なエラーが発生しました";
       console.error("エラー内容:", message);
-      toast.error("レシピの追加に失敗しました");
+      toast.error(message);
     }
   };
 
@@ -80,7 +80,7 @@ export const Picks = () => {
   //window.open：JavaScript で新しいウィンドウ（またはタブ）を開くための関数
   //
   return (
-    <div className="flex flex-col items-center justify-center gap-2 mt-14 mb-16">
+    <div className="flex flex-col items-center justify-center gap-2 mt-20 mb-12">
       <div className="mb-8">
         <p className="text-2xl font-bold mb-2 text-center tracking-wider">
           今日のおすすめレシピ
