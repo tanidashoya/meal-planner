@@ -67,11 +67,35 @@ export const MatchRecipe = () => {
     return;
   };
 
+  //楽天レシピ
+  // const handleSearch = async (query: string) => {
+  //   if (!aiChoiceStore.aiWord) {
+  //     toast.warn("検索ワードを入力してください");
+  //     return;
+  //   }
+  //   const { data, error } = await supabase.functions.invoke("rakuten-search", {
+  //     body: { query },
+  //   });
+  //   if (error) {
+  //     console.error("AIレシピ探索に失敗", error.message);
+  //     toast.error("AIレシピ探索に失敗");
+  //   } else {
+  //     toast.success("AIによるレシピ探索が完了");
+  //   }
+  //   aiChoiceStore.set(data);
+  //   aiChoiceStore.setHasSearched(true);
+  //   aiChoiceStore.setAiSearchLoading(false);
+  //   console.log(data);
+  //   return;
+  // };
+
   const handleClick = () => {
     if (!aiChoiceStore.aiWord) {
       toast.warn("検索ワードを入力してください");
       return;
     }
+    //楽天レシピ
+    // handleSearch(aiChoiceStore.aiWord);
     if (mode === "free") {
       handleSimilarRecipesFree(aiChoiceStore.aiWord);
     } else if (mode === "strict") {

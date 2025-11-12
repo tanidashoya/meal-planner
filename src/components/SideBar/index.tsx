@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import matchRecipeIcon from "../../assets/ai_search.png";
 import { useAiChoiceStore } from "../../modules/aiChoice/ai-choice.state";
 import outsideSiteIcon from "../../assets/outside_site.webp";
+import weeklyRecipesIcon from "../../assets/weekly_recipes.png";
 
 interface SideBarProps {
   openModal: () => void;
@@ -76,105 +77,130 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     //border-r → 右の境界線を表示する
     //modal={false} → 裏側のページも操作可能
     <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col  items-center pb-2 pt-4 pb-1 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border bg-white lg:bg-transparent lg:h-full">
-      <Sheet open={open} onOpenChange={setOpen} modal={false}>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            className="ml-2 hover:bg-white lg:m-2 !px-4 !py-6 lg:!px-3 lg:!py-5 !shadow-none !outline-none"
-          >
-            <PanelLeft
-              className="!h-9 !w-9 md:!h-7 md:!w-7 text-gray-500 "
-              strokeWidth={1.5}
-            />
-          </Button>
-        </SheetTrigger>
-        {/* [&_svg]:h-5 [&_svg]:w-5 → アイコンのサイズを5pxにする svg:画像フォーマットの一種で、アイコンやイラストを 数式（ベクトル）で描いている画像 */}
-        {/* Shadcn UI が内部で使っている Lucide アイコンも svg */}
-        <SheetContent
-          side="left"
-          className="w-80 md:w-[280px]"
-          onEscapeKeyDown={(e) => e.preventDefault()}
-          onInteractOutside={(e) => e.preventDefault()}
-        >
-          <VisuallyHidden>
-            <SheetTitle>サイドバー</SheetTitle>
-            <SheetDescription>サイドバー</SheetDescription>
-          </VisuallyHidden>
-          <aside className="h-full bg-secondary border-r flex flex-col">
-            {/* flex-shrink-0: 要素のサイズを縮小しない */}
-            {/* flex-shrink-0がなければレシピが増えた際にサイドバーのサイズが縮小されてそのあとRecipeListがスクロール可能になる */}
-            <div className="flex-shrink-0">
-              <UserItem
-                userEmail={currentUser.email}
-                userName={currentUser.userName}
-                signout={handleSignOut}
+      <div className="flex items-center gap-2">
+        <Sheet open={open} onOpenChange={setOpen} modal={false}>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              className="hover:bg-white lg:m-2 !px-4 !py-6 lg:!px-3 lg:!py-5 !shadow-none !outline-none"
+            >
+              <PanelLeft
+                className="!h-9 !w-9 md:!h-7 md:!w-7 text-gray-500 "
+                strokeWidth={1.5}
               />
+            </Button>
+          </SheetTrigger>
+          {/* [&_svg]:h-5 [&_svg]:w-5 → アイコンのサイズを5pxにする svg:画像フォーマットの一種で、アイコンやイラストを 数式（ベクトル）で描いている画像 */}
+          {/* Shadcn UI が内部で使っている Lucide アイコンも svg */}
+          <SheetContent
+            side="left"
+            className="w-80 md:w-[280px]"
+            onEscapeKeyDown={(e) => e.preventDefault()}
+            onInteractOutside={(e) => e.preventDefault()}
+          >
+            <VisuallyHidden>
+              <SheetTitle>サイドバー</SheetTitle>
+              <SheetDescription>サイドバー</SheetDescription>
+            </VisuallyHidden>
+            <aside className="h-full bg-secondary border-r flex flex-col">
+              {/* flex-shrink-0: 要素のサイズを縮小しない */}
+              {/* flex-shrink-0がなければレシピが増えた際にサイドバーのサイズが縮小されてそのあとRecipeListがスクロール可能になる */}
+              <div className="flex-shrink-0">
+                <UserItem
+                  userEmail={currentUser.email}
+                  userName={currentUser.userName}
+                  signout={handleSignOut}
+                />
 
-              <div className="hover:bg-primary/5 mb-4 w-2/3 border ml-2 rounded-3xl bg-white">
-                <Item label="Myレシピ検索" icon={Search} onClick={openModal} />
+                <div className="hover:bg-primary/5 mb-4 w-2/3 border ml-2 rounded-3xl bg-white">
+                  <Item
+                    label="Myレシピ検索"
+                    icon={Search}
+                    onClick={openModal}
+                  />
+                </div>
               </div>
-            </div>
-            {/* overflow-y-auto: 縦方向のスクロールを有効化 */}
-            <div className="flex-1 overflow-y-auto h-full">
-              <RecipeList setOpen={setOpen} />
-            </div>
-          </aside>
-        </SheetContent>
-      </Sheet>
+              {/* overflow-y-auto: 縦方向のスクロールを有効化 */}
+              <div className="flex-1 overflow-y-auto h-full">
+                <RecipeList setOpen={setOpen} />
+              </div>
+            </aside>
+          </SheetContent>
+        </Sheet>
 
-      {/* レシピランダム提案ボタン */}
-      <Button
-        variant="outline"
-        className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-        onClick={() => navigate("/picks")}
-      >
-        <img src={randomPicksIcon} alt="picks icon" className="size-11" />
-      </Button>
-
-      {/* レシピAI探索ボタン */}
-      {aiChoiceStore.aiSearchLoading ? (
-        <div className="!px-2 !ml-2 !mr-1 !shadow-none rounded-md flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      ) : (
+        {/* レシピランダム提案ボタン */}
         <Button
           variant="outline"
           className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/match-recipe")}
+          onClick={() => navigate("/picks")}
         >
-          <img src={matchRecipeIcon} alt="picks icon" className="size-[52px]" />
+          <img src={randomPicksIcon} alt="picks icon" className="size-11" />
         </Button>
-      )}
-      {/* 外部サイトへのリンクボタン */}
-      <Button
-        variant="outline"
-        className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-        onClick={() => navigate("/outside-site")}
-      >
-        <img src={outsideSiteIcon} alt="outside site icon" className="size-9" />
-      </Button>
 
-      <div className="hidden lg:flex flex-col items-center gap-2">
+        {/* レシピAI探索ボタン */}
+        {aiChoiceStore.aiSearchLoading ? (
+          <div className="!px-2 !ml-2 !mr-1 !shadow-none rounded-md flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
+            onClick={() => navigate("/match-recipe")}
+          >
+            <img
+              src={matchRecipeIcon}
+              alt="picks icon"
+              className="size-[52px]"
+            />
+          </Button>
+        )}
+        {/* 外部サイトへのリンクボタン */}
         <Button
           variant="outline"
-          className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/")}
+          className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
+          onClick={() => navigate("/outside-site")}
         >
-          <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
+          <img
+            src={outsideSiteIcon}
+            alt="outside site icon"
+            className="size-9"
+          />
         </Button>
+
+        <div className="hidden lg:flex flex-col items-center gap-2">
+          <Button
+            variant="outline"
+            className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
+            onClick={() => navigate("/")}
+          >
+            <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
+          </Button>
+          <Button
+            variant="outline"
+            className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
+            onClick={() => navigate("/star-sort")}
+          >
+            <img src={tasteIcon} alt="taste icon" className="size-8" />
+          </Button>
+          <Button
+            variant="outline"
+            className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
+            onClick={() => navigate("/time-sort")}
+          >
+            <img src={watchIcon} alt="watch icon" className="size-8" />
+          </Button>
+        </div>
         <Button
           variant="outline"
           className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/star-sort")}
+          onClick={() => navigate("/weekly-recipes")}
         >
-          <img src={tasteIcon} alt="taste icon" className="size-8" />
-        </Button>
-        <Button
-          variant="outline"
-          className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/time-sort")}
-        >
-          <img src={watchIcon} alt="watch icon" className="size-8" />
+          <img
+            src={weeklyRecipesIcon}
+            alt="weekly recipes icon"
+            className="size-11"
+          />
         </Button>
       </div>
       <BottomBar />
