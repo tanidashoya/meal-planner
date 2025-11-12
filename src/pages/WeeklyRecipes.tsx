@@ -15,7 +15,7 @@ export const WeeklyRecipes = () => {
 
   const moveToDetail = (id: number) => {
     if (pickedRecipe) {
-      navigate(`/recipes/${pickedRecipe.id}`);
+      navigate(`/recipes/${id}`);
     }
   };
 
@@ -78,7 +78,7 @@ export const WeeklyRecipes = () => {
     let threshold = Math.random() * totalWeight;
 
     //重みづけに応して、どのカテゴリからレシピを一件選ぶかを決める
-    for (const { category, recipes, weight } of candidates) {
+    for (const { recipes, weight } of candidates) {
       //Math.floorは小数点以下を切り捨てるメソッド
       //指定されたカテゴリのrecipesの中からランダムに一件選ぶ
       if (threshold < weight) {
