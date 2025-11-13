@@ -104,26 +104,35 @@ export const WeeklyRecipes = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2 mt-20 mb-12">
-      <p className="text-2xl font-bold mb-2 text-center tracking-wider">
-        週次レシピ
-      </p>
-      <button
-        onClick={handlePickRecipe}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md"
-      >
-        レシピを選ぶ
-      </button>
+    <div className="flex flex-col items-center justify-center gap-2 mt-12 mb-12">
+      <div className="flex items-center justify-center gap-8 mb-4">
+        <p className="text-2xl font-bold text-center tracking-wider">
+          一週間レシピ
+        </p>
+        <button
+          onClick={handlePickRecipe}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          レシピ出力
+        </button>
+      </div>
       {pickedRecipe && (
         <div
-          className="flex flex-col items-center justify-center gap-2"
+          className="flex items-center justify-center gap-2 w-full px-4"
           onClick={() => moveToDetail(pickedRecipe.id)}
         >
-          <ImageOgp
-            url={pickedRecipe.source || ""}
-            className="w-full h-32 mb-5"
-          />
-          <p className="text-lg font-bold">{pickedRecipe.title}</p>
+          <div className="flex items-center justify-space-between gap-4 border-[1px] border-gray-300 rounded-md p-1 w-full">
+            <ImageOgp
+              url={pickedRecipe.source || ""}
+              className="w-36 h-24 flex-shrink-0 ml-2"
+            />
+            <div className="flex flex-col items-start justify-center gap-2">
+              <span className="text-base font-bold border-b-[2px] border-gray-300">
+                {pickedRecipe.category}
+              </span>
+              <span className="text-sm font-bold">{pickedRecipe.title}</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

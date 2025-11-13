@@ -8,17 +8,29 @@ interface ImageOgpProps {
 
 export const ImageOgp = ({ url, className }: ImageOgpProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [ogp, setOgp] = useState<{ title?: string; description?: string; image?: string } | null>(null);
+  const [ogp, setOgp] = useState<{
+    title?: string;
+    description?: string;
+    image?: string;
+  } | null>(null);
 
   useEffect(() => {
+    // isMounted:コンポーネントがマウントされているかどうかを管理
     let isMounted = true;
 
     const isURL = (url: string | null) => {
-      try { new URL(url || ""); return true; } catch { return false; }
+      try {
+        new URL(url || "");
+        return true;
+      } catch {
+        return false;
+      }
     };
 
     const getOgpPreview = async (url: string | null) => {
-      if (!isURL(url)) return null;
+      if (!isURL(url)) {
+        return null;
+      }
       const cacheKey = `ogp_${url}`;
       const cached = localStorage.getItem(cacheKey);
 
@@ -38,7 +50,10 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       }
 
       // 🔹Edge Function から取得
-      const { data, error } = await supabase.functions.invoke("smooth-function", { body: { url } });
+      const { data, error } = await supabase.functions.invoke(
+        "smooth-function",
+        { body: { url } }
+      );
       if (error) {
         console.error("OGP取得エラー:", error);
         return null;
@@ -49,9 +64,17 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       console.log("✅ サーバーから新規取得:", url);
       return data;
     };
-  
+
+    // 🔹URLが無効な場合は早期リターン（ogpとisLoadingをnullにして、コンポーネントをアンマウント）
+    if (!url || !isURL(url)) {
+      if (isMounted) {
+        setOgp(null);
+        setIsLoading(false);
+      }
+      return;
+    }
+
     (async () => {
-      if (!url) return;
       setIsLoading(true);
       try {
         const data = await getOgpPreview(url);
@@ -62,13 +85,12 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
         if (isMounted) setIsLoading(false);
       }
     })();
-  
+
     // ✅ クリーンアップ関数
     return () => {
       isMounted = false;
     };
   }, [url]);
-  
 
   return (
     <div className={`flex justify-center items-center ${className}`}>
@@ -76,12 +98,14 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
         <div className={`flex justify-center items-center ${className}`}>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
         </div>
+      ) : ogp?.image ? (
+        <img
+          src={ogp.image}
+          alt={ogp.title}
+          className="w-full h-full object-contain"
+        />
       ) : (
-        ogp?.image ? (
-          <img src={ogp.image} alt={ogp.title} className="w-full h-full object-contain" />
-        ) : (
-          <p className="text-gray-500">画像は存在しません</p>
-        )
+        <p className="text-gray-500">画像は存在しません</p>
       )}
     </div>
   );
