@@ -1,7 +1,6 @@
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { Recipe } from "../modules/recipes/recipe.entity";
 import { useMemo } from "react";
-import { toast } from "react-toastify";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageOgp } from "../components/ImageOgp";
@@ -9,14 +8,27 @@ import { ImageOgp } from "../components/ImageOgp";
 export const WeeklyRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
-  const [pickedRecipe, setPickedRecipe] = useState<Recipe | null>(null);
+  const youbilist = [
+    "月曜日",
+    "火曜日",
+    "水曜日",
+    "木曜日",
+    "金曜日",
+    "土曜日",
+    "日曜日",
+  ];
+
+  type WeeklyRecipes = {
+    youbi: string;
+    recipe: Recipe | null;
+  };
+
+  const [weeklyRecipes, setWeeklyRecipes] = useState<WeeklyRecipes[]>([]);
 
   const navigate = useNavigate();
 
   const moveToDetail = (id: number) => {
-    if (pickedRecipe) {
-      navigate(`/recipes/${id}`);
-    }
+    navigate(`/recipes/${id}`);
   };
 
   //カテゴリの重み付け
@@ -93,48 +105,69 @@ export const WeeklyRecipes = () => {
 
   //関数内で定義した変数は、その関数のスコープにだけ有効
   //だからuseStateで保持する必要がある
-  const handlePickRecipe = () => {
-    //重みづけ通りにランダムにレシピを選ぶ
-    const recipe = pickWeightedRecipe(groupedRecipes, categoryWeights);
-    if (!recipe) {
-      toast.info("抽選可能なレシピがありません");
-      return;
+  //この関数を引数に渡されたweeklyRecipesを更新する関数に変更する。
+  // const handlePickRecipe = () => {
+  //   //重みづけ通りにランダムにレシピを選ぶ
+  //   const recipe = pickWeightedRecipe(groupedRecipes, categoryWeights);
+  //   if (!recipe) {
+  //     toast.info("抽選可能なレシピがありません");
+  //     return;
+  //   }
+  //   setPickedRecipe(recipe);
+  // };
+
+  const handlePicksWeeklyRecipes = () => {
+    setWeeklyRecipes([]);
+    for (const youbi of youbilist) {
+      const weeklyRecipe: WeeklyRecipes = {
+        youbi,
+        recipe: pickWeightedRecipe(groupedRecipes, categoryWeights),
+      };
+      // setWeeklyRecipes([...weeklyRecipes, weeklyRecipe]);
+      setWeeklyRecipes((prev) => [...prev, weeklyRecipe]); //関数型アップデートとして書かないとprevが更新されない
     }
-    setPickedRecipe(recipe);
   };
 
   return (
     <div className="flex flex-col items-center justify-center gap-2 mt-12 mb-12">
       <div className="flex items-center justify-center gap-8 mb-4">
-        <p className="text-2xl font-bold text-center tracking-wider">
-          一週間レシピ
+        <p className="text-xl font-bold text-center tracking-wider">
+          Myレシピから提案
         </p>
         <button
-          onClick={handlePickRecipe}
+          onClick={handlePicksWeeklyRecipes}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
           レシピ出力
         </button>
       </div>
-      {pickedRecipe && (
+      {weeklyRecipes.map((weeklyRecipe) => (
         <div
-          className="flex items-center justify-center gap-2 w-full px-4"
-          onClick={() => moveToDetail(pickedRecipe.id)}
+          key={weeklyRecipe.youbi}
+          className="flex flex-col items-center justify-center gap-2 w-full px-4 mt-8"
         >
-          <div className="flex items-center justify-space-between gap-4 border-[1px] border-gray-300 rounded-md p-1 w-full">
+          <p className="text-2xl text-gray-500 font-bold text-left mb-1">
+            {weeklyRecipe.youbi}
+          </p>
+          <div
+            onClick={() => moveToDetail(weeklyRecipe.recipe?.id ?? 0)} //nullやundefinedの場合は0を返す（idがnumber型のため）
+            className="flex items-center justify-space-between gap-4 w-full px-4 border-[2px] shadow-md border-gray-300 rounded-md py-2"
+          >
             <ImageOgp
-              url={pickedRecipe.source || ""}
-              className="w-36 h-24 flex-shrink-0 ml-2"
+              url={weeklyRecipe.recipe?.source || ""}
+              className="w-36 h-24 flex-shrink-0 border-[1px] border-gray-300 rounded-md"
             />
             <div className="flex flex-col items-start justify-center gap-2">
-              <span className="text-base font-bold border-b-[2px] border-gray-300">
-                {pickedRecipe.category}
+              <span className="text-base border-b-[2px] border-gray-300">
+                {weeklyRecipe.recipe?.category}
               </span>
-              <span className="text-sm font-bold">{pickedRecipe.title}</span>
+              <span className="text-sm font-bold">
+                {weeklyRecipe.recipe?.title}
+              </span>
             </div>
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };
