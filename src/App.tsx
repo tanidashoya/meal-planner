@@ -41,7 +41,13 @@ export function ScrollToTop() {
 
   useEffect(() => {
     // ページ遷移のたびに先頭に戻す
-    window.scrollTo(0, 0);
+    // Layout.tsxのmain要素がスクロールコンテナ
+    const mainElement = document.querySelector("main");
+    if (mainElement) {
+      mainElement.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
 
   return null;
@@ -119,11 +125,9 @@ function App() {
     );
   }
 
+  //id="app"：overflow-y-autoがありLaypoutコンポーネントのmain要素と連動して動いていた
   return (
-    <div
-      id="app"
-      className="h-[calc(var(--vh)*100)] overflow-y-auto overscroll-contain"
-    >
+    <div id="app" className="h-[calc(var(--vh)*100)] overscroll-contain">
       <BrowserRouter>
         <ToastContainer
           position="top-right"

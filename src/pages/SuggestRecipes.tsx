@@ -4,26 +4,12 @@ import { useMemo } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageOgp } from "../components/ImageOgp";
+import { useSuggestRecipesStore } from "../modules/suggestRecipes/suggest-recipes.state";
 
 export const SuggestRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
-  const youbilist = [
-    "月曜日",
-    "火曜日",
-    "水曜日",
-    "木曜日",
-    "金曜日",
-    "土曜日",
-    "日曜日",
-  ];
-
-  type WeeklyRecipes = {
-    youbi: string;
-    recipe: Recipe | null;
-  };
-
-  const [weeklyRecipes, setWeeklyRecipes] = useState<WeeklyRecipes[]>([]);
+  const { suggestRecipes, setSuggestRecipes } = useSuggestRecipesStore();
 
   const navigate = useNavigate();
 
@@ -31,14 +17,6 @@ export const SuggestRecipes = () => {
     navigate(`/recipes/${id}`);
   };
 
-  //カテゴリの重み付け
-  const categoryWeights: Record<string, number> = {
-    肉料理: 4,
-    魚料理: 3,
-    "丼・ルー料理": 2,
-    麺料理: 1,
-    その他: 1,
-  };
   //Recorrd:Record<Keys, Type> は TypeScript が提供しているユーティリティ型で、
   //指定したキー集合（Keys）をすべて同じ型（Type）の値にマッピングしたオブジェクト型を表す
   //Object.entries:オブジェクトを[キー, 値]のペアの配列に変換するメソッド⇒[["肉料理",[{id:1,title:肉料理1,・・・},{id:2,title:肉料理2,・・・}]],["魚料理",[{id:3,title:魚料理1,・・・},{id:4,title:魚料理2,・・・}]],・・・]
@@ -50,81 +28,38 @@ export const SuggestRecipes = () => {
   //return acc：累積オブジェクトを返さないと次のループに引き継がれないため必須
   const groupedRecipes = useMemo(
     () =>
-      Object.entries(
-        recipes.reduce<Record<string, Recipe[]>>((acc, recipe) => {
-          const category = recipe.category ?? "未分類";
-          const next = acc[category] ?? [];
-          acc[category] = [...next, recipe];
-          return acc;
-        }, {})
-      ),
+      recipes.reduce<Record<string, Recipe[]>>((acc, recipe) => {
+        const category = recipe.category ?? "未分類";
+        const next = acc[category] ?? [];
+        acc[category] = [...next, recipe];
+        return acc;
+      }, {}),
     [recipes]
   );
 
-  //重み付けされたレシピを選ぶ関数
-  //第一引数:カテゴリ別のレシピをためていくオブジェクト⇒groupedRecipes
-  //第二引数:カテゴリの重み付け⇒categoryWeights
-  const pickWeightedRecipe = (
-    groups: [string, Recipe[]][],
-    weights: Record<string, number>
-  ): Recipe | null => {
-    //: Recipe | null は戻り値の型を指定している
-    // 重みが正で、かつレシピが残っているカテゴリだけを対象にする
-    //小物の重みは設定しないのでcandidatesには含まれない
-    const candidates = groups
-      .map(([category, recipes]) => ({
-        category,
-        recipes,
-        weight: weights[category] ?? 0,
-      }))
-      .filter(({ weight, recipes }) => weight > 0 && recipes.length > 0); //filterは重みがゼロ以下のカテゴリや、レシピ配列が空のカテゴリを除外するため
-
-    if (candidates.length === 0) return null; //candidatesが空の場合(レシピがない場合)はnullを返す
-
-    //アロー関数の省略記法で、波括弧 {} を書かずに式だけ置くと、その式の値が自動的に返り値になります
-    //各カテゴリの重みの合計を算出（初期値は0）
-    const totalWeight = candidates.reduce((sum, { weight }) => sum + weight, 0);
-
-    //Math.random()は0以上1未満の乱数を生成
-    //thresholdは0以上totalWeight未満の乱数
-    let threshold = Math.random() * totalWeight;
-
-    //重みづけに応して、どのカテゴリからレシピを一件選ぶかを決める
-    for (const { recipes, weight } of candidates) {
-      //Math.floorは小数点以下を切り捨てるメソッド
-      //指定されたカテゴリのrecipesの中からランダムに一件選ぶ
-      if (threshold < weight) {
-        const randomIndex = Math.floor(Math.random() * recipes.length);
-        return recipes[randomIndex];
-      }
-      threshold -= weight;
+  //渡されたリストから2つ選ぶ
+  const pickTwoRadom = (Recipes: Recipe[]): Recipe[] => {
+    const RecipesArray = [...Recipes];
+    //配列の最後の要素から順にランダムに選ぶ
+    //Math.floorは小数点切り捨て
+    //Math.Rondomは0以上1未満のランダムな小数を返す
+    //jは0からiまでのランダムな整数を返す
+    for (let i = RecipesArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * i);
+      [RecipesArray[i], RecipesArray[j]] = [RecipesArray[j], RecipesArray[i]];
     }
-
-    return null; // 理論上ここには来ないが保険
+    //配列の最初の2つを返す
+    return RecipesArray.slice(0, 2);
   };
 
-  //関数内で定義した変数は、その関数のスコープにだけ有効
-  //だからuseStateで保持する必要がある
-  //この関数を引数に渡されたweeklyRecipesを更新する関数に変更する。
-  // const handlePickRecipe = () => {
-  //   //重みづけ通りにランダムにレシピを選ぶ
-  //   const recipe = pickWeightedRecipe(groupedRecipes, categoryWeights);
-  //   if (!recipe) {
-  //     toast.info("抽選可能なレシピがありません");
-  //     return;
-  //   }
-  //   setPickedRecipe(recipe);
-  // };
-
-  const handlePicksWeeklyRecipes = () => {
-    setWeeklyRecipes([]);
-    for (const youbi of youbilist) {
-      const weeklyRecipe: WeeklyRecipes = {
-        youbi,
-        recipe: pickWeightedRecipe(groupedRecipes, categoryWeights),
-      };
-      // setWeeklyRecipes([...weeklyRecipes, weeklyRecipe]);
-      setWeeklyRecipes((prev) => [...prev, weeklyRecipe]); //関数型アップデートとして書かないとprevが更新されない
+  const handlePicksCategoryRecipes = () => {
+    setSuggestRecipes([]);
+    const groupedRecipesObject = Object.entries(groupedRecipes);
+    for (const [category, Recipes] of groupedRecipesObject) {
+      //カテゴリ別に2つのレシピをランダムに選ぶ
+      const pickedRecipes = pickTwoRadom(Recipes);
+      //pickedRecipesListにカテゴリと選ばれたレシピを追加していく（関数型アップデート）
+      setSuggestRecipes((prev) => [...prev, [category, pickedRecipes]]);
     }
   };
 
@@ -135,37 +70,38 @@ export const SuggestRecipes = () => {
           Myレシピから提案
         </p>
         <button
-          onClick={handlePicksWeeklyRecipes}
+          onClick={handlePicksCategoryRecipes}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
           レシピ出力
         </button>
       </div>
-      {weeklyRecipes.map((weeklyRecipe) => (
+      {suggestRecipes.map(([category, pickedRecipes]) => (
         <div
-          key={weeklyRecipe.youbi}
+          key={category}
           className="flex flex-col items-center justify-center gap-2 w-full px-4 mt-8"
         >
           <p className="text-2xl text-gray-500 font-bold text-left mb-1">
-            {weeklyRecipe.youbi}
+            {category}
           </p>
-          <div
-            onClick={() => moveToDetail(weeklyRecipe.recipe?.id ?? 0)} //nullやundefinedの場合は0を返す（idがnumber型のため）
-            className="flex items-center justify-space-between gap-4 w-full px-4 border-[2px] shadow-md border-gray-300 rounded-md py-2"
-          >
-            <ImageOgp
-              url={weeklyRecipe.recipe?.source || ""}
-              className="w-36 h-24 flex-shrink-0 border-[1px] border-gray-300 rounded-md"
-            />
-            <div className="flex flex-col items-start justify-center gap-2">
-              <span className="text-base border-b-[2px] border-gray-300">
-                {weeklyRecipe.recipe?.category}
-              </span>
-              <span className="text-sm font-bold">
-                {weeklyRecipe.recipe?.title}
-              </span>
+          {pickedRecipes.map((pickedRecipe) => (
+            <div
+              key={pickedRecipe.id}
+              onClick={() => moveToDetail(pickedRecipe.id ?? 0)}
+              className="flex items-center justify-space-between gap-4 w-full px-4 border-[2px] shadow-md border-gray-300 rounded-md py-2"
+            >
+              <ImageOgp
+                url={pickedRecipe.source || ""}
+                className="w-36 h-24 flex-shrink-0 border-[1px] border-gray-300 rounded-md"
+              />
+              <div className="flex flex-col items-start justify-center gap-2">
+                <span className="text-base border-b-[2px] border-gray-300">
+                  {pickedRecipe.category}
+                </span>
+                <span className="text-sm font-bold">{pickedRecipe.title}</span>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       ))}
     </div>
