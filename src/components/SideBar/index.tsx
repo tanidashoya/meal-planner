@@ -194,7 +194,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         <Button
           variant="outline"
           className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/weekly-recipes")}
+          onClick={() => navigate("/suggest-recipes")}
         >
           <img
             src={weeklyRecipesIcon}

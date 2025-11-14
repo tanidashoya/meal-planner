@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageOgp } from "../components/ImageOgp";
 
-export const WeeklyRecipes = () => {
+export const SuggestRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
   const youbilist = [

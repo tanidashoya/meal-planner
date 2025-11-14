@@ -19,7 +19,7 @@ import { MatchRecipe } from "./pages/MatchRecipe";
 import { OutSideSite } from "./pages/OutSideSite";
 import { UnratedRecipes } from "./pages/UnratedRecipes";
 import { AllRecipes } from "./pages/AllRecipes";
-import { WeeklyRecipes } from "./pages/WeeklyRecipes";
+import { SuggestRecipes } from "./pages/SuggestRecipes";
 
 function useViewportHeightFix() {
   useEffect(() => {
@@ -149,7 +149,7 @@ function App() {
             <Route path="/outside-site" element={<OutSideSite />} />
             <Route path="/unrated-recipes" element={<UnratedRecipes />} />
             <Route path="/all-recipes" element={<AllRecipes />} />
-            <Route path="/weekly-recipes" element={<WeeklyRecipes />} />
+            <Route path="/suggest-recipes" element={<SuggestRecipes />} />
           </Route>
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
