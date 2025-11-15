@@ -106,18 +106,14 @@ export const Picks = () => {
             }}
           >
             <div>
-              <button
-                onClick={() =>
-                  window.open(
-                    `${officialRecipe.url}`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  )
-                }
+              <a
+                href={officialRecipe.url || ""}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block w-full p-4 focus:!outline-none border !border-gray-300 !shadow-sm overflow-hidden rounded-lg hover:bg-gray-50"
               >
                 <div className="flex flex-col items-center justify-center gap-2 mb-4 w-full p-0">
-                  <span className="block break-all w-full text-left text-base font-bold">
+                  <span className="block break-all w-full text-left text-base font-bold text-gray-700">
                     {officialRecipe.title}
                   </span>
                   <span className="block text-blue-500 font-medium text-sm truncate w-full">
@@ -128,7 +124,7 @@ export const Picks = () => {
                   url={officialRecipe.url || ""}
                   className="w-full h-28 my-0"
                 />
-              </button>
+              </a>
             </div>
             {/* Myレシピに追加ボタン(押したらisAddingRecipeの状態でofficialRecipe.idをキーにしてtrueにする) */}
             {/* その状態（オブジェクト）内に追加したIDのキーがtru担っていたら追加しました */}

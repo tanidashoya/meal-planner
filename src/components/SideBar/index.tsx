@@ -71,6 +71,32 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
   // 以下の3つの条件のうち どれか1つでも falsy（=偽） ならreturn; が実行されて「後続の処理をスキップ」する
   if (!currentUser || !currentUser.email || !currentUser.userName) return;
 
+  // サイドバーが開いたときに履歴に状態を追加
+  useEffect(() => {
+    //window.history.pushState(state, title, url)は履歴に状態を追加するメソッド
+    //window.history.pushState() が履歴を追加するのは、ブラウザ内部にある「セッション履歴（Session History）」
+    if (open) {
+      window.history.pushState({ sidebarOpen: true }, "");
+    }
+  }, [open]);
+
+  //サイドバーが開いている時にはスマホでもどるボタンを押したときには優先的にサイドバーが閉じるようにする
+  useEffect(() => {
+    // 戻るボタンが押されたときの処理
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state?.sidebarOpen) {
+        // サイドバーが開いている場合は閉じる
+        setOpen(false);
+      }
+    };
+
+    //popstateイベントはブラウザの進む・戻るボタンが押されたときに発生するイベント
+    window.addEventListener("popstate", handlePopState);
+    //これはコンポーネントがアンマウントしたときにイベントが残らないように削除しているクリーンアップ関数
+    return () => window.removeEventListener("popstate", handlePopState);
+    //setOpenは通常変更されることはないがuseEffect内で使われている値や関数は依存配列に含めることが推奨（Eslintにもかからない）
+  }, [setOpen]);
+
   return (
     //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ
     //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒index.cssで定義されている
@@ -133,6 +159,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           variant="outline"
           className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
           onClick={() => navigate("/picks")}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            navigate("/picks");
+          }}
         >
           <img src={randomPicksIcon} alt="picks icon" className="size-11" />
         </Button>
@@ -147,6 +177,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             variant="outline"
             className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
             onClick={() => navigate("/match-recipe")}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              navigate("/match-recipe");
+            }}
           >
             <img
               src={matchRecipeIcon}
@@ -160,6 +194,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           variant="outline"
           className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
           onClick={() => navigate("/outside-site")}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            navigate("/outside-site");
+          }}
         >
           <img
             src={outsideSiteIcon}
@@ -173,6 +211,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             variant="outline"
             className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
             onClick={() => navigate("/")}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}
           >
             <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
           </Button>
@@ -180,6 +222,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             variant="outline"
             className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
             onClick={() => navigate("/star-sort")}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              navigate("/star-sort");
+            }}
           >
             <img src={tasteIcon} alt="taste icon" className="size-8" />
           </Button>
@@ -187,6 +233,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             variant="outline"
             className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
             onClick={() => navigate("/time-sort")}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              navigate("/time-sort");
+            }}
           >
             <img src={watchIcon} alt="watch icon" className="size-8" />
           </Button>
@@ -195,6 +245,10 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           variant="outline"
           className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
           onClick={() => navigate("/suggest-recipes")}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            navigate("/suggest-recipes");
+          }}
         >
           <img
             src={weeklyRecipesIcon}

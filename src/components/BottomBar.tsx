@@ -9,12 +9,21 @@ import allIcon from "@/assets/all_recipes.webp";
 export const BottomBar = () => {
   const navigate = useNavigate();
 
+  //onTouchStart={(e) => {
+  //  e.preventDefault();
+  //  navigate("/");
+  //}}
+  //これでスマホでタッチしたときにブラウザのデフォルトの動作を防止して、コンポーネントの遷移を可能にしている
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-gray-200 bg-white w-full flex justify-center items-center gap-0 px-2 h-16 pb-1">
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
         onClick={() => navigate("/")}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          navigate("/");
+        }}
       >
         <PlusCircle className="size-7 text-gray-500" strokeWidth={1.5} />
         <span className="text-gray-500 text-[11px]">レシピ追加</span>
@@ -23,6 +32,10 @@ export const BottomBar = () => {
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none  !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
         onClick={() => navigate("/all-recipes")}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          navigate("/all-recipes");
+        }}
       >
         <img src={allIcon} alt="all icon" className="size-7" />
         <span className="text-gray-500 text-[11px]">レシピ一覧</span>
@@ -31,6 +44,10 @@ export const BottomBar = () => {
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
         onClick={() => navigate("/star-sort")}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          navigate("/star-sort");
+        }}
       >
         <img src={tasteIcon} alt="taste icon" className="size-7" />
         <span className="text-gray-500 text-[11px]">おいしさ</span>
@@ -39,6 +56,10 @@ export const BottomBar = () => {
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
         onClick={() => navigate("/time-sort")}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          navigate("/time-sort");
+        }}
       >
         <img src={watchIcon} alt="watch icon" className="size-7" />
         <span className="text-gray-500 text-[11px]">調理時間</span>
@@ -47,6 +68,10 @@ export const BottomBar = () => {
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
         onClick={() => navigate("/unrated-recipes")}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          navigate("/unrated-recipes");
+        }}
       >
         <img src={unratedIcon} alt="unrated icon" className="size-7" />
         <span className="text-gray-500 text-[11px]">未評価</span>

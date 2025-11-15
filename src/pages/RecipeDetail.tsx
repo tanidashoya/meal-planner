@@ -13,6 +13,8 @@ import { ImageOgp } from "../components/ImageOgp";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SelectCategory } from "../components/SelectCategory";
+import { Button } from "../components/ui/button";
+// import lineIcon from "../assets/line_icon.png";
 
 export const RecipeDetail = () => {
   const navigate = useNavigate();
@@ -106,6 +108,14 @@ export const RecipeDetail = () => {
     }
   };
 
+  const shareUrl =
+    targetRecipe?.source && isURL(targetRecipe.source)
+      ? targetRecipe.source
+      : "";
+  const lineShareUrl = shareUrl
+    ? `https://line.me/R/msg/text/?${encodeURIComponent(shareUrl)}`
+    : "";
+
   //レシピが見つからない場合、データベースから直接取得
   //ここでは状態変化させない
   useEffect(() => {
@@ -138,7 +148,7 @@ export const RecipeDetail = () => {
 
   //Numberを付けるのはidがstring型のため
   return (
-    <div className="flex flex-col items-center justify-center px-4 h-full max-h-full overflow-hidden">
+    <div className="flex flex-col items-center justify-center px-4 mt-8 h-full max-h-full overflow-hidden">
       {targetRecipe === undefined ? (
         <div className="text-center">
           <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
@@ -155,44 +165,66 @@ export const RecipeDetail = () => {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center w-full">
-          <ImageOgp
-            url={targetRecipe.source || ""}
-            className="w-full h-32 mb-5"
-          />
-          <div className="flex justify-center w-full gap-2">
+          <a
+            href={targetRecipe.source || ""}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="flex items-center justify-center gap-2 w-full border-[1px] shadow-sm border-gray-300 rounded-lg px-2">
+              <ImageOgp
+                url={targetRecipe.source || ""}
+                className="w-45 h-28 flex-shrink-0 py-1"
+              />
+              {/* asChild: Buttonコンポーネントの子要素としてaタグを使用する */}
+              {/* asChild は、Buttonコンポーネントが自身のDOM要素（<button>）をレンダリングせず、子要素（この場合は <a>）をそのまま使用するためのプロパティ */}
+              {/* flex-1: 親要素の残りのスペースを埋める */}
+              {/* min-w-0: 最小幅を0に設定 */}
+              <div className="flex flex-col items-start justify-center gap-2 min-w-0 flex-1">
+                {isURL(targetRecipe.source) ? (
+                  <span className="text-blue-500 text-sm lg:text-base break-all line-clamp-3 w-full">
+                    {targetRecipe.source}
+                  </span>
+                ) : (
+                  <span className="text-gray-700 text-base lg:text-2xl">
+                    {targetRecipe.source}
+                  </span>
+                )}
+              </div>
+            </div>
+          </a>
+          <div className="flex justify-start items-center w-full gap-4 mt-2">
             <SelectCategory
               selectedCategory={selectedCategory}
               setSelectedCategory={handleChangeCategory}
               isSelectOpen={isSelectOpen}
               setIsSelectOpen={setIsSelectOpen}
-              className="w-full"
+              className={"flex-1"}
             />
-
+            {shareUrl && (
+              <Button
+                variant="outline"
+                className="!px-4 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none bg-[#00C300] !text-white font-bold"
+                asChild
+              >
+                <a
+                  href={lineShareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LINEで共有
+                </a>
+              </Button>
+            )}
+          </div>
+          <div className="border-b-2 mb-3 py-2 w-full lg:w-1/2 text-center lg:mb-12">
             <input
               type="text"
               value={newTitle}
-              className="border rounded-md pl-2 text-left text-lg lg:text-3xl w-4/5 font-['Inter'] truncate font-medium text-gray-700 lg:mb-8 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500"
+              className="w-full border-[1px] border-gray-300 rounded-md pl-2 py-1 text-left text-lg lg:text-3xl font-['Inter'] font-medium text-gray-700 lg:mb-8 focus:!outline-none focus-visible:!outline-none focus:!ring-1 focus:!ring-blue-500"
               onChange={handleChangeTitle}
               onKeyDown={handleKeyDown}
               onBlur={handleUpdateTitle} // ← フォーカスが外れたら発火
             />
-          </div>
-          <div className="flex  border-b-2 mb-3 py-2 w-full lg:w-1/2 text-center lg:mb-12">
-            <span className="text-sm">参照：</span>
-            {isURL(targetRecipe.source) ? (
-              <a
-                href={targetRecipe.source || ""}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 text-sm lg:text-base truncate w-4/5 mx-auto lg:w-full"
-              >
-                {targetRecipe.source}
-              </a>
-            ) : (
-              <span className="text-gray-700 text-base lg:text-2xl break-all">
-                {targetRecipe.source}
-              </span>
-            )}
           </div>
           <div className="flex flex-col items-center justify-center gap-2 lg:gap-8 lg:w-full">
             <div className="flex flex-col items-center justify-center shadow-sm border rounded-lg px-4 pt-1 pb-0 lg:px-12 lg:py-4">
