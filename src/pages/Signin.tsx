@@ -25,7 +25,7 @@ export function Signin() {
       <span className="text-4xl font-bold mb-8">ログイン</span>
       <div className="flex flex-col items-center justify-center gap-y-2 border border-gray-300 rounded-md p-6 w-[90%] md:w-[480px]">
         <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
-          <span className="text-lg">Eメールアドレス：</span>
+          <span className="text-base font-bold">Eメールアドレス：</span>
           <input
             type="email"
             placeholder="メールアドレスを入力"
@@ -35,7 +35,7 @@ export function Signin() {
           />
         </div>
         <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
-          <span className="text-lg">パスワード：</span>
+          <span className="text-base font-bold">パスワード：</span>
           <input
             type="password"
             placeholder="パスワードを入力"
@@ -49,14 +49,14 @@ export function Signin() {
           onClick={handleSignIn}
           className="w-60 p-2 border border-gray-300 rounded-md bg-blue-200 mb-8 mt-8 disabled:bg-gray-100 disabled:!cursor-not-allowed disabled:!border-gray-200"
         >
-          <span className="text-lg">ログイン</span>
+          <span className="text-base">ログイン</span>
         </button>
-        <span className="text-lg">
+        <span className="text-base">
           アカウントをお持ちでない方は
           <Link to="/signup">
-            <span className="text-center text-lg hover:border-b hover:border-blue-300 ml-2 transition-all duration-200 mt-2">
+            <p className="text-center text-base hover:border-b hover:border-blue-300 ml-2 transition-all duration-200 mt-2">
               アカウントを新規作成
-            </span>
+            </p>
           </Link>
         </span>
       </div>

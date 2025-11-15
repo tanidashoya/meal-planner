@@ -34,7 +34,7 @@ export function Signup() {
       <span className="text-4xl font-bold mb-8">新規作成</span>
       <div className="flex flex-col items-center justify-center gap-y-2 border border-gray-300 rounded-md p-6 w-[90%] md:w-[480px]">
         <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
-          <span className="text-lg">名前：</span>
+          <span className="text-base font-bold">名前：</span>
           <input
             type="name"
             placeholder="名前を入力"
@@ -44,7 +44,7 @@ export function Signup() {
           />
         </div>
         <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
-          <span className="text-lg">Eメールアドレス：</span>
+          <span className="text-base font-bold">Eメールアドレス：</span>
           <input
             type="email"
             placeholder="メールアドレスを入力"
@@ -54,7 +54,7 @@ export function Signup() {
           />
         </div>
         <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
-          <span className="text-lg">パスワード：</span>
+          <span className="text-base font-bold">パスワード：</span>
           <input
             type="password"
             placeholder="パスワードを入力"
@@ -68,13 +68,13 @@ export function Signup() {
           onClick={() => handleSignUp(name, email, password)}
           className="w-60 p-2 border border-gray-300 rounded-md bg-blue-200 mb-6 mt-6 disabled:bg-gray-100 disabled:!cursor-not-allowed disabled:!border-gray-200"
         >
-          <span className="text-lg">新規作成</span>
+          <span className="text-base">新規作成</span>
         </button>
-        <span className="text-lg">
+        <span className="text-base">
           アカウントを既にお持ちの方は
           <Link to="/signin">
-            <p className="text-center text-lg hover:border-b hover:border-blue-300 ml-2 transition-all duration-200 mt-2">
-              アカウントを新規作成
+            <p className="text-center text-base hover:border-b hover:border-blue-300 ml-2 transition-all duration-200 mt-2">
+              ログイン画面へ
             </p>
           </Link>
         </span>
