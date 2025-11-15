@@ -116,6 +116,33 @@ export const RecipeDetail = () => {
     ? `https://line.me/R/msg/text/?${encodeURIComponent(shareUrl)}`
     : "";
 
+  // LINE共有のハンドラー
+  const handleShareToLine = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!shareUrl) return;
+
+    try {
+      // navigator.shareが利用可能な場合（主にモバイルブラウザ）
+      if (navigator.share) {
+        await navigator.share({
+          title: targetRecipe?.title || "",
+          text: targetRecipe?.title || "",
+          url: shareUrl,
+        });
+      } else {
+        // フォールバック: LINE URLを直接開く
+        window.open(lineShareUrl, "_blank", "noopener,noreferrer");
+      }
+    } catch (error) {
+      // ユーザーが共有をキャンセルした場合など
+      if (error instanceof Error && error.name !== "AbortError") {
+        console.error("共有エラー:", error);
+        // エラー時もフォールバックとしてLINE URLを開く
+        window.open(lineShareUrl, "_blank", "noopener,noreferrer");
+      }
+    }
+  };
+
   //レシピが見つからない場合、データベースから直接取得
   //ここでは状態変化させない
   useEffect(() => {
@@ -204,15 +231,9 @@ export const RecipeDetail = () => {
               <Button
                 variant="outline"
                 className="!px-4 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none bg-[#00C300] !text-white font-bold"
-                asChild
+                onClick={handleShareToLine}
               >
-                <a
-                  href={lineShareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LINEで共有
-                </a>
+                LINEで共有
               </Button>
             )}
           </div>
