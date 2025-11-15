@@ -58,6 +58,8 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
   //open, setOpenが変更されたらuseEffectが実行される
   //openの値が変化してuseEffectが再実行されることでイベントリスナーが再設定されてopenの正しい値を参照するようになる
   useEffect(() => {
+    //早期 return（ロジック上の return）は useEffect の中に入れる必要がある。
+    if (!currentUser || !currentUser.email || !currentUser.userName) return;
     const handleOpenSideBar = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
@@ -66,22 +68,23 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     };
     window.addEventListener("keydown", handleOpenSideBar);
     return () => window.removeEventListener("keydown", handleOpenSideBar);
-  }, [open, setOpen]);
+  }, [setOpen, currentUser]);
 
   // 以下の3つの条件のうち どれか1つでも falsy（=偽） ならreturn; が実行されて「後続の処理をスキップ」する
-  if (!currentUser || !currentUser.email || !currentUser.userName) return;
 
   // サイドバーが開いたときに履歴に状態を追加
   useEffect(() => {
+    if (!currentUser || !currentUser.email || !currentUser.userName) return;
     //window.history.pushState(state, title, url)は履歴に状態を追加するメソッド
     //window.history.pushState() が履歴を追加するのは、ブラウザ内部にある「セッション履歴（Session History）」
     if (open) {
       window.history.pushState({ sidebarOpen: true }, "");
     }
-  }, [open]);
+  }, [open, currentUser]);
 
   //サイドバーが開いている時にはスマホでもどるボタンを押したときには優先的にサイドバーが閉じるようにする
   useEffect(() => {
+    if (!currentUser || !currentUser.email || !currentUser.userName) return;
     // 戻るボタンが押されたときの処理
     const handlePopState = (event: PopStateEvent) => {
       if (event.state?.sidebarOpen) {
@@ -95,7 +98,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     //これはコンポーネントがアンマウントしたときにイベントが残らないように削除しているクリーンアップ関数
     return () => window.removeEventListener("popstate", handlePopState);
     //setOpenは通常変更されることはないがuseEffect内で使われている値や関数は依存配列に含めることが推奨（Eslintにもかからない）
-  }, [setOpen]);
+  }, [setOpen, currentUser]);
 
   return (
     //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ
@@ -133,8 +136,8 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
               {/* flex-shrink-0がなければレシピが増えた際にサイドバーのサイズが縮小されてそのあとRecipeListがスクロール可能になる */}
               <div className="flex-shrink-0">
                 <UserItem
-                  userEmail={currentUser.email}
-                  userName={currentUser.userName}
+                  userEmail={currentUser?.email ?? ""}
+                  userName={currentUser?.userName ?? ""}
                   signout={handleSignOut}
                 />
 
