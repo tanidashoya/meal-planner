@@ -76,7 +76,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     } else {
       setOpen(false);
     }
-  }, [location.search]);
+  }, [location.search, setOpen]);
 
   return (
     //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ

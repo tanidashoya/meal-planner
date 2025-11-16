@@ -161,7 +161,7 @@ export const RecipeDetail = () => {
           );
           //LayOutを経由した場合は重複するように思えるがsetメソッドで重複を排除している
           recipeStore.set(recipes);
-        } catch (error) {
+        } catch {
           toast.error("レシピの取得エラーが発生しました");
         } finally {
           setIsLoading(false);
