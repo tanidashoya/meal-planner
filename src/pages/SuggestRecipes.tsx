@@ -16,15 +16,6 @@ export const SuggestRecipes = () => {
     navigate(`/recipes/${id}`);
   };
 
-  //Recorrd:Record<Keys, Type> は TypeScript が提供しているユーティリティ型で、
-  //指定したキー集合（Keys）をすべて同じ型（Type）の値にマッピングしたオブジェクト型を表す
-  //Object.entries:オブジェクトを[キー, 値]のペアの配列に変換するメソッド⇒[["肉料理",[{id:1,title:肉料理1,・・・},{id:2,title:肉料理2,・・・}]],["魚料理",[{id:3,title:魚料理1,・・・},{id:4,title:魚料理2,・・・}]],・・・]
-  //acc：カテゴリ別のレシピをためていくオブジェクト（累積オブジェクト）⇒ {{肉料理:[{id:1,title:肉料理1,・・・},{id:2,title:肉料理2,・・・}]},{魚料理:[{id:3,title:魚料理1,・・・},{id:4,title:魚料理2,・・・}]},・・・}
-  //reduce:配列を1つの値にまとめるためのメソッド(繰り返し処理)
-  //reduce第二引数が初期値
-  //next:これまで同じカテゴリで集めてきたレシピの配列
-  //...next:これまで同じカテゴリで集めてきたレシピの配列を展開
-  //return acc：累積オブジェクトを返さないと次のループに引き継がれないため必須
   const groupedRecipes = useMemo(
     () =>
       recipes.reduce<Record<string, Recipe[]>>((acc, recipe) => {
@@ -41,7 +32,6 @@ export const SuggestRecipes = () => {
     const RecipesArray = [...Recipes];
     //配列の最後の要素から順にランダムに選ぶ
     //Math.floorは小数点切り捨て
-    //Math.Rondomは0以上1未満のランダムな小数を返す
     //jは0からiまでのランダムな整数を返す
     for (let i = RecipesArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * i);
@@ -53,9 +43,8 @@ export const SuggestRecipes = () => {
 
   const handlePicksCategoryRecipes = () => {
     setSuggestRecipes([]);
-    const groupedRecipesObject = Object.entries(groupedRecipes);
-    for (const [category, Recipes] of groupedRecipesObject) {
-      //カテゴリ別に2つのレシピをランダムに選ぶ
+    const groupedRecipesArray = Object.entries(groupedRecipes);
+    for (const [category, Recipes] of groupedRecipesArray) {
       const pickedRecipes = pickTwoRadom(Recipes);
       //pickedRecipesListにカテゴリと選ばれたレシピを追加していく（関数型アップデート）
       setSuggestRecipes((prev) => [...prev, [category, pickedRecipes]]);
@@ -90,6 +79,7 @@ export const SuggestRecipes = () => {
               className="flex items-center justify-space-between gap-4 w-full px-4 border-[2px] shadow-md border-gray-300 rounded-md py-2"
             >
               <ImageOgp
+                // sourceは空文字の可能性もある。一応空文字で確定的・安全に扱うためにデフォルト値を空文字にしておく
                 url={pickedRecipe.source || ""}
                 className="w-36 h-24 flex-shrink-0 border-[1px] border-gray-300 rounded-md"
               />

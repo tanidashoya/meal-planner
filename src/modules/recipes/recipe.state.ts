@@ -4,9 +4,12 @@ import { recipeRepository } from "./recipe.repository";
 import { toast } from "react-toastify";
 
 const recipeAtom = atom<Recipe[]>([]);
+const isLoadingAtom = atom<boolean>(false);
 
 export const useRecipeStore = () => {
   const [recipes, setRecipes] = useAtom(recipeAtom);
+  //レシピの読み込み中かどうかを管理する状態（ローディング状態をグローバルステートにしておくことで、他のコンポーネントでも使用できるようにする）
+  const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
 
   //グローバルステートのレシピを更新する
   const set = (newRecipes: Recipe[]) => {
@@ -67,6 +70,8 @@ export const useRecipeStore = () => {
 
   return {
     getAll: () => recipes,
+    isLoading,
+    setLoading: (loading: boolean) => setIsLoading(loading),
     set,
     delete: deleteRecipe,
     getOne,

@@ -67,22 +67,21 @@ export const AllRecipes = () => {
   //   }
   // };
 
+  //レシピの読み込み中かどうかを管理するグローバルステートがtrueの場合はローディング画面を表示する
+  if (recipesStore.isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
     <Card className="border-0 shadow-none m-auto lg:w-3/5 w-full h-full pb-8 mt-12 gap-3">
       <CardContent className="p-2 pb-28">
         <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-8 text-center">
           Myレシピ一覧（全{recipes.length}件）
         </h2>
-        {/* <div className="flex justify-center w-full gap-2 mb-4 items-center">
-          <SelectCategory
-            selectedCategory={selectedCategory}
-            setSelectedCategory={handleChangeCategory}
-            isSelectOpen={isSelectOpen}
-            setIsSelectOpen={setIsSelectOpen}
-            className="w-[176px]"
-            showAllOption={true}
-          />
-        </div> */}
 
         <div className="flex items-center justify-center gap-2 mb-8">
           <input
@@ -93,12 +92,7 @@ export const AllRecipes = () => {
             className="border border-gray-400 rounded-md py-2 px-4 gap-6 lg:p-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        {/* <RatingItem
-          recipes={filteredRecipes}
-          deleteRecipe={deleteRecipe}
-          className="border-2 w-full border-gray-300 rounded-md py-7 px-7 gap-6 lg:p-10"
-        /> */}
-        {/* Object.entries(categoryRecipes) は categoryRecipes オブジェクトを [key, value] の配列に変換する関数。 */}
+
         <Swiper
           slidesPerView={1.1}
           centeredSlides={true}

@@ -35,12 +35,13 @@ export const Layout = () => {
   //recipe.repository.tsが保存変更された場合はcurrentUserStore.currentUserが変更されない（Layoutコンポーネントは再マウントされない）
   // ⇒ そのためrecipeStoreが空になる
   useEffect(() => {
-    //すべてのレシピを取得（する必要がない気がする・・・）
-    //最初はカテゴリーだけの表示でいいのでは？
+    //すべてのレシピを取得
     //検索ページで使用する
     const fetchRecipes = async () => {
       if (!currentUserStore.currentUser) return;
       try {
+        //レシピの読み込み中を管理する状態をtrueにする（グローバスステート）
+        recipeStore.setLoading(true);
         const recipes = await recipeRepository.findAll(
           currentUserStore.currentUser.id
         );
@@ -55,6 +56,8 @@ export const Layout = () => {
         toast.error(
           error instanceof Error ? error.message : "不明なエラーが発生しました"
         );
+      } finally {
+        recipeStore.setLoading(false);
       }
     };
 

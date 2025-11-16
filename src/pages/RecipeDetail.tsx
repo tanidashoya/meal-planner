@@ -1,5 +1,3 @@
-//レジピの詳細画面を実装する
-
 import { useParams } from "react-router-dom";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { TastePoint } from "../components/TastePoint";
@@ -14,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SelectCategory } from "../components/SelectCategory";
 import { Button } from "../components/ui/button";
-// import lineIcon from "../assets/line_icon.png";
 
 export const RecipeDetail = () => {
   const navigate = useNavigate();
@@ -22,19 +19,20 @@ export const RecipeDetail = () => {
   const recipeStore = useRecipeStore();
   const currentUserStore = useCurrentUserStore();
   const recipes = recipeStore.getAll();
+  //ローディング中かどうかを管理する状態（このコンポーネントで取得しなければならないときはtrueにする）
+  const [isLoading, setIsLoading] = useState(false);
   //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
   const targetRecipe = recipes.filter((recipe) => recipe.id == Number(id))[0];
   //Reactの制御コンポーネントでは、valueプロパティがnullやundefinedの場合はエラーになるため、空文字列として扱う
-  const [newTitle, setNewTitle] = useState(targetRecipe?.title || "");
+  const [newTitle, setNewTitle] = useState(targetRecipe?.title ?? "");
   const imgTaste = tasteIcon;
   const tasteWord = ["悪くない", "ふつう", "いい感じ", "うまい！", "最高！！"];
   const imgWatch = watchIcon;
   const watchWord = ["らくちん", "かんたん", "ふつう", "しっかり", "大変！！"];
-
   //カテゴリを選択する
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(
-    targetRecipe?.category || ""
+    targetRecipe?.category ?? ""
   );
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,10 +41,9 @@ export const RecipeDetail = () => {
 
   //SelectコンポーネントではonValueChangeで直接更新処理を行うのが正しい
   const handleChangeCategory = async (value: string) => {
+    if (!currentUserStore.currentUser || !targetRecipe) return;
+    //状態に保管してpropsに渡すために必要
     setSelectedCategory(value);
-    // ここで直接更新処理を行う
-    if (!currentUserStore.currentUser) return;
-    if (!targetRecipe) return;
     try {
       const updatedRecipe = await recipeRepository.update(
         currentUserStore.currentUser.id,
@@ -55,20 +52,19 @@ export const RecipeDetail = () => {
       recipeStore.set([updatedRecipe]);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "不明なエラーが発生しました"
+        error instanceof Error ? error.message : "カテゴリの更新に失敗しました"
       );
     }
   };
 
-  //リロードじゃなくて追加画面に戻る方がいいかな
+  //追加画面に戻る
   const handleReload = () => {
-    navigate("/"); // ページをリロード
+    navigate("/");
     window.location.reload();
   };
 
   const handleUpdateTitle = async () => {
-    if (!currentUserStore.currentUser) return;
-    if (!targetRecipe) return;
+    if (!currentUserStore.currentUser || !targetRecipe) return;
     try {
       const updatedRecipe = await recipeRepository.update(
         currentUserStore.currentUser.id,
@@ -77,14 +73,17 @@ export const RecipeDetail = () => {
       recipeStore.set([updatedRecipe]);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "不明なエラーが発生しました"
+        error instanceof Error ? error.message : "タイトルの更新に失敗しました"
       );
     }
   };
 
-  //e.currentTarget.blur()はフォーカスを外すメソッド
-  //「blur」というのは Web（ブラウザ）のUI用語で、要素（特に input や textarea）から フォーカスが外れること を指
+  //e.currentTarget.blur()はフォーカスを外すメソッド（Enterを押したらフォーカスを外す）
+  //スマホの標準キーボードではEnterキーを押してもフォーカスが外れないため、フォーカスを外すためにはblurメソッドを使用する
+  //「blur」というのは Web（ブラウザ）のUI用語で、要素（特に input や textarea）から フォーカスが外れること を指す
+  //これは主にPCで入力したときにEnterキーを押したら更新されて、フォーカスを外すために使用する
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!currentUserStore.currentUser || !targetRecipe) return;
     if (e.key === "Enter") {
       handleUpdateTitle();
       e.currentTarget.blur();
@@ -93,14 +92,12 @@ export const RecipeDetail = () => {
 
   //引数に渡された文字列がURLかどうかを判定
   const isURL = (url: string | null) => {
-    //urlがnullやundefinedの場合は空文字列として扱う
-    //||""はurlがnullやundefinedの場合は空文字列として扱う
-    //|| は「左が falsy（null, undefined, 空文字, 0, false）なら右を返す」という意味です。
+    //|| は「左が falsy（null, undefined, 空文字, 0, false）なら右を返す」という意味
     try {
       //URLオブジェクトを作成し、エラーが発生しなければURLとして有効
       //new URL():引数に正しいURLが渡された場合はオブジェクトが作られる
       //エラーが発生した場合はcatchブロックが実行される(これを利用してURLかの判定に使う)
-      new URL(url || "");
+      new URL(url ?? "");
       return true;
     } catch (error) {
       console.error("エラー内容:", error);
@@ -108,21 +105,28 @@ export const RecipeDetail = () => {
     }
   };
 
+  //shareUrlはURLかどうかを判定して、URLの場合はそのURLを、それ以外は空文字列を返す
   const shareUrl =
     targetRecipe?.source && isURL(targetRecipe.source)
       ? targetRecipe.source
       : "";
-  const lineShareUrl = shareUrl
+  //lineShareUrlはshareUrlがURLの場合はそのURLを、それ以外は空文字列を返す
+  // https://line.me/R/msg/text/?... は LINE公式の共有URL（Webリンク方式）
+  //encodeURIComponent:URL として使っても壊れないように、安全な文字列に変換するための関数(URLエンコードしてエラーを起こさないようにする)
+  const lineShareUrl = isURL(shareUrl)
     ? `https://line.me/R/msg/text/?${encodeURIComponent(shareUrl)}`
     : "";
 
-  // LINE共有のハンドラー
+  // LINE共有のハンドラー（ボタンを押したら共有する）
   const handleShareToLine = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!shareUrl) return;
+    if (!isURL(shareUrl)) return;
 
+    //navigater.share（Web Share APIのメソッド）に指定したオブジェクトをOSの共有UIに渡して、ユーザーが選んだ共有先アプリにその情報を共有する
+    //Web Share API:スマホ（iPhone/Android）のブラウザで シェア用のネイティブUI（共有メニュー）を開く API。
+    //Web Share APIは非同期関数async-awaitと組み合わせて使用する
+    // if (navigator.share) :「このブラウザで Web Share API が使えるかどうか？」を確認している。
     try {
-      // navigator.shareが利用可能な場合（主にモバイルブラウザ）
       if (navigator.share) {
         await navigator.share({
           title: targetRecipe?.title || "",
@@ -130,13 +134,15 @@ export const RecipeDetail = () => {
           url: shareUrl,
         });
       } else {
-        // フォールバック: LINE URLを直接開く
+        // フォールバック: LINE URLを直接開く（Web Share APIが使えない場合はLINE URLを直接開く）
+        // LINEの共有UIが立ち上がる
         window.open(lineShareUrl, "_blank", "noopener,noreferrer");
       }
     } catch (error) {
       // ユーザーが共有をキャンセルした場合など
       if (error instanceof Error && error.name !== "AbortError") {
         console.error("共有エラー:", error);
+        toast.error("LINE共有エラーが発生しました");
         // エラー時もフォールバックとしてLINE URLを開く
         window.open(lineShareUrl, "_blank", "noopener,noreferrer");
       }
@@ -149,29 +155,38 @@ export const RecipeDetail = () => {
     (async () => {
       if (!targetRecipe && id && currentUserStore.currentUser) {
         try {
+          setIsLoading(true);
           const recipes = await recipeRepository.findAll(
             currentUserStore.currentUser.id
           );
           //LayOutを経由した場合は重複するように思えるがsetメソッドで重複を排除している
           recipeStore.set(recipes);
         } catch (error) {
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "不明なエラーが発生しました"
-          );
+          toast.error("レシピの取得エラーが発生しました");
+        } finally {
+          setIsLoading(false);
         }
       }
     })();
   }, [id, targetRecipe, currentUserStore.currentUser, recipeStore]);
 
   // targetRecipeが変更されたらnewTitleを更新する
+  // これがないと別のレシピの詳細ページに遷移したときにタイトルが前のレシピのタイトルになってしまう
+  //RecipeDetailは/recipes/:id内でパラメータだけ変わるため、このコードがないと前のレシピのタイトルとカテゴリが保持されてしまう
   useEffect(() => {
     if (targetRecipe) {
       setNewTitle(targetRecipe.title || "");
       setSelectedCategory(targetRecipe.category || "");
     }
   }, [targetRecipe]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   //Numberを付けるのはidがstring型のため
   return (
