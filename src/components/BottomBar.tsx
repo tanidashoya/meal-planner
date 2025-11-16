@@ -22,7 +22,6 @@ export const BottomBar = () => {
         onClick={() => navigate("/")}
         onTouchStart={(e) => {
           e.preventDefault();
-          navigate("/");
         }}
       >
         <PlusCircle className="size-7 text-gray-500" strokeWidth={1.5} />
@@ -34,7 +33,6 @@ export const BottomBar = () => {
         onClick={() => navigate("/all-recipes")}
         onTouchStart={(e) => {
           e.preventDefault();
-          navigate("/all-recipes");
         }}
       >
         <img src={allIcon} alt="all icon" className="size-7" />
@@ -46,7 +44,6 @@ export const BottomBar = () => {
         onClick={() => navigate("/star-sort")}
         onTouchStart={(e) => {
           e.preventDefault();
-          navigate("/star-sort");
         }}
       >
         <img src={tasteIcon} alt="taste icon" className="size-7" />
@@ -58,7 +55,6 @@ export const BottomBar = () => {
         onClick={() => navigate("/time-sort")}
         onTouchStart={(e) => {
           e.preventDefault();
-          navigate("/time-sort");
         }}
       >
         <img src={watchIcon} alt="watch icon" className="size-7" />
@@ -70,7 +66,6 @@ export const BottomBar = () => {
         onClick={() => navigate("/unrated-recipes")}
         onTouchStart={(e) => {
           e.preventDefault();
-          navigate("/unrated-recipes");
         }}
       >
         <img src={unratedIcon} alt="unrated icon" className="size-7" />

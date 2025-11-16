@@ -230,7 +230,7 @@ export const RecipeDetail = () => {
             {shareUrl && (
               <Button
                 variant="outline"
-                className="!px-4 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none bg-[#00C300] !text-white font-bold"
+                className="!px-4 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none focus:!ring-0 focus-visible:!ring-0 focus-visible:!ring-offset-0 bg-[#00C300] focus:!bg-[#00C300] focus-visible:!bg-[#00C300] !text-white focus:!text-white focus-visible:!text-white font-bold"
                 onClick={handleShareToLine}
               >
                 LINEで共有

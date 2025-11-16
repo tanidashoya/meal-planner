@@ -1,7 +1,7 @@
 //meal-plannerアプリのサイドバーの機能を実装する
 import { authRepository } from "../../modules/auth/auth.repository";
 import { useCurrentUserStore } from "../../modules/auth/current-user.state";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { UserItem } from "./UserItem";
 import { RecipeList } from "../RecipeList";
 import { Item } from "./Item";
@@ -13,7 +13,7 @@ import { PanelLeft } from "lucide-react";
 import { SheetTrigger, SheetTitle, SheetDescription } from "../ui/sheet";
 import { SheetContent } from "../ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import watchIcon from "../../assets/watch_icon.webp";
 import { BottomBar } from "../BottomBar";
 import randomPicksIcon from "../../assets/random_picks.webp";
@@ -37,7 +37,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
   const currentUser = currentUserStore.currentUser;
   const recipeStore = useRecipeStore();
   const navigate = useNavigate();
-  const prevOpenRef = useRef<boolean>(false);
+  const location = useLocation();
 
   //try-catch文を使用してエラーを捕捉する
   //AuthSessionMissingエラー以外のエラーやグローバルステートのnull化やページ遷移に失敗した場合はエラーを捕捉して処理を停止させないようにする
@@ -69,42 +69,14 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     return () => window.removeEventListener("keydown", handleOpenSideBar);
   }, [open, setOpen]);
 
-  // 以下の3つの条件のうち どれか1つでも falsy（=偽） ならreturn; が実行されて「後続の処理をスキップ」する
-
-  // サイドバーが開いたときに履歴に状態を追加
+  // URL → UI
   useEffect(() => {
-    if (!currentUser || !currentUser.email || !currentUser.userName) return;
-    //window.history.pushState(state, title, url)は履歴に状態を追加するメソッド
-    //window.history.pushState() が履歴を追加するのは、ブラウザ内部にある「セッション履歴（Session History）」
-    // サイドバーが開いたとき（false → true）だけ履歴に状態を追加
-    if (open && !prevOpenRef.current) {
-      window.history.pushState({ sidebarOpen: true }, "");
+    if (location.search.includes("sidebar=open")) {
+      setOpen(true);
+    } else {
+      setOpen(false);
     }
-    // 前の状態を更新
-    prevOpenRef.current = open;
-  }, [open, currentUser]);
-
-  //サイドバーが開いている時にはスマホでもどるボタンを押したときには優先的にサイドバーが閉じるようにする
-  useEffect(() => {
-    if (!currentUser || !currentUser.email || !currentUser.userName) return;
-    // 戻るボタンが押されたときの処理
-    const handlePopState = (event: PopStateEvent) => {
-      // event.stateがnullまたはsidebarOpenがtrueでない場合、サイドバーを閉じる
-      // (pushStateで追加した履歴から戻ってきた場合)
-      if (!event.state || event.state.sidebarOpen !== true) {
-        // サイドバーが開いている場合は閉じる
-        if (open) {
-          setOpen(false);
-        }
-      }
-    };
-
-    //popstateイベントはブラウザの進む・戻るボタンが押されたときに発生するイベント
-    window.addEventListener("popstate", handlePopState);
-    //これはコンポーネントがアンマウントしたときにイベントが残らないように削除しているクリーンアップ関数
-    return () => window.removeEventListener("popstate", handlePopState);
-    //setOpenは通常変更されることはないがuseEffect内で使われている値や関数は依存配列に含めることが推奨（Eslintにもかからない）
-  }, [open, setOpen, currentUser]);
+  }, [location.search]);
 
   return (
     //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ
@@ -113,7 +85,20 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     //modal={false} → 裏側のページも操作可能
     <div className="fixed top-0 left-0 right-0 z-50 lg:top-auto lg:left-auto lg:right-auto flex lg:flex-col  items-center pb-2 pt-4 pb-1 lg:ml-0 lg:mt-0 lg:mb-0 lg:gap-2 border-b lg:border bg-white lg:bg-transparent lg:h-full">
       <div className="flex items-center gap-2">
-        <Sheet open={open} onOpenChange={setOpen} modal={false}>
+        <Sheet
+          open={open}
+          // UIとURLの状態を同期する
+          onOpenChange={(next) => {
+            setOpen(next);
+
+            if (next) {
+              navigate("?sidebar=open");
+            } else {
+              navigate("", { replace: true });
+            }
+          }}
+          modal={false}
+        >
           <SheetTrigger asChild>
             <Button
               variant="outline"
@@ -170,7 +155,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           onClick={() => navigate("/picks")}
           onTouchStart={(e) => {
             e.preventDefault();
-            navigate("/picks");
           }}
         >
           <img src={randomPicksIcon} alt="picks icon" className="size-11" />
@@ -188,7 +172,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             onClick={() => navigate("/match-recipe")}
             onTouchStart={(e) => {
               e.preventDefault();
-              navigate("/match-recipe");
             }}
           >
             <img
@@ -205,7 +188,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           onClick={() => navigate("/outside-site")}
           onTouchStart={(e) => {
             e.preventDefault();
-            navigate("/outside-site");
           }}
         >
           <img
@@ -222,7 +204,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             onClick={() => navigate("/")}
             onTouchStart={(e) => {
               e.preventDefault();
-              navigate("/");
             }}
           >
             <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
@@ -233,7 +214,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             onClick={() => navigate("/star-sort")}
             onTouchStart={(e) => {
               e.preventDefault();
-              navigate("/star-sort");
             }}
           >
             <img src={tasteIcon} alt="taste icon" className="size-8" />
@@ -244,7 +224,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
             onClick={() => navigate("/time-sort")}
             onTouchStart={(e) => {
               e.preventDefault();
-              navigate("/time-sort");
             }}
           >
             <img src={watchIcon} alt="watch icon" className="size-8" />
@@ -256,7 +235,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           onClick={() => navigate("/suggest-recipes")}
           onTouchStart={(e) => {
             e.preventDefault();
-            navigate("/suggest-recipes");
           }}
         >
           <img
