@@ -5,9 +5,13 @@ import watchIcon from "@/assets/watch_icon.webp";
 import { useNavigate } from "react-router-dom";
 import unratedIcon from "@/assets/unrated_icon.webp";
 import allIcon from "@/assets/all_recipes.webp";
+import { useRef } from "react";
 
 export const BottomBar = () => {
   const navigate = useNavigate();
+  // タッチイベントが発火したかどうかを追跡するためのref
+  // これはタッチとクリックの重複を防ぐための一般的なパターンです
+  const touchHandled = useRef(false);
 
   //onTouchStart={(e) => {
   //  e.preventDefault();
@@ -19,9 +23,17 @@ export const BottomBar = () => {
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
-        onClick={() => navigate("/")}
-        onTouchStart={(e) => {
-          e.preventDefault();
+        onClick={() => {
+          // タッチイベントで既に遷移している場合はonClickを無視
+          if (!touchHandled.current) {
+            navigate("/");
+          }
+          // フラグをリセット
+          touchHandled.current = false;
+        }}
+        onTouchStart={() => {
+          touchHandled.current = true;
+          navigate("/");
         }}
       >
         <PlusCircle className="size-7 text-gray-500" strokeWidth={1.5} />
@@ -30,9 +42,15 @@ export const BottomBar = () => {
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none  !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
-        onClick={() => navigate("/all-recipes")}
-        onTouchStart={(e) => {
-          e.preventDefault();
+        onClick={() => {
+          if (!touchHandled.current) {
+            navigate("/all-recipes");
+          }
+          touchHandled.current = false;
+        }}
+        onTouchStart={() => {
+          touchHandled.current = true;
+          navigate("/all-recipes");
         }}
       >
         <img src={allIcon} alt="all icon" className="size-7" />
@@ -41,9 +59,15 @@ export const BottomBar = () => {
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
-        onClick={() => navigate("/star-sort")}
-        onTouchStart={(e) => {
-          e.preventDefault();
+        onClick={() => {
+          if (!touchHandled.current) {
+            navigate("/star-sort");
+          }
+          touchHandled.current = false;
+        }}
+        onTouchStart={() => {
+          touchHandled.current = true;
+          navigate("/star-sort");
         }}
       >
         <img src={tasteIcon} alt="taste icon" className="size-7" />
@@ -52,9 +76,15 @@ export const BottomBar = () => {
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
-        onClick={() => navigate("/time-sort")}
-        onTouchStart={(e) => {
-          e.preventDefault();
+        onClick={() => {
+          if (!touchHandled.current) {
+            navigate("/time-sort");
+          }
+          touchHandled.current = false;
+        }}
+        onTouchStart={() => {
+          touchHandled.current = true;
+          navigate("/time-sort");
         }}
       >
         <img src={watchIcon} alt="watch icon" className="size-7" />
@@ -63,9 +93,15 @@ export const BottomBar = () => {
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1"
-        onClick={() => navigate("/unrated-recipes")}
-        onTouchStart={(e) => {
-          e.preventDefault();
+        onClick={() => {
+          if (!touchHandled.current) {
+            navigate("/unrated-recipes");
+          }
+          touchHandled.current = false;
+        }}
+        onTouchStart={() => {
+          touchHandled.current = true;
+          navigate("/unrated-recipes");
         }}
       >
         <img src={unratedIcon} alt="unrated icon" className="size-7" />

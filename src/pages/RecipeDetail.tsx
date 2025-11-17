@@ -21,6 +21,7 @@ export const RecipeDetail = () => {
   const recipes = recipeStore.getAll();
   //ローディング中かどうかを管理する状態（このコンポーネントで取得しなければならないときはtrueにする）
   const [isLoading, setIsLoading] = useState(false);
+  //それぞれのアイコンローディング中かどうかを管理する状態
   //filterに該当するデータがない場合にはtargetRecipeはundefinedになる
   const targetRecipe = recipes.filter((recipe) => recipe.id == Number(id))[0];
   //Reactの制御コンポーネントでは、valueプロパティがnullやundefinedの場合はエラーになるため、空文字列として扱う

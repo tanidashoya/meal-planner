@@ -13,7 +13,7 @@ import { PanelLeft } from "lucide-react";
 import { SheetTrigger, SheetTitle, SheetDescription } from "../ui/sheet";
 import { SheetContent } from "../ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import watchIcon from "../../assets/watch_icon.webp";
 import { BottomBar } from "../BottomBar";
 import randomPicksIcon from "../../assets/random_picks.webp";
@@ -38,7 +38,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
   const recipeStore = useRecipeStore();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const touchHandled = useRef(false);
   //try-catch文を使用してエラーを捕捉する
   //AuthSessionMissingエラー以外のエラーやグローバルステートのnull化やページ遷移に失敗した場合はエラーを捕捉して処理を停止させないようにする
   const handleSignOut = async () => {
@@ -152,9 +152,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         <Button
           variant="outline"
           className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/picks")}
-          onTouchStart={(e) => {
-            e.preventDefault();
+          onClick={() => {
+            if (!touchHandled.current) {
+              navigate("/picks");
+            }
+            touchHandled.current = false;
+          }}
+          onTouchStart={() => {
+            touchHandled.current = true;
+            navigate("/picks");
           }}
         >
           <img src={randomPicksIcon} alt="picks icon" className="size-11" />
@@ -169,9 +175,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <Button
             variant="outline"
             className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-            onClick={() => navigate("/match-recipe")}
-            onTouchStart={(e) => {
-              e.preventDefault();
+            onClick={() => {
+              if (!touchHandled.current) {
+                navigate("/match-recipe");
+              }
+              touchHandled.current = false;
+            }}
+            onTouchStart={() => {
+              touchHandled.current = true;
+              navigate("/match-recipe");
             }}
           >
             <img
@@ -185,9 +197,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         <Button
           variant="outline"
           className="hover:bg-white !px-2 !py-6 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/outside-site")}
-          onTouchStart={(e) => {
-            e.preventDefault();
+          onClick={() => {
+            if (!touchHandled.current) {
+              navigate("/outside-site");
+            }
+            touchHandled.current = false;
+          }}
+          onTouchStart={() => {
+            touchHandled.current = true;
+            navigate("/outside-site");
           }}
         >
           <img
@@ -201,9 +219,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <Button
             variant="outline"
             className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-            onClick={() => navigate("/")}
-            onTouchStart={(e) => {
-              e.preventDefault();
+            onClick={() => {
+              if (!touchHandled.current) {
+                navigate("/");
+              }
+              touchHandled.current = false;
+            }}
+            onTouchStart={() => {
+              touchHandled.current = true;
+              navigate("/");
             }}
           >
             <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
@@ -211,9 +235,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <Button
             variant="outline"
             className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-            onClick={() => navigate("/star-sort")}
-            onTouchStart={(e) => {
-              e.preventDefault();
+            onClick={() => {
+              if (!touchHandled.current) {
+                navigate("/star-sort");
+              }
+              touchHandled.current = false;
+            }}
+            onTouchStart={() => {
+              touchHandled.current = true;
+              navigate("/star-sort");
             }}
           >
             <img src={tasteIcon} alt="taste icon" className="size-8" />
@@ -221,9 +251,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <Button
             variant="outline"
             className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-            onClick={() => navigate("/time-sort")}
-            onTouchStart={(e) => {
-              e.preventDefault();
+            onClick={() => {
+              if (!touchHandled.current) {
+                navigate("/time-sort");
+              }
+              touchHandled.current = false;
+            }}
+            onTouchStart={() => {
+              touchHandled.current = true;
+              navigate("/time-sort");
             }}
           >
             <img src={watchIcon} alt="watch icon" className="size-8" />
@@ -232,9 +268,15 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         <Button
           variant="outline"
           className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-          onClick={() => navigate("/suggest-recipes")}
-          onTouchStart={(e) => {
-            e.preventDefault();
+          onClick={() => {
+            if (!touchHandled.current) {
+              navigate("/suggest-recipes");
+            }
+            touchHandled.current = false;
+          }}
+          onTouchStart={() => {
+            touchHandled.current = true;
+            navigate("/suggest-recipes");
           }}
         >
           <img
