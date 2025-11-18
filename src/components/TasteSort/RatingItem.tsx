@@ -10,7 +10,7 @@ interface RatingItemProps {
 
 export const RatingItem = ({
   recipes,
-  deleteRecipe,
+  // deleteRecipe,
   className,
 }: RatingItemProps) => {
   const navigate = useNavigate();
