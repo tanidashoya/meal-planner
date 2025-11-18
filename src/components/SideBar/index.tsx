@@ -15,7 +15,6 @@ import { SheetContent } from "../ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useEffect, useRef } from "react";
 import watchIcon from "../../assets/watch_icon.webp";
-import { BottomBar } from "../BottomBar";
 import randomPicksIcon from "../../assets/random_picks.webp";
 import { useRecipeStore } from "../../modules/recipes/recipe.state";
 import { toast } from "react-toastify";
@@ -286,7 +285,6 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           />
         </Button>
       </div>
-      <BottomBar />
     </div>
   );
 };

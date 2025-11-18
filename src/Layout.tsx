@@ -16,6 +16,7 @@ import { SideBar } from "./components/SideBar";
 import { unsubscribe } from "./lib/supabase";
 import { subscribe } from "./lib/supabase";
 import { toast } from "react-toastify";
+import { BottomBar } from "./components/BottomBar";
 
 export const Layout = () => {
   const currentUserStore = useCurrentUserStore();
@@ -166,6 +167,7 @@ export const Layout = () => {
           onKeywordChanged={SearchRecipe}
         />
       </main>
+      <BottomBar />
     </div>
   );
 };
