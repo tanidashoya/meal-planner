@@ -48,7 +48,7 @@ export const RatingGroup = ({
           return (
             <div
               key={rating}
-              className="w-full lg:w-4/5 mb-8 mx-auto border-2 border-gray-300 rounded-md py-5 lg:p-10 shadow-sm lg:mb-12"
+              className="w-full lg:w-4/5 mb-8 mx-auto border-[1px] border-gray-300 rounded-md py-5 lg:p-10 shadow-md lg:mb-12"
             >
               <div className="flex items-center justify-center gap-2 mb-10 lg:mb-12 border-b border-gray-300 pb-2 w-3/5 mx-auto">
                 {Array.from({ length: Number(rating) }, (_, i) => (
@@ -75,7 +75,7 @@ export const RatingGroup = ({
                     }
                   >
                     <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300">
-                      <p className=" font-['Inter'] text-sm lg:text-base">
+                      <p className=" font-['Inter'] text-base lg:text-base">
                         {`もっと見る（全${recipes.length}件）`}
                       </p>
                     </Button>
