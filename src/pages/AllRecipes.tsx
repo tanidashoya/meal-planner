@@ -55,18 +55,6 @@ export const AllRecipes = () => {
     setSearchText(e.target.value);
   };
 
-  // const deleteRecipe = async (id: number) => {
-  //   if (!currentUser) return;
-  //   try {
-  //     await recipesStore.delete(currentUser.id, id);
-  //     toast.success("レシピを削除しました");
-  //   } catch (error) {
-  //     toast.error(
-  //       error instanceof Error ? error.message : "不明なエラーが発生しました"
-  //     );
-  //   }
-  // };
-
   //レシピの読み込み中かどうかを管理するグローバルステートがtrueの場合はローディング画面を表示する
   if (recipesStore.isLoading) {
     return (
