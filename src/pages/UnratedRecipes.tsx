@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 // import { useCurrentUserStore } from "../modules/auth/current-user.state";
 // import { toast } from "react-toastify";
 import { ImageOgp } from "../components/ImageOgp";
+import { DeleteButton } from "../components/DeleteButton";
 
 export const UnratedRecipes = () => {
   const recipesStore = useRecipeStore();
@@ -53,6 +54,11 @@ export const UnratedRecipes = () => {
             <h3 className="text-sm text-gray-600 font-bold truncate w-full">
               {recipe.title}
             </h3>
+            <DeleteButton
+              id={recipe.id}
+              className="absolute top-1 right-2 bg-gray-400 text-white p-1 rounded-md opacity-70"
+              size="w-4 h-4 text-white"
+            />
           </div>
         ))}
       </div>

@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 // ← ここに置けば OK！
 import "swiper/css";
+import { DeleteButton } from "../components/DeleteButton";
 
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
@@ -111,7 +112,7 @@ export const AllRecipes = () => {
                   {recipes.map((recipe) => (
                     <div
                       key={recipe.id}
-                      className="flex flex-col items-center justify-center gap-2 border-[1px] shadow-sm border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
+                      className="relative flex flex-col items-center justify-center gap-2 border-[1px] shadow-sm border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
                       onClick={() => moveToDetail(recipe.id)}
                     >
                       <ImageOgp
@@ -121,6 +122,11 @@ export const AllRecipes = () => {
                       <h3 className="text-sm text-gray-600 font-bold truncate w-full">
                         {recipe.title}
                       </h3>
+                      <DeleteButton
+                        id={recipe.id}
+                        className="absolute top-2 right-2 bg-gray-400 text-white p-1 rounded-md opacity-70"
+                        size="w-4 h-4 text-white"
+                      />
                     </div>
                   ))}
                 </div>

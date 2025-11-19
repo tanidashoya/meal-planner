@@ -1,6 +1,7 @@
 import { Recipe } from "../../modules/recipes/recipe.entity";
 import { useNavigate } from "react-router-dom";
 import { ImageOgp } from "../ImageOgp";
+import { DeleteButton } from "../DeleteButton";
 
 interface RatingItemProps {
   recipes: Recipe[];
@@ -32,7 +33,7 @@ export const RatingItem = ({
           <div
             key={recipe.id}
             onClick={() => moveToDetail(recipe.id ?? 0)}
-            className="flex items-center justify-space-between gap-3 w-full px-4 border-[1px] shadow-sm border-gray-300 rounded-md py-2"
+            className="relative flex items-center justify-space-between gap-3 w-full px-4 border-[1px] shadow-sm border-gray-300 rounded-md py-2"
           >
             <ImageOgp
               // sourceは空文字の可能性もある。一応空文字で確定的・安全に扱うためにデフォルト値を空文字にしておく
@@ -45,6 +46,11 @@ export const RatingItem = ({
               </span>
               <span className="text-sm font-bold">{recipe.title}</span>
             </div>
+            <DeleteButton
+              id={recipe.id ?? 0}
+              className="absolute top-2 right-3 bg-gray-400 text-white p-1 rounded-md opacity-70"
+              size="w-4 h-4 text-white"
+            />
           </div>
         );
       })}
