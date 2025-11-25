@@ -32,19 +32,20 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
         return null;
       }
       const cacheKey = `ogp_${url}`;
-
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+      const cached = localStorage.getItem(cacheKey);
       const now = Date.now();
 
-      // if (cached) {
-      //   const parsed = JSON.parse(cached);
-      //   if (now - parsed.timestamp < ONE_WEEK) {
-      //     console.log("📦 ローカルキャッシュから取得:", url);
-      //     return parsed.data;
-      //   } else {
-      //     console.log("🧹 キャッシュ期限切れ → 削除:", url);
-      //     localStorage.removeItem(cacheKey);
-      //   }
-      // }
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (now - parsed.timestamp < ONE_DAY) {
+          console.log("📦 ローカルキャッシュから取得:", url);
+          return parsed.data;
+        } else {
+          console.log("🧹 キャッシュ期限切れ → 削除:", url);
+          localStorage.removeItem(cacheKey);
+        }
+      }
 
       // 🔹Edge Function から取得
       const { data, error } = await supabase.functions.invoke(
