@@ -32,10 +32,7 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
         return null;
       }
       const cacheKey = `ogp_${url}`;
-      const cached = localStorage.getItem(cacheKey);
 
-      // 🔹キャッシュ有効期限（7日 = 604800000ms）
-      const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
       const now = Date.now();
 
       // if (cached) {
