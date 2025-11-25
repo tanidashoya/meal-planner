@@ -22,6 +22,7 @@ export function Home() {
   const recipeStore = useRecipeStore();
   const [recipeTitle, setRecipeTitle] = useState("");
   const [source, setSource] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   //selectedCategoryはcategoryの中の最初の要素を初期値としている
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isSelectOpen, setIsSelectOpen] = useState(false);
@@ -29,6 +30,7 @@ export function Home() {
   const createRecipe = async (params: RecipeParams) => {
     if (!currentUserStore.currentUser) return;
     try {
+      setIsLoading(true);
       const recipe = await recipeRepository.create(
         currentUserStore.currentUser.id,
         params
@@ -42,6 +44,8 @@ export function Home() {
       const message =
         error instanceof Error ? error.message : "不明なエラーが発生しました";
       toast.error(message);
+    } finally {
+      setIsLoading(false);
     }
     setRecipeTitle("");
     setSource("");
@@ -125,8 +129,16 @@ export function Home() {
             className="w-[180px] mt-4 bg-green-500 mx-auto "
             disabled={!recipeTitle.trim() || !selectedCategory}
           >
-            <Plus className="h-4 w-4 text-white" />
-            <span className="text-white pr-2">Myレシピに追加</span>
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <Plus className="h-4 w-4 text-white" />
+                <span className="text-white pr-2">Myレシピに追加</span>
+              </div>
+            )}
           </Button>
         </CardContent>
       </Card>

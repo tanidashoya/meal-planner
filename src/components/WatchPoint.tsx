@@ -72,7 +72,10 @@ export function WatchPoint({ recipeId, img, Word }: TimeProps) {
         const isActive = time >= ratingValue;
 
         return isLoading ? (
-          <div className="flex flex-col items-center justify-center w-11.5 h-11.5 lg:w-13 lg:h-13">
+          <div
+            key={ratingValue}
+            className="flex flex-col items-center justify-center w-11.5 h-11.5 lg:w-13 lg:h-13"
+          >
             <div className="animate-spin rounded-full w-7 h-7 lg:w-10 lg:h-10 border-b-2 border-blue-600"></div>
           </div>
         ) : (
@@ -95,7 +98,7 @@ export function WatchPoint({ recipeId, img, Word }: TimeProps) {
                   isActive ? "" : "opacity-20"
                 }`}
               >
-                {Word?.[ratingValue - 1]}
+                {Word?.[ratingValue - 1] ?? ""}
               </span>
             </div>
           </div>

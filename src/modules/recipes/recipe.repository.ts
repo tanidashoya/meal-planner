@@ -22,8 +22,10 @@ const CategorySchema = z.enum([
 export const recipeRepository = {
   async create(userID: string, params: RecipeParams) {
     const isURL = (url: string | null) => {
+      if (!url) return false;
+      if (!url.startsWith("http")) return false;
       try {
-        new URL(url || "");
+        new URL(url);
         return true;
       } catch {
         return false;

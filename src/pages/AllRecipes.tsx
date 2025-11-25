@@ -31,6 +31,17 @@ export const AllRecipes = () => {
     [recipes]
   );
 
+  const filteredRecipes = useMemo(() => {
+    return Object.entries(categoryRecipes).map(([category, recipes]) => {
+      return [
+        category,
+        recipes.filter((recipe) => {
+          return recipe.title?.toLowerCase().includes(searchText.toLowerCase());
+        }),
+      ];
+    }) as [string, Recipe[]][];
+  }, [categoryRecipes, searchText]);
+
   const moveToDetail = (id: number) => {
     navigate(`/recipes/${id}`);
   };
@@ -90,7 +101,7 @@ export const AllRecipes = () => {
           autoHeight={true}
           className="!mx-auto [&_.swiper-slide:not(.swiper-slide-active)]:opacity-80"
         >
-          {Object.entries(categoryRecipes).map(([category, recipes]) => (
+          {filteredRecipes.map(([category, recipes]) => (
             <SwiperSlide key={category} className="!flex !justify-center">
               <div className="w-[96%] max-w-full">
                 <h2 className="text-2xl text-gray-600 font-bold mb-6 text-center">

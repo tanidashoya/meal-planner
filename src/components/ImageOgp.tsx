@@ -38,16 +38,16 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
       const now = Date.now();
 
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (now - parsed.timestamp < ONE_WEEK) {
-          console.log("📦 ローカルキャッシュから取得:", url);
-          return parsed.data;
-        } else {
-          console.log("🧹 キャッシュ期限切れ → 削除:", url);
-          localStorage.removeItem(cacheKey);
-        }
-      }
+      // if (cached) {
+      //   const parsed = JSON.parse(cached);
+      //   if (now - parsed.timestamp < ONE_WEEK) {
+      //     console.log("📦 ローカルキャッシュから取得:", url);
+      //     return parsed.data;
+      //   } else {
+      //     console.log("🧹 キャッシュ期限切れ → 削除:", url);
+      //     localStorage.removeItem(cacheKey);
+      //   }
+      // }
 
       // 🔹Edge Function から取得
       const { data, error } = await supabase.functions.invoke(
@@ -78,6 +78,7 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       setIsLoading(true);
       try {
         const data = await getOgpPreview(url);
+        console.log("OGP結果:", data);
         if (isMounted) setOgp(data); // ✅ アンマウント後なら更新しない
       } catch (err) {
         console.error("OGP取得エラー:", err);
