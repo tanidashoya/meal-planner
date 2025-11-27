@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { isURL } from "../lib/common";
 
 interface ImageOgpProps {
   url: string;
@@ -17,15 +18,6 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
   useEffect(() => {
     // isMounted:コンポーネントがマウントされているかどうかを管理
     let isMounted = true;
-
-    const isURL = (url: string | null) => {
-      try {
-        new URL(url || "");
-        return true;
-      } catch {
-        return false;
-      }
-    };
 
     const getOgpPreview = async (url: string | null) => {
       if (!isURL(url)) {

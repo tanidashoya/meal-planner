@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SelectCategory } from "../components/SelectCategory";
 import { Button } from "../components/ui/button";
+import { isURL } from "../lib/common";
 
 export const RecipeDetail = () => {
   const navigate = useNavigate();
@@ -88,24 +89,6 @@ export const RecipeDetail = () => {
     if (e.key === "Enter") {
       handleUpdateTitle();
       e.currentTarget.blur();
-    }
-  };
-
-  //引数に渡された文字列がURLかどうかを判定
-  const isURL = (url: string | null) => {
-    if (!url) return false;
-    //引数のurlがhttpから始まっていない場合はfalseを返す
-    if (!url.startsWith("http")) return false;
-    //|| は「左が falsy（null, undefined, 空文字, 0, false）なら右を返す」という意味
-    try {
-      //URLオブジェクトを作成し、エラーが発生しなければURLとして有効
-      //new URL():引数に正しいURLが渡された場合はオブジェクトが作られる
-      //エラーが発生した場合はcatchブロックが実行される(これを利用してURLかの判定に使う)
-      new URL(url);
-      return true;
-    } catch (error) {
-      console.error("エラー内容:", error);
-      return false;
     }
   };
 

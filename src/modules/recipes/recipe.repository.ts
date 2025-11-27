@@ -3,6 +3,7 @@ import { RecipeParams, updateRecipe } from "./recipe.entity";
 //zodはバリデーションするためのライブラリ
 //「このデータはこういう形であるべき」と定義して、フロントエンドやバックエンドでチェックできる
 import { z } from "zod";
+import { isURL } from "../../lib/common";
 
 //z.enumは特定の文字列の集合だけを許可する型を定義()
 const CategorySchema = z.enum([
@@ -21,16 +22,7 @@ const CategorySchema = z.enum([
 */
 export const recipeRepository = {
   async create(userID: string, params: RecipeParams) {
-    const isURL = (url: string | null) => {
-      if (!url) return false;
-      if (!url.startsWith("http")) return false;
-      try {
-        new URL(url);
-        return true;
-      } catch {
-        return false;
-      }
-    };
+    //zodではtry-catchを使わずにsafeParse()を使用することで、例外を投げない代わりに、成功・失敗の結果をオブジェクトで返すことができる
 
     if (!params.category) {
       throw new Error("カテゴリは必須です");
