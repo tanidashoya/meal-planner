@@ -212,33 +212,34 @@ export const RecipeDetail = () => {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center w-full">
-          <a
-            href={targetRecipe.source || ""}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <div className="flex items-center justify-center gap-2 w-full border-[1px] shadow-sm border-gray-300 rounded-lg px-2">
-              <ImageOgp
-                url={targetRecipe.source || ""}
-                className="w-45 h-28 flex-shrink-0 py-1"
-              />
-              {/* asChild: Buttonコンポーネントの子要素としてaタグを使用する */}
-              {/* asChild は、Buttonコンポーネントが自身のDOM要素（<button>）をレンダリングせず、子要素（この場合は <a>）をそのまま使用するためのプロパティ */}
-              {/* flex-1: 親要素の残りのスペースを埋める */}
-              {/* min-w-0: 最小幅を0に設定 */}
-              <div className="flex flex-col items-start justify-center gap-2 min-w-0 flex-1">
-                {isURL(targetRecipe.source) ? (
-                  <span className="text-blue-500 text-sm lg:text-base break-all line-clamp-3 w-full">
-                    {targetRecipe.source}
-                  </span>
-                ) : (
-                  <span className="text-gray-700 text-base lg:text-2xl">
-                    {targetRecipe.source}
-                  </span>
-                )}
+          <div className="flex items-center justify-center gap-2 w-full border-[1px] shadow-sm border-gray-300 rounded-lg px-2">
+            {isURL(targetRecipe.source) ? (
+              <div className="flex items-center justify-center gap-2 min-w-0 flex-1">
+                <a
+                  href={targetRecipe.source || ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex items-center justify-center gap-2 min-w-0 flex-1">
+                    <ImageOgp
+                      url={targetRecipe.source || ""}
+                      className="w-45 h-28 flex-shrink-0 py-1"
+                    />
+                    <span className="text-blue-500 text-sm lg:text-base break-all line-clamp-3 w-full">
+                      {targetRecipe.source}
+                    </span>
+                  </div>
+                </a>
               </div>
-            </div>
-          </a>
+            ) : (
+              <div className="w-45 h-28 flex items-center justify-center">
+                <span className="text-gray-700 text-lg lg:text-2xl text-center">
+                  画像が存在しません
+                </span>
+              </div>
+            )}
+          </div>
+
           <div className="flex justify-start items-center w-full gap-4 mt-2">
             <SelectCategory
               selectedCategory={selectedCategory}

@@ -104,7 +104,7 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
           className="w-full h-full object-contain"
         />
       ) : (
-        <p className="text-gray-500">画像は存在しません</p>
+        <p className="text-gray-500 text-center text-sm">画像は存在しません</p>
       )}
     </div>
   );
