@@ -5,6 +5,7 @@ import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { signInSchema } from "../lib/auth";
 import { toast } from "react-toastify";
+import { ZodError } from "zod";
 export function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,16 +26,25 @@ export function Signin() {
     try {
       signInSchema.parse({ email, password });
       setErrors({});
-    } catch (error: any) {
-      const fieldErrors: { email?: string; password?: string } = {};
-      error.errors?.forEach((err: any) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as "email" | "password"] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
-      //ここでreturnすることでログイン処理が実行されないようにする
-      return;
+      //catch説でのエラーはunknown型で受け取るのが一般的
+      //様々なエラーが入ってくる可能性があるからunknown型としておくのがいい
+      //any:型チェックを“完全にオフ”にする危険スイッチ(TypeScriptの型チェックを完全に無視する)
+      //unknown:型チェックを“部分的にオフ”にする安全スイッチ(TypeScriptの型チェックを部分的に無視する)
+    } catch (error: unknown) {
+      //unknown型を使った場合は型ガードしないとアクセスできない（unknownの場合型ガード必須）
+      //instanceof演算子はオブジェクトの型を判定する演算子
+      //ZodError型かどうかを判定する
+      if (error instanceof ZodError) {
+        const fieldErrors: { email?: string; password?: string } = {};
+        error.issues.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0] as "email" | "password"] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+        //ここでreturnすることでログイン処理が実行されないようにする
+        return;
+      }
     }
     // ログイン処理
     try {

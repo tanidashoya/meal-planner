@@ -5,6 +5,7 @@ import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { signUpSchema } from "../lib/auth";
 import { toast } from "react-toastify";
+import { ZodError } from "zod";
 
 export function Signup() {
   const [name, setName] = useState("");
@@ -34,6 +35,25 @@ export function Signup() {
     }
   };
   // サインアップボタンをクリックしたらサインアップ処理を実行
+  // 型定義されたオブジェクトを定義する
+  //error.errorsは配列なのでforEachで一つずつ取り出す
+  //err.path[0]はエラーが発生したフィールドのパス(name,email,password,confirmPasswordのいずれか)
+  //err.messageはエラーメッセージ
+  //fielderrorsオブジェクトにerr.path(nameやpasswordなど)をキーとして
+  // エラーが起こったフィールドのエラーメッセージを値としている
+  //keyof:右辺のオブジェクト型の“キー名”だけを取り出して union 型にする演算子
+  //typeof:右辺にある“実際の変数やオブジェクト”の型を抽出し、その型情報を左側（型システム）で使う
+  //✔ as keyof typeof fieldErrors は“実行時の安全”は保証しない
+  // ✔ 保証するのは “TypeScript（開発時）に対しての意図だけ”
+  // 実行時に間違ったキーが来てもバグになる（TSは止めてくれない）
+  // 開発者には「ここは fieldErrors のキーだよ」と意図を示せる
+  // TypeScript の型エラーを抑えて通すための宣言
+  // ■ では何のために使うのか？
+  // ✔ ① コードの意図を明確にし、他の開発者が理解しやすくするため
+  // ✔ ② TypeScript の型チェックを無理に通して、開発時の警告を防ぐため
+  // ✔ ③（今回のケースなら） Zod が必ず正しいキーを返すので実務上安全（公開したときにはZodで制御されている）
+  // エラーを設定
+  //fieldErrorsオブジェクトをsetErrors関数に渡してerrors状態オブジェクトを更新
   const handleSignUp = async () => {
     try {
       //「スキーマに値を渡して “正しいかどうか判定してもらっている”」
@@ -44,35 +64,24 @@ export function Signup() {
       // 検証成功した場合はerrors状態オブジェクトをクリア
       setErrors({});
       //検証で失敗した場合はcatchブロックでエラーを処理する
-    } catch (error: any) {
-      // 型定義されたオブジェクトを定義する
-      const fieldErrors: typeof errors = {};
-      //error.errorsは配列なのでforEachで一つずつ取り出す
-      //err.path[0]はエラーが発生したフィールドのパス(name,email,password,confirmPasswordのいずれか)
-      //err.messageはエラーメッセージ
-      //fielderrorsオブジェクトにerr.path(nameやpasswordなど)をキーとして
-      // エラーが起こったフィールドのエラーメッセージを値としている
-      //keyof:右辺のオブジェクト型の“キー名”だけを取り出して union 型にする演算子
-      //typeof:右辺にある“実際の変数やオブジェクト”の型を抽出し、その型情報を左側（型システム）で使う
-      //✔ as keyof typeof fieldErrors は“実行時の安全”は保証しない
-      // ✔ 保証するのは “TypeScript（開発時）に対しての意図だけ”
-      // 実行時に間違ったキーが来てもバグになる（TSは止めてくれない）
-      // 開発者には「ここは fieldErrors のキーだよ」と意図を示せる
-      // TypeScript の型エラーを抑えて通すための宣言
-      // ■ では何のために使うのか？
-      // ✔ ① コードの意図を明確にし、他の開発者が理解しやすくするため
-      // ✔ ② TypeScript の型チェックを無理に通して、開発時の警告を防ぐため
-      // ✔ ③（今回のケースなら） Zod が必ず正しいキーを返すので実務上安全（公開したときにはZodで制御されている）
-      error.errors?.forEach((err: any) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as keyof typeof fieldErrors] = err.message;
-        }
-      });
-      // エラーを設定
-      //fieldErrorsオブジェクトをsetErrors関数に渡してerrors状態オブジェクトを更新
-      setErrors(fieldErrors);
-      //ここでreturnすることでサインアップ処理が実行されないようにする
-      return;
+    } catch (error: unknown) {
+      if (error instanceof ZodError) {
+        const fieldErrors: {
+          name?: string;
+          email?: string;
+          password?: string;
+          confirmPassword?: string;
+        } = {};
+        error.issues.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[
+              err.path[0] as "name" | "email" | "password" | "confirmPassword"
+            ] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+        return;
+      }
     }
     // サインアップ処理
     try {
