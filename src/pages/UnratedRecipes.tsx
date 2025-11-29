@@ -41,7 +41,7 @@ export const UnratedRecipes = () => {
     return CATEGORY_ORDER.map((category) => {
       return [category, unratedCategoryRecipes[category]] as [string, Recipe[]];
     }) as [string, Recipe[]][];
-  }, [unratedCategoryRecipes]) as [string, Recipe[]][];
+  }, [unratedCategoryRecipes, CATEGORY_ORDER]) as [string, Recipe[]][];
   // const deleteRecipe = async (id: number) => {
   //   if (!currentUser) return;
   //   try {
