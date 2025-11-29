@@ -8,14 +8,14 @@ import { useEffect, useState } from "react";
 import tasteIcon from "../assets/taste_icon.png";
 import watchIcon from "../assets/watch_icon.png";
 import { ImageOgp } from "../components/ImageOgp";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SelectCategory } from "../components/SelectCategory";
 import { Button } from "../components/ui/button";
 import { isURL } from "../lib/common";
+import { DeleteButton } from "../components/DeleteButton";
+import { BackLink } from "../components/ui/BackLink";
 
 export const RecipeDetail = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
   const recipeStore = useRecipeStore();
   const currentUserStore = useCurrentUserStore();
@@ -59,11 +59,7 @@ export const RecipeDetail = () => {
     }
   };
 
-  //追加画面に戻る
-  const handleReload = () => {
-    navigate("/");
-    window.location.reload();
-  };
+  //追加
 
   const handleUpdateTitle = async () => {
     if (!currentUserStore.currentUser || !targetRecipe) return;
@@ -156,7 +152,8 @@ export const RecipeDetail = () => {
         }
       }
     })();
-  }, [id, targetRecipe, currentUserStore.currentUser, recipeStore]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, targetRecipe, currentUserStore.currentUser]);
 
   // targetRecipeが変更されたらnewTitleを更新する
   // これがないと別のレシピの詳細ページに遷移したときにタイトルが前のレシピのタイトルになってしまう
@@ -182,16 +179,10 @@ export const RecipeDetail = () => {
       {targetRecipe === undefined ? (
         <div className="text-center">
           <p className="text-xl text-gray-600 mb-4">レシピが見つかりません</p>
-          <span className="text-xl text-gray-600">
-            ページを
-            <span
-              onClick={handleReload}
-              className="text-blue-500 py-2 mx-2 text-lg"
-            >
-              更新
-            </span>
-            してもう一度お試しください
-          </span>
+          <BackLink
+            className="text-blue-500 py-2 mx-2 text-xl hover:text-blue-600"
+            text="前のページに戻る"
+          />
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center w-full">
@@ -240,6 +231,11 @@ export const RecipeDetail = () => {
                 LINEで共有
               </Button>
             )}
+            <DeleteButton
+              id={targetRecipe.id ?? 0}
+              className="bg-red-400 p-2 rounded-md"
+              size="w-6 h-6 text-white"
+            />
           </div>
           <div className="border-b-2 mb-3 py-2 w-full lg:w-1/2 text-center lg:mb-12">
             <input

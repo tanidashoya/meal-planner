@@ -13,6 +13,16 @@ import { useMemo } from "react";
 import "swiper/css";
 import { DeleteButton } from "../components/DeleteButton";
 
+// カテゴリの表示順序を定義
+const CATEGORY_ORDER = [
+  "肉料理",
+  "魚料理",
+  "丼・ルー料理",
+  "麺料理",
+  "小物",
+  "その他",
+] as const;
+
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
@@ -32,14 +42,15 @@ export const AllRecipes = () => {
   );
 
   const filteredRecipes = useMemo(() => {
-    return Object.entries(categoryRecipes).map(([category, recipes]) => {
+    // 定義された順序でカテゴリを処理し、存在するカテゴリのみを返す
+    return CATEGORY_ORDER.map((category) => {
       return [
         category,
-        recipes.filter((recipe) => {
+        categoryRecipes[category].filter((recipe) => {
           return recipe.title?.toLowerCase().includes(searchText.toLowerCase());
         }),
-      ];
-    }) as [string, Recipe[]][];
+      ] as [string, Recipe[]];
+    });
   }, [categoryRecipes, searchText]);
 
   const moveToDetail = (id: number) => {
@@ -78,7 +89,7 @@ export const AllRecipes = () => {
   return (
     <Card className="border-0 shadow-none m-auto lg:w-3/5 w-full h-full pb-8 mt-12 gap-3">
       <CardContent className="p-2 pb-28">
-        <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-8 text-center">
+        <h2 className="font-['Inter'] text-2xl font-bold text-gray-600 mb-8 text-center">
           Myレシピ一覧（全{recipes.length}件）
         </h2>
 
@@ -97,7 +108,7 @@ export const AllRecipes = () => {
           centeredSlides={true}
           spaceBetween={2}
           watchSlidesProgress={true}
-          loop={true}
+          // loop={true}
           autoHeight={true}
           className="!mx-auto [&_.swiper-slide:not(.swiper-slide-active)]:opacity-80"
         >
@@ -107,28 +118,34 @@ export const AllRecipes = () => {
                 <h2 className="text-2xl text-gray-600 font-bold mb-6 text-center">
                   {category} ( {recipes.length}件 )
                 </h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {recipes.map((recipe) => (
-                    <div
-                      key={recipe.id}
-                      className="relative flex flex-col items-center justify-center gap-2 border-[1px] shadow-sm border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
-                      onClick={() => moveToDetail(recipe.id)}
-                    >
-                      <ImageOgp
-                        url={recipe.source || ""}
-                        className="w-32 h-22 flex-shrink-0"
-                      />
-                      <h3 className="text-sm text-gray-600 font-bold truncate w-full">
-                        {recipe.title}
-                      </h3>
-                      <DeleteButton
-                        id={recipe.id}
-                        className="absolute top-2 right-2 bg-gray-400 text-white p-1 rounded-md opacity-70"
-                        size="w-4 h-4 text-white"
-                      />
-                    </div>
-                  ))}
-                </div>
+                {recipes.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {recipes.map((recipe) => (
+                      <div
+                        key={recipe.id}
+                        className="relative flex flex-col items-center justify-center gap-2 border-[1px] shadow-sm border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
+                        onClick={() => moveToDetail(recipe.id)}
+                      >
+                        <ImageOgp
+                          url={recipe.source || ""}
+                          className="w-32 h-22 flex-shrink-0"
+                        />
+                        <h3 className="text-sm text-gray-600 font-bold truncate w-full">
+                          {recipe.title}
+                        </h3>
+                        <DeleteButton
+                          id={recipe.id}
+                          className="absolute top-2 right-2 bg-gray-400 text-white p-1 rounded-md opacity-70"
+                          size="w-4 h-4 text-white"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-400 text-lg font-bold py-30 w-full m-auto border-[1px] border-gray-300 rounded-md">
+                    検索結果がありません
+                  </div>
+                )}
               </div>
             </SwiperSlide>
           ))}

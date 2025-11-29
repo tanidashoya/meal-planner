@@ -28,9 +28,9 @@ export function WatchPoint({ recipeId, img, Word }: TimeProps) {
         const data = await recipeRepository.fetchTime(currentUser.id, recipeId);
         setTime(data.time || 0);
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "不明なエラーが発生しました"
-        );
+        // toast.error(
+        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
+        // );
         setTime(0);
       } finally {
         setIsLoading(false);
@@ -53,9 +53,9 @@ export function WatchPoint({ recipeId, img, Word }: TimeProps) {
         );
         recipeStore.set([updatedRecipe]);
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "不明なエラーが発生しました"
-        );
+        // toast.error(
+        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
+        // );
         setTime(0);
       }
     };

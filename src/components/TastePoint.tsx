@@ -30,9 +30,9 @@ export function TastePoint({ recipeId, img, Word }: TastePointProps) {
         );
         setRating(data.rating || 0);
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "不明なエラーが発生しました"
-        );
+        // toast.error(
+        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
+        // );
         setRating(0);
       } finally {
         setIsLoading(false);
@@ -55,9 +55,9 @@ export function TastePoint({ recipeId, img, Word }: TastePointProps) {
         );
         recipeStore.updateRating(updatedRecipe);
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "不明なエラーが発生しました"
-        );
+        // toast.error(
+        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
+        // );
         setRating(0);
       }
     };

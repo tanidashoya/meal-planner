@@ -1,34 +1,22 @@
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { Recipe } from "../modules/recipes/recipe.entity";
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageOgp } from "../components/ImageOgp";
 import { useSuggestRecipesStore } from "../modules/suggestRecipes/suggest-recipes.state";
+import { DeleteButton } from "../components/DeleteButton";
 
 export const SuggestRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
-  const { suggestRecipes, setSuggestRecipes } = useSuggestRecipesStore();
-
   const navigate = useNavigate();
 
   const moveToDetail = (id: number) => {
     navigate(`/recipes/${id}`);
   };
-
-  const groupedRecipes = useMemo(
-    () =>
-      recipes.reduce<Record<string, Recipe[]>>((acc, recipe) => {
-        const category = recipe.category ?? "未分類";
-        const next = acc[category] ?? [];
-        acc[category] = [...next, recipe];
-        return acc;
-      }, {}),
-    [recipes]
-  );
+  const { suggestRecipes, setSuggestRecipes } = useSuggestRecipesStore();
 
   //渡されたリストから2つ選ぶ
-  const pickTwoRadom = (Recipes: Recipe[]): Recipe[] => {
+  const pickRandomRecipes = (Recipes: Recipe[]) => {
     const RecipesArray = [...Recipes];
     //配列の最後の要素から順にランダムに選ぶ
     //Math.floorは小数点切り捨て
@@ -37,62 +25,47 @@ export const SuggestRecipes = () => {
       const j = Math.floor(Math.random() * i);
       [RecipesArray[i], RecipesArray[j]] = [RecipesArray[j], RecipesArray[i]];
     }
-    //配列の最初の2つを返す
-    return RecipesArray.slice(0, 2);
-  };
-
-  const handlePicksCategoryRecipes = () => {
-    setSuggestRecipes([]);
-    const groupedRecipesArray = Object.entries(groupedRecipes);
-    for (const [category, Recipes] of groupedRecipesArray) {
-      const pickedRecipes = pickTwoRadom(Recipes);
-      //pickedRecipesListにカテゴリと選ばれたレシピを追加していく（関数型アップデート）
-      setSuggestRecipes((prev) => [...prev, [category, pickedRecipes]]);
-    }
+    //配列の最初の6つを返す
+    setSuggestRecipes(RecipesArray.slice(0, 4));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2 mt-12 mb-12">
-      <div className="flex items-center justify-center gap-8 mb-4">
+    <div className="flex flex-col items-center justify-center gap-2 mt-15 mb-12">
+      <div className="flex flex-col items-center justify-center gap-8 mb-8">
         <p className="text-xl font-bold text-center tracking-wider">
           Myレシピから提案
         </p>
         <button
-          onClick={handlePicksCategoryRecipes}
+          onClick={() => {
+            pickRandomRecipes(recipes);
+          }}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
-          レシピ出力
+          ランダムレシピ出力
         </button>
       </div>
-      {suggestRecipes.map(([category, pickedRecipes]) => (
-        <div
-          key={category}
-          className="flex flex-col items-center justify-center gap-2 w-full px-4 mt-8"
-        >
-          <p className="text-2xl text-gray-500 font-bold text-left mb-1">
-            {category}
-          </p>
-          {pickedRecipes.map((pickedRecipe) => (
-            <div
-              key={pickedRecipe.id}
-              onClick={() => moveToDetail(pickedRecipe.id ?? 0)}
-              className="flex items-center justify-space-between gap-4 w-full px-4 border-[2px] shadow-md border-gray-300 rounded-md py-2"
-            >
-              <ImageOgp
-                // sourceは空文字の可能性もある。一応空文字で確定的・安全に扱うためにデフォルト値を空文字にしておく
-                url={pickedRecipe.source || ""}
-                className="w-36 h-24 flex-shrink-0 border-[1px] border-gray-300 rounded-md"
-              />
-              <div className="flex flex-col items-start justify-center gap-2">
-                <span className="text-base border-b-[2px] border-gray-300">
-                  {pickedRecipe.category}
-                </span>
-                <span className="text-sm font-bold">{pickedRecipe.title}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ))}
+      <div className="grid grid-cols-2 gap-3 px-4">
+        {suggestRecipes.map((recipe) => (
+          <div
+            key={recipe.id}
+            className="relative flex flex-col items-center justify-center gap-2 border-[1px] shadow-sm border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
+            onClick={() => moveToDetail(recipe.id)}
+          >
+            <ImageOgp
+              url={recipe.source || ""}
+              className="w-32 h-22 flex-shrink-0"
+            />
+            <h3 className="text-sm text-gray-600 font-bold truncate w-full">
+              {recipe.title}
+            </h3>
+            <DeleteButton
+              id={recipe.id}
+              className="absolute top-2 right-2 bg-gray-400 text-white p-1 rounded-md opacity-70"
+              size="w-4 h-4 text-white"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

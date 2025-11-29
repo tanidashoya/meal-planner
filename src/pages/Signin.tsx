@@ -52,6 +52,8 @@ export function Signin() {
       const user = await authRepository.signin(email, password);
       currentUserStore.set(user);
       toast.success("ログインに成功しました");
+      //{ replace: true })は、ブラウザの履歴スタック上で現在のURLを新しいURLで置き換える
+      //つまり、もどるボタンを押した時に前のページに戻れないようにする
       navigate("/", { replace: true });
     } catch (error) {
       toast.error(
