@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
-import { toast } from "react-toastify";
 
 interface TastePointProps {
   recipeId: number;
@@ -29,10 +28,7 @@ export function TastePoint({ recipeId, img, Word }: TastePointProps) {
           recipeId
         );
         setRating(data.rating || 0);
-      } catch (error) {
-        // toast.error(
-        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
-        // );
+      } catch {
         setRating(0);
       } finally {
         setIsLoading(false);
@@ -54,10 +50,7 @@ export function TastePoint({ recipeId, img, Word }: TastePointProps) {
           newRating
         );
         recipeStore.updateRating(updatedRecipe);
-      } catch (error) {
-        // toast.error(
-        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
-        // );
+      } catch {
         setRating(0);
       }
     };

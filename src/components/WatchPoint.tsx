@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
-import { toast } from "react-toastify";
 
 interface TimeProps {
   recipeId: number;
@@ -27,10 +26,7 @@ export function WatchPoint({ recipeId, img, Word }: TimeProps) {
         setIsLoading(true);
         const data = await recipeRepository.fetchTime(currentUser.id, recipeId);
         setTime(data.time || 0);
-      } catch (error) {
-        // toast.error(
-        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
-        // );
+      } catch {
         setTime(0);
       } finally {
         setIsLoading(false);
@@ -52,10 +48,7 @@ export function WatchPoint({ recipeId, img, Word }: TimeProps) {
           newTime
         );
         recipeStore.set([updatedRecipe]);
-      } catch (error) {
-        // toast.error(
-        //   error instanceof Error ? error.message : "不明なエラーが発生しました"
-        // );
+      } catch {
         setTime(0);
       }
     };
