@@ -1,60 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Layout } from "./Layout";
-import { Home } from "./pages/Home";
-import { Signup } from "./pages/Signup";
-import { Signin } from "./pages/Signin";
+import { BrowserRouter } from "react-router-dom";
 import { authRepository } from "./modules/auth/auth.repository";
 import { useEffect, useState } from "react";
 import { useCurrentUserStore } from "./modules/auth/current-user.state";
-import { RecipeDetail } from "./pages/RecipeDetail";
 import mealPlannerLogo from "./assets/mealPlanner.webp";
-import { TasteSort } from "./pages/TasteSort";
-import { TasteList } from "./pages/TasteList";
-import { TimeSort } from "./pages/TimeSort";
-import { TimeList } from "./pages/TimeList";
-import { useLocation } from "react-router-dom";
-import { Picks } from "./pages/Picks";
 import { ToastContainer } from "react-toastify";
-import { MatchRecipe } from "./pages/MatchRecipe";
-import { OutSideSite } from "./pages/OutSideSite";
-import { UnratedRecipes } from "./pages/UnratedRecipes";
-import { AllRecipes } from "./pages/AllRecipes";
-import { SuggestRecipes } from "./pages/SuggestRecipes";
-
-function useViewportHeightFix() {
-  useEffect(() => {
-    const setVh = () => {
-      // innerHeightをもとにCSS変数 --vh を常に正しく再設定
-      document.documentElement.style.setProperty(
-        "--vh",
-        `${window.innerHeight * 0.01}px`
-      );
-    };
-    setVh(); // 初期設定
-    window.addEventListener("resize", setVh);
-    return () => window.removeEventListener("resize", setVh);
-  }, []);
-}
-
-export function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    // ページ遷移のたびに先頭に戻す
-    // Layout.tsxのmain要素がスクロールコンテナ
-    const mainElement = document.querySelector("main");
-    if (mainElement) {
-      mainElement.scrollTo(0, 0);
-    } else {
-      window.scrollTo(0, 0);
-    }
-  }, [pathname]);
-
-  return null;
-}
+import { AppRoutes } from "./router";
+import { useViewportHeightFix } from "./hooks/useViewport";
+import { ScrollRestoration } from "./components/ScrollRestoration";
 
 function App() {
+  //リサイズされるたびに本当の高さ（実際に見えている高さ）を取得して、CSS変数 --vh を再設定する
   useViewportHeightFix();
+  //UIを表示せずにローディング画面を表示するための状態の場合は初期値がtrue
   const [isLoading, setIsLoading] = useState(true);
   const currentUserStore = useCurrentUserStore();
   useEffect(() => {
@@ -72,7 +29,7 @@ function App() {
     const startTime = Date.now();
 
     const loadData = async () => {
-      // 実際のデータ取得
+      // ユーザー情報の取得
       await fetchCurrentUser();
 
       if (isFirstVisit) {
@@ -81,9 +38,12 @@ function App() {
         //elapsedTime：現在の時刻からstartTimeを引いた値（処理開始からここまでかかった時間）
         const elapsedTime = Date.now() - startTime;
         //remainingTime：2.4秒からelapsedTimeを引いた値（残りの時間）
-        //つまり最小で2.4秒間ローディングを表示
+        //つまり2.4秒経過するまではローディングを表示
         //「remainingTime には、あとどれだけ待つ必要があるか（ただし0未満にはならない）」が入る
-        const remainingTime = Math.max(0, 2400 - elapsedTime);
+        //Math.maxは複数の数字を渡して大きい方を返す関数
+        //2000：2秒（最小2秒間ローディングを表示）
+        //2400 - elapsedTime：2.4秒から経過した時間を引いた値（残りの時間）
+        const remainingTime = Math.max(2000, 2400 - elapsedTime);
 
         // 初回訪問フラグをセット
         //seesionStorageにvisitedキーと値trueのペアが保存されている
@@ -125,39 +85,28 @@ function App() {
     );
   }
 
-  //id="app"：overflow-y-autoがありLaypoutコンポーネントのmain要素と連動して動いていた
+  //ToastContainer：通知を表示するコンポーネント
+  //id="app"：overflow-y-autoがありLaypoutコンポーネントのmain要素と連動してスクロールが動いていた
+  //App.tsxでスクロールできるようにしているとLayoutコンポーネント全体がスクロールされるので
+  // 上下のバーも一緒にスクロールされてしまう。
   return (
-    <div id="app" className="h-[calc(var(--vh)*100)] overscroll-contain">
+    <div id="app" className="h-[var(--vh)] overscroll-contain">
       <BrowserRouter>
         <ToastContainer
-          position="top-right"
-          autoClose={1700}
-          hideProgressBar={true}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="colored"
+          position="top-right" // 表示位置（右上）
+          autoClose={1700} // 1700ms（1.7秒）後に自動で消える
+          hideProgressBar={true} // 進捗バー（残り時間）を非表示
+          newestOnTop={true} // 新しい通知は上に追加（下ではなく）
+          closeOnClick // クリックで閉じられる
+          pauseOnHover // マウスを乗せている間は消えない
+          draggable // ドラッグして閉じられる
+          theme="colored" // 色付きテーマ
+          limit={3} // 同時に表示する通知の最大数
+          pauseOnFocusLoss={false} // フォーカスが外れた時に消えない
         />
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="/recipes/:id" element={<RecipeDetail />} />
-            <Route path="/star-sort" element={<TasteSort />} />
-            <Route path="/star-list/:star" element={<TasteList />} />
-            <Route path="/time-sort" element={<TimeSort />} />
-            <Route path="/time-list/:time" element={<TimeList />} />
-            <Route path="/picks" element={<Picks />} />
-            <Route path="/match-recipe" element={<MatchRecipe />} />
-            <Route path="/outside-site" element={<OutSideSite />} />
-            <Route path="/unrated-recipes" element={<UnratedRecipes />} />
-            <Route path="/all-recipes" element={<AllRecipes />} />
-            <Route path="/suggest-recipes" element={<SuggestRecipes />} />
-          </Route>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/signin" element={<Signin />} />
-        </Routes>
+        <AppRoutes />
+        {/* ページ遷移時にスクロール位置を復元(各ページでばらばらに保存している) */}
+        <ScrollRestoration />
       </BrowserRouter>
     </div>
   );
