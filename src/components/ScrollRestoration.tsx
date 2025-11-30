@@ -29,7 +29,7 @@ export const ScrollRestoration = () => {
 
     // スクロール位置をリアルタイムで保存
     mainElement.addEventListener("scroll", handleScroll);
-    //　クリーンアップ関数（アンマウントされたらスクロール位置をリアルタイムで保存を解除）
+    //クリーンアップ関数（アンマウントされたらスクロール位置をリアルタイムで保存を解除）
     return () => mainElement.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 

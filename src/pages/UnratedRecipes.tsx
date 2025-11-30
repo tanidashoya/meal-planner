@@ -14,14 +14,6 @@ export const UnratedRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
   // カテゴリの表示順序を定義
-  const CATEGORY_ORDER = [
-    "肉料理",
-    "魚料理",
-    "丼・ルー料理",
-    "麺料理",
-    "小物",
-    "その他",
-  ] as const;
 
   const navigate = useNavigate();
   const unratedRecipes = recipes.filter(
@@ -38,10 +30,18 @@ export const UnratedRecipes = () => {
   }, [unratedRecipes]);
 
   const arrayUnratedRecipes = useMemo(() => {
-    return CATEGORY_ORDER.map((category) => {
-      return [category, unratedCategoryRecipes[category]] as [string, Recipe[]];
-    }) as [string, Recipe[]][];
-  }, [unratedCategoryRecipes, CATEGORY_ORDER]) as [string, Recipe[]][];
+    const CATEGORY_ORDER = [
+      "肉料理",
+      "魚料理",
+      "丼・ルー料理",
+      "麺料理",
+      "小物",
+      "その他",
+    ];
+    return CATEGORY_ORDER.map((category): [string, Recipe[]] => {
+      return [category, unratedCategoryRecipes[category]];
+    });
+  }, [unratedCategoryRecipes]);
   // const deleteRecipe = async (id: number) => {
   //   if (!currentUser) return;
   //   try {

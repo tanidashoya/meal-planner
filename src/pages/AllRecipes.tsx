@@ -1,8 +1,5 @@
 import { useRecipeStore } from "../modules/recipes/recipe.state";
-// import { useCurrentUserStore } from "../modules/auth/current-user.state";
-// import { toast } from "react-toastify";
 import { Card, CardContent } from "../components/ui/card";
-// import { SelectCategory } from "../components/SelectCategory";
 import { useAllRecipesStore } from "../modules/AllRecipes/all-recipes.state";
 import { Recipe } from "../modules/recipes/recipe.entity";
 import { ImageOgp } from "../components/ImageOgp";
@@ -14,14 +11,6 @@ import "swiper/css";
 import { DeleteButton } from "../components/DeleteButton";
 
 // カテゴリの表示順序を定義
-const CATEGORY_ORDER = [
-  "肉料理",
-  "魚料理",
-  "丼・ルー料理",
-  "麺料理",
-  "小物",
-  "その他",
-] as const;
 
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
@@ -42,36 +31,28 @@ export const AllRecipes = () => {
   );
 
   const filteredRecipes = useMemo(() => {
+    const CATEGORY_ORDER = [
+      "肉料理",
+      "魚料理",
+      "丼・ルー料理",
+      "麺料理",
+      "小物",
+      "その他",
+    ];
     // 定義された順序でカテゴリを処理し、存在するカテゴリのみを返す
-    return CATEGORY_ORDER.map((category) => {
+    return CATEGORY_ORDER.map((category): [string, Recipe[]] => {
       return [
         category,
         categoryRecipes[category].filter((recipe) => {
           return recipe.title?.toLowerCase().includes(searchText.toLowerCase());
         }),
-      ] as [string, Recipe[]];
+      ];
     });
   }, [categoryRecipes, searchText]);
 
   const moveToDetail = (id: number) => {
     navigate(`/recipes/${id}`);
   };
-
-  // const filteredRecipes = recipes.filter((recipe) => {
-  //   // 検索テキストとカテゴリのフィルタリング
-  //   //searchText.trim() === "" はsearchTextが空文字列かどうかを判定:空文字列の場合はtrueを返す⇒検索テキストが空の場合は全てのレシピを返す
-  //   //recipe.title?.toLowerCase().includes(searchText.toLowerCase()) はrecipe.titleがsearchTextを含むかどうかを判定:含む場合はtrueを返す
-  //   const matchesTitle =
-  //     searchText.trim() === "" ||
-  //     recipe.title?.toLowerCase().includes(searchText.toLowerCase());
-  //   //selectedCategory === "全てのレシピ" はselectedCategoryが"全てのレシピ"かどうかを判定:trueの場合は全てのレシピを返す
-  //   //recipe.category === selectedCategory はrecipe.categoryがselectedCategoryと一致するかどうかを判定:一致する場合はtrueを返す
-  //   const matchesCategory =
-  //     selectedCategory === "全てのレシピ" ||
-  //     recipe.category === selectedCategory;
-  //   //matchesSearch && matchesCategory は検索テキストとカテゴリのフィルタリングの結果を返す:どちらもtrueの場合はtrueを返す
-  //   return matchesTitle && matchesCategory;
-  // });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
