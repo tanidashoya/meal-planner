@@ -4,27 +4,30 @@ import { useAllRecipesStore } from "../modules/AllRecipes/all-recipes.state";
 import { Recipe } from "../modules/recipes/recipe.entity";
 import { ImageOgp } from "../components/ImageOgp";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 // ← ここに置けば OK！
 import "swiper/css";
 import { DeleteButton } from "../components/DeleteButton";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 
+const CATEGORY_ORDER = [
+  "肉料理",
+  "魚料理",
+  "丼・ルー料理",
+  "麺料理",
+  "小物",
+  "その他",
+];
+
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
   //currentUserは使われてはいないが種ページと同様で防御策の早期returnとして記述
   const { currentUser } = useCurrentUserStore();
-  if (!currentUser) return;
-  const CATEGORY_ORDER = [
-    "肉料理",
-    "魚料理",
-    "丼・ルー料理",
-    "麺料理",
-    "小物",
-    "その他",
-  ];
+  //早期returnの後にhooksがあるとlintエラーになる
+  // if (!currentUser) return;
+
   const { searchText, setSearchText } = useAllRecipesStore();
   const SWIPER_KEY = "all-recipes-swiper-index";
   const navigate = useNavigate();
@@ -60,6 +63,9 @@ export const AllRecipes = () => {
     setSearchText(e.target.value);
   };
 
+  if (!currentUser) {
+    return <Navigate to="/signin" replace />;
+  }
   //レシピの読み込み中かどうかを管理するグローバルステートがtrueの場合はローディング画面を表示する
   if (recipesStore.isLoading) {
     return (
