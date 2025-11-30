@@ -22,6 +22,7 @@ export const UnratedRecipes = () => {
     "小物",
     "その他",
   ];
+  const SWIPER_KEY = "unrated-recipes-swiper-index";
   const navigate = useNavigate();
   const unratedRecipes = recipes.filter(
     (recipe) => recipe.rating === null || recipe.time === null
@@ -103,6 +104,14 @@ export const UnratedRecipes = () => {
           watchSlidesProgress={true}
           // loop={true}
           autoHeight={true}
+          //保存しているスライドのインデックス（Number(sessionStorage.getItem(SWIPER_KEY))）を取得して、そのインデックスのスライドに移動
+          //もし保存しているスライドのインデックスがない場合は0番目のスライドに移動
+          initialSlide={Number(sessionStorage.getItem(SWIPER_KEY)) || 0}
+          //スワイパーのスライドが変わった時に実行
+          //移動後のスライドのインデックス（swiper.activeIndex）をsessionStorageに保存
+          onSlideChange={(swiper) => {
+            sessionStorage.setItem(SWIPER_KEY, String(swiper.activeIndex));
+          }}
           className="!mx-auto [&_.swiper-slide:not(.swiper-slide-active)]:opacity-80"
         >
           {arrayUnratedRecipes.map(([category, recipes]) => (

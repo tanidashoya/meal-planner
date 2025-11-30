@@ -14,10 +14,21 @@ import { AllRecipes } from "../pages/AllRecipes";
 import { SuggestRecipes } from "../pages/SuggestRecipes";
 import { Signup } from "../pages/Signup";
 import { Signin } from "../pages/Signin";
+import { ProtectedRoute } from "../components/ui/ProtectedRoute";
 
 export const AppRoutes = () => (
+  //ProtectedRouteコンポーネントで囲われたコンポーネントは、currentUserがnullの場合はサインインページにリダイレクト
+
   <Routes>
-    <Route path="/" element={<Layout />}>
+    <Route
+      path="/"
+      element={
+        <ProtectedRoute>
+          {/* ← 親：先に実行される */}
+          <Layout /> {/* ← 子：children として渡される */}
+        </ProtectedRoute>
+      }
+    >
       <Route index element={<Home />} />
       <Route path="/recipes/:id" element={<RecipeDetail />} />
       <Route path="/star-sort" element={<TasteSort />} />

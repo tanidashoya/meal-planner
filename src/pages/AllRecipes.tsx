@@ -9,12 +9,14 @@ import { useMemo } from "react";
 // ← ここに置けば OK！
 import "swiper/css";
 import { DeleteButton } from "../components/DeleteButton";
-
-// カテゴリの表示順序を定義
+import { useCurrentUserStore } from "../modules/auth/current-user.state";
 
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
+  //currentUserは使われてはいないが種ページと同様で防御策の早期returnとして記述
+  const { currentUser } = useCurrentUserStore();
+  if (!currentUser) return;
   const CATEGORY_ORDER = [
     "肉料理",
     "魚料理",
@@ -24,6 +26,7 @@ export const AllRecipes = () => {
     "その他",
   ];
   const { searchText, setSearchText } = useAllRecipesStore();
+  const SWIPER_KEY = "all-recipes-swiper-index";
   const navigate = useNavigate();
 
   const categoryRecipes = useMemo(
@@ -90,6 +93,14 @@ export const AllRecipes = () => {
           watchSlidesProgress={true}
           // loop={true}
           autoHeight={true}
+          //保存しているスライドのインデックス（Number(sessionStorage.getItem(SWIPER_KEY))）を取得して、そのインデックスのスライドに移動
+          //もし保存しているスライドのインデックスがない場合は0番目のスライドに移動
+          initialSlide={Number(sessionStorage.getItem(SWIPER_KEY)) || 0}
+          //スワイパーのスライドが変わった時に実行
+          //移動後のスライドのインデックス（swiper.activeIndex）をsessionStorageに保存
+          onSlideChange={(swiper) => {
+            sessionStorage.setItem(SWIPER_KEY, String(swiper.activeIndex));
+          }}
           className="!mx-auto [&_.swiper-slide:not(.swiper-slide-active)]:opacity-80"
         >
           {filteredRecipes.map(([category, recipes]) => (
