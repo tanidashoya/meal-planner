@@ -15,7 +15,14 @@ import { DeleteButton } from "../components/DeleteButton";
 export const AllRecipes = () => {
   const recipesStore = useRecipeStore();
   const recipes = recipesStore.getAll();
-  // const { currentUser } = useCurrentUserStore();
+  const CATEGORY_ORDER = [
+    "肉料理",
+    "魚料理",
+    "丼・ルー料理",
+    "麺料理",
+    "小物",
+    "その他",
+  ];
   const { searchText, setSearchText } = useAllRecipesStore();
   const navigate = useNavigate();
 
@@ -31,14 +38,6 @@ export const AllRecipes = () => {
   );
 
   const filteredRecipes = useMemo(() => {
-    const CATEGORY_ORDER = [
-      "肉料理",
-      "魚料理",
-      "丼・ルー料理",
-      "麺料理",
-      "小物",
-      "その他",
-    ];
     // 定義された順序でカテゴリを処理し、存在するカテゴリのみを返す
     return CATEGORY_ORDER.map((category): [string, Recipe[]] => {
       return [
