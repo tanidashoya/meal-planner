@@ -4,7 +4,7 @@ import { recipeRepository } from "./recipe.repository";
 import { toast } from "react-toastify";
 
 const recipeAtom = atom<Recipe[]>([]);
-const isLoadingAtom = atom<boolean>(false);
+const isLoadingAtom = atom<boolean>(true);
 
 export const useRecipeStore = () => {
   const [recipes, setRecipes] = useAtom(recipeAtom);

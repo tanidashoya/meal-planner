@@ -1,8 +1,5 @@
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { useNavigate } from "react-router-dom";
-// import { MoreVertical, Trash2 } from "lucide-react";
-// import { useCurrentUserStore } from "../modules/auth/current-user.state";
-// import { toast } from "react-toastify";
 import { ImageOgp } from "../components/ImageOgp";
 import { DeleteButton } from "../components/DeleteButton";
 import { useMemo } from "react";
@@ -39,60 +36,55 @@ export const UnratedRecipes = () => {
     }, {} as Record<string, Recipe[]>);
   }, [unratedRecipes]);
 
+  // ☆ ??[]がないとエラーになる
+  //この流れになっているから
+  /*
+  Layout マウント
+         ↓
+  useEffect で fetchRecipes() 開始（非同期）
+          ↓
+  【同時に】UnratedRecipes レンダリング ← ここでデータはまだない！
+          ↓
+  recipes = []（空配列）
+          ↓
+  unratedCategoryRecipes = {}（空オブジェクト）
+          ↓
+  unratedCategoryRecipes["肉料理"] = undefined 💥 ここで一度undefinedになるから
+          ↓
+  （後から）fetchRecipes() 完了
+          ↓
+  recipes = [{...}, {...}, ...]（データあり）
+          ↓
+  再レンダリング → 正常表示
+  */
+  //しかしこれは正常。なぜなら・・・
+  // 1. まずUIをレンダリングする（データがなくても）
+  // 2. データが来たら再レンダリングする
+  // ※ useEffectは「レンダリング後」に実行されるため、
+  //    データ取得完了を待たずに先にUIがレンダリングされる
+  //だから開発者はローディング状態の管理やundefined・nullになることを気にしないといけない
+  //データ取得前の最初のレンダリング時にはunratedCategoryRecipesは空オブジェクトになっているから、
+  //そのままmapメソッドを実行するとunratedCategoryRecipes[category]が空のオブジェクトのプロパティにアクセスしてしまうからundefinedになってしまうからエラーになる
+  //そのため、unratedCategoryRecipes[category] ?? []とすることで空のオブジェクトのプロパティにアクセスしてしまうと空配列を返すようにする
   const arrayUnratedRecipes = useMemo(() => {
     return CATEGORY_ORDER.map((category): [string, Recipe[]] => {
-      return [category, unratedCategoryRecipes[category]];
+      return [category, unratedCategoryRecipes[category] ?? []];
     });
   }, [unratedCategoryRecipes]);
-  // const deleteRecipe = async (id: number) => {
-  //   if (!currentUser) return;
-  //   try {
-  //     await recipesStore.delete(currentUser.id, id);
-  //     toast.success("レシピを削除しました");
-  //   } catch (error) {
-  //     toast.error(
-  //       error instanceof Error ? error.message : "不明なエラーが発生しました"
-  //     );
-  //   }
-  // };
 
   const moveToDetail = (id: number) => {
     navigate(`/recipes/${id}`);
   };
 
+  if (recipesStore.isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    // <div className="w-full lg:w-4/5 mx-auto rounded-md px-5 py-5 lg:p-8 mt-12 lg:mb-8">
-    //   <div className="flex items-center justify-center gap-2 mb-12 lg:mb-12">
-    //     <h2 className="font-['Inter'] text-xl font-bold text-gray-600">
-    //       未評価項目があるレシピ
-    //     </h2>
-    //     <span className="text-xl text-gray-600 font-bold">
-    //       ({unratedRecipes.length}件)
-    //     </span>
-    //   </div>
-    //   <div className="grid grid-cols-2 gap-2">
-    //     {unratedRecipes.map((recipe) => (
-    //       <div
-    //         key={recipe.id}
-    //         className="relative flex flex-col items-center justify-center gap-2 border-[1px] mb-1 shadow-sm border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50"
-    //         onClick={() => moveToDetail(recipe.id)}
-    //       >
-    //         <ImageOgp
-    //           url={recipe.source || ""}
-    //           className="w-36 h-24 flex-shrink-0"
-    //         />
-    //         <h3 className="text-sm text-gray-600 font-bold truncate w-full">
-    //           {recipe.title}
-    //         </h3>
-    //         <DeleteButton
-    //           id={recipe.id}
-    //           className="absolute top-1 right-2 bg-gray-400 text-white p-1 rounded-md opacity-70"
-    //           size="w-4 h-4 text-white"
-    //         />
-    //       </div>
-    //     ))}
-    //   </div>
-    // </div>
     <Card className="border-0 shadow-none m-auto lg:w-3/5 w-full h-full pb-8 mt-15 gap-3">
       <CardContent className="p-2 pb-28">
         <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-15 text-center">

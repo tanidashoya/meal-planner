@@ -8,7 +8,7 @@ import { Outlet } from "react-router-dom";
 import { useCurrentUserStore } from "./modules/auth/current-user.state";
 import { useRecipeStore } from "./modules/recipes/recipe.state";
 import { recipeRepository } from "./modules/recipes/recipe.repository";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { SearchModal } from "./components/SearchModal";
 import { Recipe } from "./modules/recipes/recipe.entity";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ export const Layout = () => {
   //✅ リロード（＝アプリ全体の再マウント）が起きたら、依存配列に何が入っていても useEffect は最初の一回は必ず実行される。
   //recipe.repository.tsが保存変更された場合はcurrentUserStore.currentUserが変更されない（Layoutコンポーネントは再マウントされない）
   // ⇒ そのためrecipeStoreが空になる
-  useEffect(() => {
+  useLayoutEffect(() => {
     //すべてのレシピを取得
     //検索ページで使用する
     const fetchRecipes = async () => {
