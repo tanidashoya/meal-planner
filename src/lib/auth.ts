@@ -9,7 +9,7 @@ import { z } from "zod";
 // その中心にあるのが z.object()
 //サインインのバリデーション
 export const signInSchema = z.object({
-  email: z.email("正しいメールアドレス形式で入力してください"),
+  email: z.string().trim().email("正しいメールアドレス形式で入力してください"),
   password: z
     .string()
     .min(1, "パスワードを入力してください")
@@ -26,20 +26,30 @@ export const signUpSchema = z
   .object({
     name: z
       .string() //string()は文字列でなければいけないというZodのバリデーションエンジンを作る。そのバリデーションエンジンをもとにz.infer<typeof signUpSchema>でTypeScriptの型を生成する。
+      .trim()
       .min(1, "名前を入力してください")
       .min(2, "名前は2文字以上で入力してください")
       .max(20, "名前は20文字以内で入力してください"),
-    email: z.email("正しいメールアドレス形式で入力してください"),
+    email: z
+      .string()
+      .trim()
+      .email("正しいメールアドレス形式で入力してください"),
     password: z
       .string()
+      .trim()
       .min(1, "パスワードを入力してください")
       .min(6, "パスワードは6文字以上で入力してください")
+      .max(20, "パスワードは20文字以内で入力してください")
       .regex(
         //正規表現でパスワードの形式を指定（英字と数字を含む必要があります）
         /^(?=.*[A-Za-z])(?=.*\d)/,
         "パスワードは英字と数字を含む必要があります"
       ),
-    confirmPassword: z.string().min(1, "確認用パスワードを入力してください"),
+    confirmPassword: z
+      .string()
+      .trim()
+      .min(1, "確認用パスワードを入力してください")
+      .max(20, "確認用パスワードは20文字以内で入力してください"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "パスワードが一致しません",

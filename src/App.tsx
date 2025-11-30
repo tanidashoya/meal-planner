@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { AppRoutes } from "./router";
 import { useViewportHeightFix } from "./hooks/useViewport";
 import { ScrollRestoration } from "./components/ScrollRestoration";
+import { toast } from "react-toastify";
 
 function App() {
   //リサイズされるたびに本当の高さ（実際に見えている高さ）を取得して、CSS変数 --vh を再設定する
@@ -30,8 +31,13 @@ function App() {
 
     const loadData = async () => {
       // ユーザー情報の取得
-      await fetchCurrentUser();
-
+      try {
+        await fetchCurrentUser();
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "不明なエラーが発生しました"
+        );
+      }
       if (isFirstVisit) {
         // 初回訪問の場合は最小2.4秒間ローディングを表示
         //elapsed：経過した

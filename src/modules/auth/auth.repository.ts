@@ -10,30 +10,26 @@ import { supabase } from "../../lib/supabase";
 //名前をuserNameとして返すようにした。
 //✅✅✅supabaseは例外としてではなくオブジェクトとしてエラーを返ずため、try-catch文を使うエラーハンドリングはしない
 export const authRepository = {
+  async signup(name: string, email: string, password: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },
+    });
+    if (error != null || data.user == null) {
+      console.error(error?.message);
+      throw new Error("サインアップに失敗しました");
+    }
+    //他の場所でdata.userが使われている場合直接書き換えると挙動がおかしくなる可能性があるのでスプレッド構文で返す
+    return {
+      ...data.user,
+      userName: data.user.user_metadata.name,
+      //accessTokenを返す
+      accessToken: data.session!.access_token,
+    };
+  },
 
-
-    async signup(name:string,email:string,password:string){
-        const {data,error} = await supabase.auth.signUp(
-            {
-                email,
-                password,
-                options:{data:{name}}
-            }
-        )
-        if (error != null || data.user == null) {
-            console.error(error?.message)
-            throw new Error("サインアップに失敗しました")
-        }
-        //他の場所でdata.userが使われている場合直接書き換えると挙動がおかしくなる可能性があるのでスプレッド構文で返す
-        return {
-            ...data.user,
-            userName:data.user.user_metadata.name,
-            //accessTokenを返す
-            accessToken:data.session!.access_token
-        }
-    },
-
-    /*
+  /*
         supabaseがsignUpメソッドで返すdataオブジェクトの構造
         {
             user: {
@@ -45,96 +41,95 @@ export const authRepository = {
             session: Session | null
         }
     */
-    
 
-    //早期return（if (!data.session) return; や if (!data.user) return;）だと
-    //フロント側にundefinedが返されるためグローバルステートに入れようとするとエラーが起こる可能性があった
-    //そのためnullを返すようにした
-    
-    async signin(email:string,password:string){
-        const {data,error} = await supabase.auth.signInWithPassword({email,password})
-        //Supabaseの仕様上、errorがあるときdataが壊れていることが多い。安全性高い。
-        //rrorを先に判定することでdataが壊れている場合はそもそもログインできていないのでエラーを投げることができる。
-        if (error != null){
-            console.error(error?.message)
-            throw new Error("サインインに失敗しました")
-        }
-        if (!data.session) return null;
-        if (!data.user) return null;
+  //早期return（if (!data.session) return; や if (!data.user) return;）だと
+  //フロント側にundefinedが返されるためグローバルステートに入れようとするとエラーが起こる可能性があった
+  //そのためnullを返すようにした
 
-        return {
-            ...data.user,
-            userName:data.user.user_metadata.name,
-            //accessTokenを返す
-            accessToken:data.session.access_token
-
-        }
-    },
-
-    //Supabase のセッションは ブラウザに長期間保存されるので、
-    //通常は一度ログインしたら再ログインを求められずに使い続けられる。
-    //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
-    async getCurrentUser(){
-        const {data,error} = await supabase.auth.getSession()
-        if (error != null){
-          console.error(error?.message)
-          throw new Error("ログイン中のユーザー情報の取得に失敗しました")
-        }
-        //セッションがnullの場合は、ログインしていないのでnullを返す
-        if (!data.session) return null;
-        if (!data.session.user) return null;
-
-        return {
-            ...data.session.user,
-            userName:data.session.user.user_metadata.name,
-            //accessTokenを返す
-            accessToken:data.session.access_token
-        }
-    },
-
-
-    // try-catch文を使用してエラーを捕捉して処理を停止させないようにする
-    // supabase.auth.signOutメソッドが実行できてもtry文の中の条件分岐は判定される
-    // catchはsupabase.auth.signOutメソッドでエラーが発生したとき、またはtry文内でthrowされたときに実行される
-
-    async signout(){
-      const {error} = await supabase.auth.signOut()
-      
-      // セッションがない場合は正常扱い（もうすでにログアウトしている場合はエラーが発生する）これは無視して正常終了する
-      if (!error || error.message.includes('Auth session missing')) {
-          return;
-      }
-      
-      // その他のエラーは投げる
-      console.error('ログアウト処理でエラーが発生:', error);
-      throw new Error(`ログアウトに失敗しました: ${error.message}`)
-  
-    },
-
-
-    //supabase.auth.updateUser() :「ログイン中のユーザーの認証情報（auth.usersテーブルのレコード）」を更新する関数
-    //オブジェクトdataのnameにnewNameを代入して更新する
-    //更新後のユーザー情報を返す
-    //supabase.auth.updateUser({ data: { name: newName } })
-    // 引数はオブジェクト { data: {...} }。
-    // その中の data プロパティが Supabase の user_metadata に対応しています。
-    // つまり「user_metadata.name を newName に更新してください」というリクエストを送っています。
-    //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
-    //updateNameメソッドでの返り値はグローバルステートに格納することでユーザー情報をUI上で更新するので
-    //⇒getCurrentUserの返り値とupdateNameメソッドの返り値の構造は同じでなければならない
-    async updateName(newName:string){
-        const {data,error} = await supabase.auth.updateUser({data:{name:newName}})
-        if (error != null){
-            console.error(error?.message)
-            throw new Error("名前の更新に失敗しました")
-        }
-        return {
-            ...data.user,
-            userName:data.user.user_metadata.name
-        }
+  async signin(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    //Supabaseの仕様上、errorがあるときdataが壊れていることが多い。安全性高い。
+    //rrorを先に判定することでdataが壊れている場合はそもそもログインできていないのでエラーを投げることができる。
+    if (error != null) {
+      console.error(error?.message);
+      throw new Error("サインインに失敗しました");
     }
-}
+    if (!data.session) return null;
+    if (!data.user) return null;
 
+    return {
+      ...data.user,
+      userName: data.user.user_metadata.name,
+      //accessTokenを返す
+      accessToken: data.session.access_token,
+    };
+  },
+
+  //Supabase のセッションは ブラウザに長期間保存されるので、
+  //通常は一度ログインしたら再ログインを求められずに使い続けられる。
+  //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
+  async getCurrentUser() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error != null) {
+      console.error(error?.message);
+      throw new Error("ログイン中のユーザー情報の取得に失敗しました");
+    }
+    //セッションがnullの場合は、ログインしていないのでnullを返す
+    if (!data.session) return null;
+    if (!data.session.user) return null;
+
+    return {
+      ...data.session.user,
+      userName: data.session.user.user_metadata.name,
+      //accessTokenを返す
+      accessToken: data.session.access_token,
+    };
+  },
+
+  // try-catch文を使用してエラーを捕捉して処理を停止させないようにする
+  // supabase.auth.signOutメソッドが実行できてもtry文の中の条件分岐は判定される
+  // catchはsupabase.auth.signOutメソッドでエラーが発生したとき、またはtry文内でthrowされたときに実行される
+
+  async signout() {
+    const { error } = await supabase.auth.signOut();
+
+    // セッションがない場合は正常扱い（もうすでにログアウトしている場合はエラーが発生する）これは無視して正常終了する
+    if (!error || error.message.includes("Auth session missing")) {
+      return;
+    }
+
+    // その他のエラーは投げる
+    console.error("ログアウト処理でエラーが発生:", error);
+    throw new Error(`ログアウトに失敗しました: ${error.message}`);
+  },
+
+  //supabase.auth.updateUser() :「ログイン中のユーザーの認証情報（auth.usersテーブルのレコード）」を更新する関数
+  //オブジェクトdataのnameにnewNameを代入して更新する
+  //更新後のユーザー情報を返す
+  //supabase.auth.updateUser({ data: { name: newName } })
+  // 引数はオブジェクト { data: {...} }。
+  // その中の data プロパティが Supabase の user_metadata に対応しています。
+  // つまり「user_metadata.name を newName に更新してください」というリクエストを送っています。
+  //App.tsxでgetCurrentUserを呼び出してグローバルステートにユーザーデータを格納している。
+  //updateNameメソッドでの返り値はグローバルステートに格納することでユーザー情報をUI上で更新するので
+  //⇒getCurrentUserの返り値とupdateNameメソッドの返り値の構造は同じでなければならない
+  async updateName(newName: string) {
+    const { data, error } = await supabase.auth.updateUser({
+      data: { name: newName },
+    });
+    if (error != null) {
+      console.error(error?.message);
+      throw new Error("名前の更新に失敗しました");
+    }
+    return {
+      ...data.user,
+      userName: data.user.user_metadata.name,
+    };
+  },
+};
 
 /*メモ
 dataの構造
