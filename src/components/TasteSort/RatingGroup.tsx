@@ -60,10 +60,16 @@ export const RatingGroup = ({
                   />
                 ))}
               </div>
-              <RatingItem
-                recipes={recipes.slice(0, 3)}
-                deleteRecipe={deleteRecipe}
-              />
+              {recipesStore.isLoading ? (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              ) : (
+                <RatingItem
+                  recipes={recipes.slice(0, 3)}
+                  deleteRecipe={deleteRecipe}
+                />
+              )}
               {/* 別ページに遷移するだけならLink toが一般的 */}
               {recipes.length > 3 && (
                 <div className="flex items-center justify-center gap-2 mt-10 lg:mt-12 mb-4">
