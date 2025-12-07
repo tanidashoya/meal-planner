@@ -46,6 +46,14 @@ function isPrivateIPv6(ip: string): boolean {
 //serve():Supabase Edge Functions（中身は Deno）でHTTPサーバーを立てる関数
 //⇒HTTPサーバーを起動して、リクエストを受けたらこの関数で処理してね
 //req:フロントエンドから届いたリクエスト（メソッド・ヘッダ・ボディなど）が入る
+// --- 共通CORS設定 ---
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, x-client-info, apikey",
+};
+
 Deno.serve(async (req) => {
   // ① プリフライト(OPTIONS)リクエストを処理(CORS処理⇒大体どこでも必須)
   //ブラウザは 本リクエスト（POSTやPUT）を送る前に「OPTIONS」リクエストを自動送信する
@@ -53,13 +61,15 @@ Deno.serve(async (req) => {
   //⇒サーバーに「このオリジンから、このメソッドとヘッダーでリクエストしていいですか？」と事前確認している
   //OPTIONS（プリフライト）の Allow-Origin と、本レスポンスの Allow-Origin は常に一致させなければならない
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "Content-Type, Authorization,x-client-info,apikey",
-      },
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  // --- 認証チェック ---
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "認証が必要です" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 

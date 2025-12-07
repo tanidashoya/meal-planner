@@ -25,6 +25,16 @@ Deno.serve(async (req) => {
       headers: corsHeaders,
     });
   }
+
+  // --- 認証チェック ---
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(
+      JSON.stringify({ error: "認証が必要です" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     // --- ① ユーザー入力受け取り ---
     const { query } = await req.json();

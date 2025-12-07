@@ -13,6 +13,15 @@ Deno.serve(async (req) => {
   if (req.method !== "POST")
     return new Response("Method Not Allowed", { status: 405, headers: CORS });
 
+  // --- 認証チェック ---
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(
+      JSON.stringify({ error: "認証が必要です" }),
+      { status: 401, headers: { ...CORS, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const form = await req.formData();
     const file = form.get("file");

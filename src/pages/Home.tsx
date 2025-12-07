@@ -28,7 +28,10 @@ export function Home() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 
   const createRecipe = async (params: RecipeParams) => {
-    if (!currentUserStore.currentUser) return;
+    if (!currentUserStore.currentUser) {
+      toast.error("ログインしてください");
+      return;
+    }
     try {
       setIsLoading(true);
       const recipe = await recipeRepository.create(
@@ -112,6 +115,7 @@ export function Home() {
                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="参照元（例：URL、書籍など）"
                 value={source}
+                maxLength={30}
                 onChange={(e) => setSource(e.target.value)}
               />
             </div>
