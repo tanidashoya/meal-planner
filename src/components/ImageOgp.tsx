@@ -40,10 +40,9 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       }
 
       // 🔹Edge Function から取得
-      const { data, error } = await supabase.functions.invoke(
-        "smooth-function",
-        { body: { url } }
-      );
+      const { data, error } = await supabase.functions.invoke("ogp-image", {
+        body: { url },
+      });
       if (error) {
         console.error("OGP取得エラー:", error);
         return null;

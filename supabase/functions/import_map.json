@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "deno_dom": "https://deno.land/x/deno_dom@v0.1.48/deno-dom-wasm.ts",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+    "openai": "https://deno.land/x/openai@v4.24.0/mod.ts"
+  }
+}
