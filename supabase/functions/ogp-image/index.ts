@@ -1,6 +1,13 @@
 //URLを直接書くと、バージョン管理が難しい＆コードが読みにくい
 // import { DOMParser } from "https://deno.land/x/deno_dom/...";
 import { DOMParser } from "deno_dom";
+import { createClient } from "@supabase/supabase-js";
+
+// --- 認証検証用クライアント（ANON_KEY使用） ---
+const supabaseAuth = createClient(
+  Deno.env.get("SUPABASE_URL"),
+  Deno.env.get("SUPABASE_ANON_KEY")
+);
 
 // ====== SSRF対策：内部向けのホスト名かどうかチェック （SSRF：Server-Side Request Forgery（サーバーサイド・リクエスト・フォージェリ）） ======
 //日本語ではサーバー側リクエスト強制（サーバーに“本来アクセスすべきでない場所”へアクセスさせる攻撃）
@@ -64,10 +71,21 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  // --- 認証チェック ---
+  // --- 認証チェック（JWT署名検証） ---
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return new Response(JSON.stringify({ error: "認証が必要です" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const {
+    data: { user },
+    error: authError,
+  } = await supabaseAuth.auth.getUser(token);
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "無効なトークンです" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

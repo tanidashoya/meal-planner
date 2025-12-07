@@ -1,5 +1,12 @@
 import OpenAI from "openai";
+import { createClient } from "@supabase/supabase-js";
+
 const openai = new OpenAI({ apiKey: Deno.env.get("OPENAI_API_KEY") });
+// --- 認証検証用クライアント（ANON_KEY使用） ---
+const supabaseAuth = createClient(
+  Deno.env.get("SUPABASE_URL"),
+  Deno.env.get("SUPABASE_ANON_KEY")
+);
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -13,11 +20,19 @@ Deno.serve(async (req) => {
   if (req.method !== "POST")
     return new Response("Method Not Allowed", { status: 405, headers: CORS });
 
-  // --- 認証チェック ---
+  // --- 認証チェック（JWT署名検証） ---
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return new Response(
       JSON.stringify({ error: "認証が必要です" }),
+      { status: 401, headers: { ...CORS, "Content-Type": "application/json" } }
+    );
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+  if (authError || !user) {
+    return new Response(
+      JSON.stringify({ error: "無効なトークンです" }),
       { status: 401, headers: { ...CORS, "Content-Type": "application/json" } }
     );
   }

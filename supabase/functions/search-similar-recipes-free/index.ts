@@ -5,6 +5,11 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_URL"),
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
 );
+// --- 認証検証用クライアント（ANON_KEY使用） ---
+const supabaseAuth = createClient(
+  Deno.env.get("SUPABASE_URL"),
+  Deno.env.get("SUPABASE_ANON_KEY")
+);
 // --- OpenAI接続 ---
 const openai = new OpenAI({
   apiKey: Deno.env.get("OPENAI_API_KEY"),
@@ -24,10 +29,24 @@ Deno.serve(async (req) => {
     });
   }
 
-  // --- 認証チェック ---
+  // --- 認証チェック（JWT署名検証） ---
+  //Authorizationヘッダーが存在し、Bearer で始まるかチェック（コードをシンプルにしたい場合はJWT認証部分と合体して整理も可能）
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return new Response(JSON.stringify({ error: "認証が必要です" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  //Bearer 以降のトークンを取得
+  const token = authHeader.replace("Bearer ", "");
+  //トークンを使用してユーザーを取得
+  const {
+    data: { user },
+    error: authError,
+  } = await supabaseAuth.auth.getUser(token);
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "無効なトークンです" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
