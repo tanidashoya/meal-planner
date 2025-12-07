@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
 
   // --- 認証チェック（JWT署名検証） ---
   //Authorizationヘッダーが存在し、Bearer で始まるかチェック（コードをシンプルにしたい場合はJWT認証部分と合体して整理も可能）
+  //Authorization: Bearer <token> の形式でトークンを取得
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return new Response(JSON.stringify({ error: "認証が必要です" }), {
@@ -38,9 +39,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  //Bearer 以降のトークンを取得
+  //Bearer 以降のトークンを取得（Bearerを削除してトークンを取得）
   const token = authHeader.replace("Bearer ", "");
   //トークンを使用してユーザーを取得
+  //auth.getUser(token) はトークンを渡すとユーザー情報を返す
+  //フロントエンドでauth.getUser(token)を呼び出すときに引数を指定していなければ、
+  // ⇒localStorageに保存されているトークンを使用してユーザーを取得する
   const {
     data: { user },
     error: authError,
