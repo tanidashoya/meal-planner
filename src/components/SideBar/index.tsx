@@ -114,8 +114,8 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <SheetContent
             side="left"
             className="w-80 md:w-[280px]"
-            onEscapeKeyDown={(e) => e.preventDefault()}
-            onInteractOutside={(e) => e.preventDefault()}
+            onEscapeKeyDown={(e) => e.preventDefault()} //エスケープキーを押した時にシートを閉じない
+            onInteractOutside={(e) => e.preventDefault()} //シートの外をクリックした時にシートを閉じない
           >
             <VisuallyHidden>
               <SheetTitle>サイドバー</SheetTitle>
