@@ -4,7 +4,7 @@ import { TastePoint } from "../components/TastePoint";
 import { WatchPoint } from "../components/WatchPoint";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import tasteIcon from "../assets/taste_icon.png";
 import watchIcon from "../assets/watch_icon.png";
 import { ImageOgp } from "../components/ImageOgp";
@@ -27,6 +27,8 @@ export const RecipeDetail = () => {
   const targetRecipe = recipes.filter((recipe) => recipe.id == Number(id))[0];
   //Reactの制御コンポーネントでは、valueプロパティがnullやundefinedの場合はエラーになるため、空文字列として扱う
   const [newTitle, setNewTitle] = useState(targetRecipe?.title ?? "");
+  const newTitleRef = useRef(newTitle);
+  newTitleRef.current = newTitle; // 常に最新値を保持
   const imgTaste = tasteIcon;
   const tasteWord = ["悪くない", "ふつう", "いい感じ", "うまい！", "最高！！"];
   const imgWatch = watchIcon;
@@ -120,6 +122,25 @@ export const RecipeDetail = () => {
       setSelectedCategory(targetRecipe.category || "");
     }
   }, [targetRecipe]);
+
+  // アンマウント時に未保存の変更があれば保存（スマホの戻るボタン対応）
+  useEffect(() => {
+    const recipeId = targetRecipe?.id;
+    const userId = currentUserStore.currentUser?.id;
+    // ここはクリーンアップ関数であり、アンマウントされるときに呼び出される
+    return () => {
+      //useEffect の中で return している関数は「クリーンアップ関数」
+      //newTitleRef.current !== targetRecipe?.title は未保存の変更があるかどうかを判断する
+      if (recipeId && userId && newTitleRef.current !== targetRecipe?.title) {
+        recipeRepository
+          .update(userId, { id: recipeId, title: newTitleRef.current })
+          .catch((error) => {
+            toast.error(error?.message ?? "タイトルの更新に失敗しました");
+          });
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetRecipe?.id, currentUserStore.currentUser?.id]);
 
   if (isLoading) {
     return (
