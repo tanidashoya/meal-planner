@@ -230,7 +230,7 @@ body {
 }
 
 #app {
-  min-height: 100vh;
+  min-height: 100dvh;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -242,7 +242,7 @@ body {
   html,
   body {
     overflow: hidden; /*スクロール自体を無効(内部の要素（例：#root や特定のコンポーネント）に overflow-y: auto を指定すれば、その部分だけはスクロール可能です。)*/
-    height: 100vh;
+    height: 100dvh;
     position: fixed; /*ページを「固定」します。スクロールしてもその位置に固定されたままになる指定。代わりに、内部の要素（例：#root）をスクロール対象にする*/
     width: 100%;
     /* iOS Chrome専用の追加対策 */
@@ -253,7 +253,7 @@ body {
 
   #app {
     overflow-y: auto;
-    height: 100vh;
+    height: 100dvh;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     position: relative;
