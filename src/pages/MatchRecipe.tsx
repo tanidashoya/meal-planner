@@ -25,46 +25,65 @@ export const MatchRecipe = () => {
     aiChoiceStore.setAiWord(e.target.value);
   };
 
-  const handleSimilarRecipes = async (text: string) => {
+  // const handleSimilarRecipes = async (text: string) => {
+  //   aiChoiceStore.setAiSearchLoading(true);
+  //   aiChoiceStore.setHasSearched(false);
+  //   aiChoiceStore.set([]);
+  //   const { data, error } = await supabase.functions.invoke(
+  //     "search-similar-recipes",
+  //     { body: { text } }
+  //   );
+  //   if (error) {
+  //     console.error("AIレシピ探索に失敗", error.message);
+  //     toast.error("AIレシピ探索に失敗");
+  //   } else {
+  //     toast.success("AIによるレシピ探索が完了");
+  //   }
+  //   aiChoiceStore.set(data);
+  //   console.log(data);
+  //   // setData(data);
+  //   aiChoiceStore.setHasSearched(true);
+  //   aiChoiceStore.setAiSearchLoading(false);
+  //   return data;
+  // };
+
+  // const handleSimilarRecipesFree = async (text: string) => {
+  //   aiChoiceStore.setAiSearchLoading(true);
+  //   aiChoiceStore.setHasSearched(false);
+  //   aiChoiceStore.set([]);
+  //   const { data, error } = await supabase.functions.invoke(
+  //     "search-similar-recipes-free",
+  //     { body: { text } }
+  //   );
+  //   if (error) {
+  //     console.error("AIレシピ探索に失敗", error.message);
+  //     toast.error("AIレシピ探索に失敗");
+  //   } else {
+  //     toast.success("AIによるレシピ探索が完了");
+  //   }
+  //   aiChoiceStore.set(data);
+  //   aiChoiceStore.setHasSearched(true);
+  //   aiChoiceStore.setAiSearchLoading(false);
+  //   return;
+  // };
+
+  const handleRecipesSearch = async (text: string) => {
     aiChoiceStore.setAiSearchLoading(true);
     aiChoiceStore.setHasSearched(false);
     aiChoiceStore.set([]);
-    const { data, error } = await supabase.functions.invoke(
-      "search-similar-recipes",
-      { body: { text } }
-    );
+    const { data, error } = await supabase.functions.invoke("recipes-search", {
+      body: { text },
+    });
     if (error) {
-      console.error("AIレシピ探索に失敗", error.message);
-      toast.error("AIレシピ探索に失敗");
+      console.error("レシピ検索に失敗", error.message);
+      toast.error("レシピ検索に失敗");
     } else {
-      toast.success("AIによるレシピ探索が完了");
+      toast.success("レシピ検索が完了");
     }
     aiChoiceStore.set(data);
-    console.log(data);
-    // setData(data);
     aiChoiceStore.setHasSearched(true);
     aiChoiceStore.setAiSearchLoading(false);
     return data;
-  };
-
-  const handleSimilarRecipesFree = async (text: string) => {
-    aiChoiceStore.setAiSearchLoading(true);
-    aiChoiceStore.setHasSearched(false);
-    aiChoiceStore.set([]);
-    const { data, error } = await supabase.functions.invoke(
-      "search-similar-recipes-free",
-      { body: { text } }
-    );
-    if (error) {
-      console.error("AIレシピ探索に失敗", error.message);
-      toast.error("AIレシピ探索に失敗");
-    } else {
-      toast.success("AIによるレシピ探索が完了");
-    }
-    aiChoiceStore.set(data);
-    aiChoiceStore.setHasSearched(true);
-    aiChoiceStore.setAiSearchLoading(false);
-    return;
   };
 
   const handleClick = () => {
@@ -74,11 +93,12 @@ export const MatchRecipe = () => {
     }
     //楽天レシピ
     // handleSearch(aiChoiceStore.aiWord);
-    if (mode === "free") {
-      handleSimilarRecipesFree(aiChoiceStore.aiWord);
-    } else if (mode === "strict") {
-      handleSimilarRecipes(aiChoiceStore.aiWord);
-    }
+    // if (mode === "free") {
+    //   handleSimilarRecipesFree(aiChoiceStore.aiWord);
+    // } else if (mode === "strict") {
+    //   handleSimilarRecipes(aiChoiceStore.aiWord);
+    // }
+    handleRecipesSearch(aiChoiceStore.aiWord);
   };
 
   const addRecipeToMyRecipe = async (params: RecipeParams) => {

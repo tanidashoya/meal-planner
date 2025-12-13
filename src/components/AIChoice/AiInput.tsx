@@ -11,8 +11,8 @@ interface AiInputProps {
 }
 
 export const AiInput = ({
-  mode,
-  setMode,
+  // mode,
+  // setMode,
   handleChange,
   aiWord,
   handleClick,
@@ -61,21 +61,14 @@ export const AiInput = ({
                     border border-gray-300 bg-white → 枠線と白背景。
                     overflow-hidden → スライダーの角がはみ出さないようにする。⇒子要素がはみ出たら非表示になる 
                     max-w-xs:要素の最大幅を制限する xs(20rem = 320px)*/}
+
+        {/* モード切り替えトグル - 一時的にコメントアウト
         <div className="relative inline-flex w-full max-w-xs rounded-full border border-gray-300 bg-white overflow-hidden">
-          {/* 背景スライダー */}
-          {/* 「装飾専用（表示目的のみ）」の div */}
-          {/* 選択中のボタンがグレーになる */}
-          {/* transition-property: transform;： 「transform（＝位置・回転・拡大などの変化）をなめらかにアニメーションする」という設定。*/}
-          {/* durationはアニメーションの時間を指定する。300ms = 0.3秒 */}
-          {/* 状態がstrictの場合は右に移動（"translate-x-full"）し、freeの場合は左に移動する */}
-          {/* translate-x-full:要素自身の幅の 100% 移動 */}
           <div
             className={`absolute top-0 left-0 h-full w-1/2 bg-gray-500 rounded-full transition-transform duration-300 ${
               mode === "strict" ? "translate-x-full" : "translate-x-0"
             }`}
           ></div>
-
-          {/* ボタン2つ */}
           <button
             onClick={() => setMode("free")}
             className={`relative w-1/2 z-10 py-2 text-sm font-medium
@@ -84,7 +77,6 @@ export const AiInput = ({
           >
             自由モード
           </button>
-
           <button
             onClick={() => setMode("strict")}
             className={`relative w-1/2 z-10 py-2 text-sm font-medium
@@ -94,6 +86,7 @@ export const AiInput = ({
             精密モード
           </button>
         </div>
+        */}
 
         {/* <div className="flex flex-row w-full justify-between mt-2">
           <div className="flex flex-col items-center justify-center">
