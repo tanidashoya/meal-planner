@@ -27,6 +27,8 @@ function normalize(text: string): string {
   );
 }
 
+const MAX_RESULTS = 15;
+
 Deno.serve(async (req) => {
   // OPTIONSリクエスト（プリフライト）は最初に処理
   if (req.method === "OPTIONS") {
@@ -74,16 +76,23 @@ Deno.serve(async (req) => {
     const normalizedQuery = normalize(query);
     // 1. 正規化済みのtitle_coreで検索（ひらがな・英数字検索）
     // ※ 正規化後が空文字の場合は全件ヒットを防ぐためスキップ
-    let coreResults: { id: number; title_original: string; url: string }[] = [];
-    let coreError = null;
-    if (normalizedQuery.length > 0) {
-      const result = await supabase
-        .from("all_recipes")
-        .select("id, title_original, url")
-        .ilike("title_core", `%${normalizedQuery}%`)
-        .limit(10);
-      coreResults = result.data || [];
-      coreError = result.error;
+    //正規化後の文字列が空になったとき三項演算子がないと全件ヒットしてしまうので
+    //正規化後の文字列が空なら空配列を返すようにしている
+    //元の文章（query）ではバリデーションではじかれるのでOK
+    const { data: coreResults, error: coreError } =
+      normalizedQuery.length > 0
+        ? await supabase
+            .from("all_recipes")
+            .select("id, title_original, url")
+            .ilike("title_core", `%${normalizedQuery}%`)
+            .limit(MAX_RESULTS)
+        : { data: [], error: null };
+
+    // core検索だけで十分ヒットしたら終了
+    if ((coreResults?.length ?? 0) >= MAX_RESULTS) {
+      return new Response(JSON.stringify(coreResults), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // 2. オリジナルのtitle_originalで検索（漢字・カタカナ検索）
@@ -91,7 +100,7 @@ Deno.serve(async (req) => {
       .from("all_recipes")
       .select("id, title_original, url")
       .ilike("title_original", `%${query}%`)
-      .limit(10);
+      .limit(MAX_RESULTS);
 
     const error = coreError || originalError;
     if (error) {
@@ -102,7 +111,7 @@ Deno.serve(async (req) => {
     }
 
     // 3. 結果をマージして重複を除去（idで判定）
-    const seenIds = new Set<number>();
+    const seenIds = new Set<string>();
     const mergedResults = [];
     for (const item of [...(coreResults || []), ...(originalResults || [])]) {
       if (!seenIds.has(item.id)) {
@@ -110,8 +119,8 @@ Deno.serve(async (req) => {
         mergedResults.push(item);
       }
     }
-    // 最大10件に制限
-    const data = mergedResults.slice(0, 10);
+    // 最大MAX_RESULTS件に制限
+    const data = mergedResults.slice(0, MAX_RESULTS);
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
