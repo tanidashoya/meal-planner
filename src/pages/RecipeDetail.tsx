@@ -183,10 +183,17 @@ export const RecipeDetail = () => {
                 </a>
               </div>
             ) : (
-              <div className="w-45 h-28 flex items-center justify-center">
-                <span className="text-gray-700 text-lg lg:text-2xl text-center">
-                  画像が存在しません
-                </span>
+              <div className="flex items-center justify-center gap-2 w-full">
+                <div className="w-45 h-28 flex items-center justify-center">
+                  <span className="text-gray-700 text-base lg:text-2xl text-center">
+                    画像が存在しません
+                  </span>
+                </div>
+                {targetRecipe.source && (
+                  <span className="text-gray-500 text-sm lg:text-base break-all line-clamp-3 w-full">
+                    {targetRecipe.source}
+                  </span>
+                )}
               </div>
             )}
           </div>

@@ -6,8 +6,11 @@ export async function searchTitle(
   query: string,
   MAX_RESULTS: number
 ) {
+  // 正規化後が2文字以下の場合は意味のない検索になるためスキップ
+  // 例：「生姜焼き」→「き」（1文字）で検索すると「き」を含む全レシピがヒットしてしまう
+  const MIN_NORMALIZED_LENGTH = 3;
   const { data: coreResults, error: coreError } =
-    normalizedQuery.length > 0
+    normalizedQuery.length >= MIN_NORMALIZED_LENGTH
       ? await supabase
           .from("all_recipes")
           .select("id, title_original,title_core, url,category")

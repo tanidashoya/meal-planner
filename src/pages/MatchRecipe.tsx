@@ -5,36 +5,26 @@ import { useAiChoiceStore } from "../modules/aiChoice/ai-choice.state";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
-import { RecipeParams } from "../modules/recipes/recipe.entity";
 import { AiResult } from "../components/AIChoice/AiResult";
 import { AiInput } from "../components/AIChoice/AiInput";
-
-type MatchRecipeParams = {
-  id: string;
-  title_original: string;
-  title_core: string | null;
-  url: string | null;
-  category: string | null;
-};
+import { SearchRecipeResult } from "../modules/aiChoice/aichoice.entity";
 
 export const MatchRecipe = () => {
-  // const [searchText, setSearchText] = useState("");
-  const [mode, setMode] = useState<"free" | "strict">("free");
   const { currentUser } = useCurrentUserStore();
   const recipeStore = useRecipeStore();
   //追加したレシピかの判定に使う
   const [isAddingRecipe, setIsAddingRecipe] = useState<{
-    [id: number]: boolean;
+    [id: string | number]: boolean;
   }>({});
   const aiChoiceStore = useAiChoiceStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // setSearchText(e.target.value);
     aiChoiceStore.setAiWord(e.target.value);
   };
 
   const handleRecipesSearch = async (text: string) => {
     aiChoiceStore.setAiSearchLoading(true);
+    //ai結果の読み込みが完了したかを判定する状態
     aiChoiceStore.setHasSearched(false);
     aiChoiceStore.set([]);
     const { data, error } = await supabase.functions.invoke("recipes-search", {
@@ -46,10 +36,21 @@ export const MatchRecipe = () => {
     } else {
       toast.success("レシピ検索が完了");
     }
+    //ai結果をグローバルステートに保管
+    //dataはSearchRecipeResult型の配列
+    //export type SearchRecipeResult = {
+    //   id: number | string;
+    //   title?: string | null;
+    //   title_original?: string | null;
+    //   title_core?: string | null;
+    //   url?: string | null;
+    //   category?: string | null;
+    // };
     aiChoiceStore.set(data);
+    //ai結果の読み込みが完了したかを判定する状態をtrueにする
     aiChoiceStore.setHasSearched(true);
+    //ai結果の読み込み中をグローバルステートに保管
     aiChoiceStore.setAiSearchLoading(false);
-    return data;
   };
 
   const handleClick = () => {
@@ -60,7 +61,7 @@ export const MatchRecipe = () => {
     handleRecipesSearch(aiChoiceStore.aiWord);
   };
 
-  const addRecipeToMyRecipe = async (params: MatchRecipeParams) => {
+  const addRecipeToMyRecipe = async (params: SearchRecipeResult) => {
     //idがnullやundefinedの場合は早期return
     if (!params.id) {
       toast.error("レシピIDが見つかりません");
@@ -74,19 +75,21 @@ export const MatchRecipe = () => {
     //追加しましたの判断で使う
     setIsAddingRecipe({ ...isAddingRecipe, [params.id]: true });
     try {
-      const recipes = await recipeRepository.create(currentUser.id, {
-        title: params.title_original,
-        category: params.category || "",
-        source: params.url || "",
+      const recipe = await recipeRepository.create(currentUser.id, {
+        title: params.title_original ?? "", //各値をリネームして渡している
+        category: params.category ?? "", //nullの可能性があるため、?? ""としている
+        source: params.url ?? "", //nullの可能性があるため、?? ""としている
       });
-      recipeStore.set([recipes]);
+      if (recipe == null) return;
+      recipeStore.set([recipe]);
       toast.success("レシピの追加に成功しました");
     } catch (error) {
       // エラー時のローディング状態（setIsAddingRecipe）をリセット（必須）
+      //追加失敗時にisAddingRecipeのidをキーにしてfalseにする
       setIsAddingRecipe((prev) => {
         const newState = { ...prev };
         if (params.id !== undefined) {
-          delete newState[params.id as unknown as number]; // このレシピIDのキーを削除
+          delete newState[params.id as string | number]; // 追加中レシピを格納するオブジェクトから追加失敗時にレシピIDのキーを削除して元の【Myレシピに追加】ボタンを表示させる
         }
         return newState;
       });
@@ -102,8 +105,6 @@ export const MatchRecipe = () => {
   return (
     <div className="flex flex-col items-center justify-center px-4 mb-24 mt-18 ">
       <AiInput
-        mode={mode}
-        setMode={setMode}
         handleChange={handleChange}
         aiWord={aiChoiceStore.aiWord}
         handleClick={handleClick}

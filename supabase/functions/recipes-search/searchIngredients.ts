@@ -40,7 +40,9 @@ async function findIngredientIdsForToken(
   const clauses: string[] = [];
 
   // AND検索では本当は eq が理想だが、ユーザー入力の揺れを拾うためにまずは ilike で候補集合を作る
-  if (norm) {
+  // 正規化後が1文字以下の場合は意味のない検索になるためスキップ
+  const MIN_NORMALIZED_LENGTH = 2;
+  if (norm && norm.length >= MIN_NORMALIZED_LENGTH) {
     clauses.push(`name_core.ilike.%${norm}%`);
     clauses.push(`name_kana.ilike.%${norm}%`);
   }
@@ -78,7 +80,7 @@ async function recipeIdsByIngredientIds(
   if (error) return { data: [], error: new Error(error.message) };
 
   const s = new Set<string>();
-  for (const r of data ?? []) s.add((r as any).recipe_id);
+  for (const r of data ?? []) s.add((r as { recipe_id: string }).recipe_id);
   return { data: [s], error: null };
 }
 
