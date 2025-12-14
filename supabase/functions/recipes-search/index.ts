@@ -1,4 +1,4 @@
-// supabase/functions/recipes-list/index.ts
+// supabase/functions/recipes-search/index.ts
 import { createClient } from "@supabase/supabase-js";
 
 // --- 共通CORS設定 ---
@@ -8,50 +8,120 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, apikey, content-type, x-client-info",
 };
-// --- Supabase接続 ---
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL"),
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
-);
+
+function normalize(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      // 全角英数字 → 半角英数字
+      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) =>
+        String.fromCharCode(s.charCodeAt(0) - 0xfee0)
+      )
+      // 全角カタカナ → ひらがな（ァ-ヶ: U+30A1-U+30F6）
+      .replace(/[ァ-ヶ]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0x60))
+      // 長音記号「ー」→ ひらがなの「ー」として保持（または削除せず残す）
+      .replace(/ー/g, "ー")
+      // ひらがな、長音記号、英数字以外を削除
+      .replace(/[^ぁ-んa-z0-9ー]/g, "")
+      .trim()
+  );
+}
 
 Deno.serve(async (req) => {
+  // OPTIONSリクエスト（プリフライト）は最初に処理
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders,
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
-  // --- 認証チェック（JWT署名検証） ---
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "認証が必要です" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const token = authHeader.replace("Bearer ", "");
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser(token);
-  if (authError || !user) {
-    return new Response(JSON.stringify({ error: "無効なトークンです" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const { data, error } = await supabase
-    .from("all_recipes")
-    .select("id, title_original, url")
-    .limit(5);
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  try {
+    // --- Supabase接続 ---
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("環境変数が設定されていません");
+    }
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // --- 認証チェック（JWT署名検証） ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "認証が必要です" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "無効なトークンです" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    //フロントエンド側から送信するキー名と合わせる必要がある
+    const { query } = await req.json();
+    if (!query || typeof query !== "string") {
+      return new Response(JSON.stringify({ error: "queryが必要です" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // 正規化前後の値を確認
+    const normalizedQuery = normalize(query);
+    // 1. 正規化済みのtitle_coreで検索（ひらがな・英数字検索）
+    // ※ 正規化後が空文字の場合は全件ヒットを防ぐためスキップ
+    let coreResults: { id: number; title_original: string; url: string }[] = [];
+    let coreError = null;
+    if (normalizedQuery.length > 0) {
+      const result = await supabase
+        .from("all_recipes")
+        .select("id, title_original, url")
+        .ilike("title_core", `%${normalizedQuery}%`)
+        .limit(10);
+      coreResults = result.data || [];
+      coreError = result.error;
+    }
+
+    // 2. オリジナルのtitle_originalで検索（漢字・カタカナ検索）
+    const { data: originalResults, error: originalError } = await supabase
+      .from("all_recipes")
+      .select("id, title_original, url")
+      .ilike("title_original", `%${query}%`)
+      .limit(10);
+
+    const error = coreError || originalError;
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // 3. 結果をマージして重複を除去（idで判定）
+    const seenIds = new Set<number>();
+    const mergedResults = [];
+    for (const item of [...(coreResults || []), ...(originalResults || [])]) {
+      if (!seenIds.has(item.id)) {
+        seenIds.add(item.id);
+        mergedResults.push(item);
+      }
+    }
+    // 最大10件に制限
+    const data = mergedResults.slice(0, 10);
+
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    // 全てのエラーをキャッチしてCORSヘッダー付きで返す
+    const message = err instanceof Error ? err.message : "不明なエラー";
+    return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-
-  return new Response(JSON.stringify(data), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
 });

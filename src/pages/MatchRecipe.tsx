@@ -72,7 +72,7 @@ export const MatchRecipe = () => {
     aiChoiceStore.setHasSearched(false);
     aiChoiceStore.set([]);
     const { data, error } = await supabase.functions.invoke("recipes-search", {
-      body: { text },
+      body: { query: text },
     });
     if (error) {
       console.error("レシピ検索に失敗", error.message);
