@@ -10,7 +10,7 @@ export async function searchTitle(
     normalizedQuery.length > 0
       ? await supabase
           .from("all_recipes")
-          .select("id, title_core, url")
+          .select("id, title_original,title_core, url,category")
           .ilike("title_core", `%${normalizedQuery}%`)
           .limit(MAX_RESULTS)
       : { data: [], error: null };
@@ -25,7 +25,7 @@ export async function searchTitle(
     query.length > 0
       ? await supabase
           .from("all_recipes")
-          .select("id, title_original, url")
+          .select("id, title_original,title_core, url,category")
           .ilike("title_original", `%${query}%`)
           .limit(MAX_RESULTS)
       : { data: [], error: null };

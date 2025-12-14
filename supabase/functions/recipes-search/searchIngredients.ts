@@ -2,7 +2,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { normalize } from "./normalize.ts";
 
-type Recipe = { id: string; title_original: string; url: string | null };
+type Recipe = {
+  id: string;
+  title_original: string;
+  url: string | null;
+  category: string | null;
+};
 
 type Result<T> = { data: T[]; error: Error | null };
 
@@ -118,7 +123,7 @@ export async function searchIngredients(
 
       const { data: recipes, error } = await supabase
         .from("all_recipes")
-        .select("id, title_original, url")
+        .select("id, title_original,title_core, url,category")
         .in("id", recipeIds)
         .limit(RECIPE_LIMIT);
 
@@ -157,7 +162,7 @@ export async function searchIngredients(
 
     const { data: recipes, error } = await supabase
       .from("all_recipes")
-      .select("id, title_original, url")
+      .select("id, title_original,title_core, url,category")
       .in("id", matchedRecipeIds)
       .limit(RECIPE_LIMIT);
 

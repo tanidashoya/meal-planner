@@ -9,6 +9,14 @@ import { RecipeParams } from "../modules/recipes/recipe.entity";
 import { AiResult } from "../components/AIChoice/AiResult";
 import { AiInput } from "../components/AIChoice/AiInput";
 
+type MatchRecipeParams = {
+  id: string;
+  title_original: string;
+  title_core: string | null;
+  url: string | null;
+  category: string | null;
+};
+
 export const MatchRecipe = () => {
   // const [searchText, setSearchText] = useState("");
   const [mode, setMode] = useState<"free" | "strict">("free");
@@ -24,48 +32,6 @@ export const MatchRecipe = () => {
     // setSearchText(e.target.value);
     aiChoiceStore.setAiWord(e.target.value);
   };
-
-  // const handleSimilarRecipes = async (text: string) => {
-  //   aiChoiceStore.setAiSearchLoading(true);
-  //   aiChoiceStore.setHasSearched(false);
-  //   aiChoiceStore.set([]);
-  //   const { data, error } = await supabase.functions.invoke(
-  //     "search-similar-recipes",
-  //     { body: { text } }
-  //   );
-  //   if (error) {
-  //     console.error("AIレシピ探索に失敗", error.message);
-  //     toast.error("AIレシピ探索に失敗");
-  //   } else {
-  //     toast.success("AIによるレシピ探索が完了");
-  //   }
-  //   aiChoiceStore.set(data);
-  //   console.log(data);
-  //   // setData(data);
-  //   aiChoiceStore.setHasSearched(true);
-  //   aiChoiceStore.setAiSearchLoading(false);
-  //   return data;
-  // };
-
-  // const handleSimilarRecipesFree = async (text: string) => {
-  //   aiChoiceStore.setAiSearchLoading(true);
-  //   aiChoiceStore.setHasSearched(false);
-  //   aiChoiceStore.set([]);
-  //   const { data, error } = await supabase.functions.invoke(
-  //     "search-similar-recipes-free",
-  //     { body: { text } }
-  //   );
-  //   if (error) {
-  //     console.error("AIレシピ探索に失敗", error.message);
-  //     toast.error("AIレシピ探索に失敗");
-  //   } else {
-  //     toast.success("AIによるレシピ探索が完了");
-  //   }
-  //   aiChoiceStore.set(data);
-  //   aiChoiceStore.setHasSearched(true);
-  //   aiChoiceStore.setAiSearchLoading(false);
-  //   return;
-  // };
 
   const handleRecipesSearch = async (text: string) => {
     aiChoiceStore.setAiSearchLoading(true);
@@ -91,17 +57,10 @@ export const MatchRecipe = () => {
       toast.warn("検索ワードを入力してください");
       return;
     }
-    //楽天レシピ
-    // handleSearch(aiChoiceStore.aiWord);
-    // if (mode === "free") {
-    //   handleSimilarRecipesFree(aiChoiceStore.aiWord);
-    // } else if (mode === "strict") {
-    //   handleSimilarRecipes(aiChoiceStore.aiWord);
-    // }
     handleRecipesSearch(aiChoiceStore.aiWord);
   };
 
-  const addRecipeToMyRecipe = async (params: RecipeParams) => {
+  const addRecipeToMyRecipe = async (params: MatchRecipeParams) => {
     //idがnullやundefinedの場合は早期return
     if (!params.id) {
       toast.error("レシピIDが見つかりません");
@@ -115,7 +74,11 @@ export const MatchRecipe = () => {
     //追加しましたの判断で使う
     setIsAddingRecipe({ ...isAddingRecipe, [params.id]: true });
     try {
-      const recipes = await recipeRepository.create(currentUser.id, params);
+      const recipes = await recipeRepository.create(currentUser.id, {
+        title: params.title_original,
+        category: params.category || "",
+        source: params.url || "",
+      });
       recipeStore.set([recipes]);
       toast.success("レシピの追加に成功しました");
     } catch (error) {
@@ -123,7 +86,7 @@ export const MatchRecipe = () => {
       setIsAddingRecipe((prev) => {
         const newState = { ...prev };
         if (params.id !== undefined) {
-          delete newState[params.id]; // このレシピIDのキーを削除
+          delete newState[params.id as unknown as number]; // このレシピIDのキーを削除
         }
         return newState;
       });

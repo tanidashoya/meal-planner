@@ -1,16 +1,23 @@
-import { aiChoice } from "../../modules/aiChoice/aichoice.entity";
+import { SearchRecipeResult } from "../../modules/aiChoice/aichoice.entity";
 import { motion } from "framer-motion";
 import { ImageOgp } from "../ImageOgp";
-import { RecipeParams } from "../../modules/recipes/recipe.entity";
 import { Check } from "lucide-react";
 import ArrowRight from "../../assets/arrow_right.png";
 import { Plus } from "lucide-react";
 import downArrow from "../../assets/down_arrow.png";
 
+type MatchRecipeParams = {
+  id: string;
+  title_original: string;
+  title_core: string | null;
+  url: string | null;
+  category: string | null;
+};
+
 interface AiResultProps {
-  aiChoice: aiChoice[];
-  isAddingRecipe: { [id: number]: boolean };
-  addRecipeToMyRecipe: (params: RecipeParams) => void;
+  aiChoice: SearchRecipeResult[];
+  isAddingRecipe: { [id: string | number]: boolean };
+  addRecipeToMyRecipe: (params: MatchRecipeParams) => void;
   hasSearched: boolean;
   isLoading: boolean;
 }
@@ -41,7 +48,7 @@ export const AiResult = ({
               className="w-8 h-8 animate-pulse"
             />
           </div>
-          {aiChoice.map((recipe: aiChoice, index: number) => (
+          {aiChoice.map((recipe: SearchRecipeResult, index: number) => (
             <div key={recipe.id}>
               <motion.a
                 href={recipe.url || ""}
@@ -68,7 +75,7 @@ export const AiResult = ({
               >
                 <div className="flex flex-row mb-1">
                   <span className="text-sm text-gray-700 break-all font-bold">
-                    {index + 1}．{recipe.title}
+                    {index + 1}．{recipe.title_original || recipe.title}
                   </span>
                 </div>
 
@@ -76,7 +83,7 @@ export const AiResult = ({
                   <ImageOgp url={recipe.url || ""} className="w-[148px]" />
                   <div className="flex flex-1 flex-col gap-1 w-1/2">
                     <span className="text-sm bleak-all text-gray-500">
-                      {recipe.title}
+                      {recipe.title_original || recipe.title}
                     </span>
                     <span className="text-sm truncate text-blue-500 font-medium">
                       {recipe.url}
@@ -112,10 +119,12 @@ export const AiResult = ({
                     <button
                       onClick={() =>
                         addRecipeToMyRecipe({
-                          title: recipe.title || "",
-                          source: recipe.url || "",
-                          category: recipe.category || "",
-                          id: recipe.id,
+                          id: recipe.id.toString(),
+                          title_original:
+                            recipe.title_original || recipe.title || "",
+                          title_core: recipe.title_core || recipe.title || null,
+                          url: recipe.url || null,
+                          category: recipe.category || null,
                         })
                       }
                       className="flex items-center gap-1 bg-green-400 text-white px-1 py-2 mr-4 rounded-md"

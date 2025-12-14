@@ -15,7 +15,13 @@ const corsHeaders = {
 const MAX_RESULTS = 15;
 
 type SearchResults = {
-  data: { id: string; content: string; url: string }[];
+  data: {
+    id: string;
+    title_original: string;
+    title_core: string;
+    url: string;
+    category: string;
+  }[];
   error: Error | null;
 };
 
