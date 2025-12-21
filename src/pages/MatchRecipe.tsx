@@ -14,7 +14,7 @@ export const MatchRecipe = () => {
   const recipeStore = useRecipeStore();
   //追加したレシピかの判定に使う
   const [isAddingRecipe, setIsAddingRecipe] = useState<{
-    [id: string | number]: boolean;
+    [id: number]: boolean;
   }>({});
   const aiChoiceStore = useAiChoiceStore();
 
@@ -27,6 +27,7 @@ export const MatchRecipe = () => {
     //ai結果の読み込みが完了したかを判定する状態
     aiChoiceStore.setHasSearched(false);
     aiChoiceStore.set([]);
+    //optionsオブジェクトのbodyキーのqueryキーにtextを設定して送るように指示している
     const { data, error } = await supabase.functions.invoke("recipes-search", {
       body: { query: text },
     });
@@ -36,16 +37,6 @@ export const MatchRecipe = () => {
     } else {
       toast.success("レシピ検索が完了");
     }
-    //ai結果をグローバルステートに保管
-    //dataはSearchRecipeResult型の配列
-    //export type SearchRecipeResult = {
-    //   id: number | string;
-    //   title?: string | null;
-    //   title_original?: string | null;
-    //   title_core?: string | null;
-    //   url?: string | null;
-    //   category?: string | null;
-    // };
     aiChoiceStore.set(data);
     //ai結果の読み込みが完了したかを判定する状態をtrueにする
     aiChoiceStore.setHasSearched(true);
@@ -89,7 +80,7 @@ export const MatchRecipe = () => {
       setIsAddingRecipe((prev) => {
         const newState = { ...prev };
         if (params.id !== undefined) {
-          delete newState[params.id as string | number]; // 追加中レシピを格納するオブジェクトから追加失敗時にレシピIDのキーを削除して元の【Myレシピに追加】ボタンを表示させる
+          delete newState[params.id]; // 追加中レシピを格納するオブジェクトから追加失敗時にレシピIDのキーを削除して元の【Myレシピに追加】ボタンを表示させる
         }
         return newState;
       });

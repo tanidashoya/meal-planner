@@ -6,18 +6,10 @@ import ArrowRight from "../../assets/arrow_right.png";
 import { Plus } from "lucide-react";
 import downArrow from "../../assets/down_arrow.png";
 
-type MatchRecipeParams = {
-  id: string;
-  title_original: string;
-  title_core: string | null;
-  url: string | null;
-  category: string | null;
-};
-
 interface AiResultProps {
   aiChoice: SearchRecipeResult[];
-  isAddingRecipe: { [id: string | number]: boolean };
-  addRecipeToMyRecipe: (params: MatchRecipeParams) => void;
+  isAddingRecipe: { [id: number]: boolean };
+  addRecipeToMyRecipe: (params: SearchRecipeResult) => void;
   hasSearched: boolean;
   isLoading: boolean;
 }
@@ -75,7 +67,7 @@ export const AiResult = ({
               >
                 <div className="flex flex-row mb-1">
                   <span className="text-sm text-gray-700 break-all font-bold">
-                    {index + 1}．{recipe.title_original || recipe.title}
+                    {index + 1}．{recipe.title_original}
                   </span>
                 </div>
 
@@ -83,7 +75,7 @@ export const AiResult = ({
                   <ImageOgp url={recipe.url || ""} className="w-[148px]" />
                   <div className="flex flex-1 flex-col gap-1 w-1/2">
                     <span className="text-sm bleak-all text-gray-500">
-                      {recipe.title_original || recipe.title}
+                      {recipe.title_original}
                     </span>
                     <span className="text-sm truncate text-blue-500 font-medium">
                       {recipe.url}
@@ -117,16 +109,7 @@ export const AiResult = ({
                       className="w-6 h-6 mr-2 opacity-60"
                     />
                     <button
-                      onClick={() =>
-                        addRecipeToMyRecipe({
-                          id: recipe.id.toString(),
-                          title_original:
-                            recipe.title_original || recipe.title || "",
-                          title_core: recipe.title_core || recipe.title || null,
-                          url: recipe.url || null,
-                          category: recipe.category || null,
-                        })
-                      }
+                      onClick={() => addRecipeToMyRecipe(recipe)}
                       className="flex items-center gap-1 bg-green-400 text-white px-1 py-2 mr-4 rounded-md"
                     >
                       <div className="flex items-center gap-1">

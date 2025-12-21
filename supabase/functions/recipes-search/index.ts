@@ -12,18 +12,7 @@ const corsHeaders = {
     "authorization, apikey, content-type, x-client-info",
 };
 
-const MAX_RESULTS = 15;
-
-type SearchResults = {
-  data: {
-    id: string;
-    title_original: string;
-    title_core: string;
-    url: string;
-    category: string;
-  }[];
-  error: Error | null;
-};
+const MAX_RESULTS = 100;
 
 Deno.serve(async (req) => {
   // OPTIONSリクエスト（プリフライト）は最初に処理
@@ -61,6 +50,13 @@ Deno.serve(async (req) => {
     }
 
     //フロントエンド側から送信するキー名と合わせる必要がある
+    //queryキーの値textは検索ワード
+    //フロントエンド
+    // const { data, error } = await supabase.functions.invoke("recipes-search", {
+    //   body: { query: text },
+    // });
+    //
+    //分割代入でqueryキーの値を変数queryに代入している？
     const { query } = await req.json();
     if (!query || typeof query !== "string") {
       return new Response(JSON.stringify({ error: "queryが必要です" }), {
@@ -71,20 +67,15 @@ Deno.serve(async (req) => {
 
     // 正規化前後の値を確認
     const normalizedQuery = normalize(query);
-    const { data: titleResults, error: titleError } = (await searchTitle(
+    const { data: titleResults, error: titleError } = await searchTitle(
       supabase,
       normalizedQuery,
       query,
       MAX_RESULTS
-    )) as SearchResults;
+    );
 
     const { data: ingredientResults, error: ingredientError } =
-      (await searchIngredients(
-        supabase,
-        normalizedQuery,
-        query,
-        MAX_RESULTS
-      )) as unknown as SearchResults;
+      await searchIngredients(supabase, normalizedQuery, query, MAX_RESULTS);
 
     const error = titleError || ingredientError;
     if (error) {
@@ -101,8 +92,8 @@ Deno.serve(async (req) => {
       ...(titleResults || []),
       ...(ingredientResults || []),
     ]) {
-      if (!seenIds.has(item.id)) {
-        seenIds.add(item.id);
+      if (!seenIds.has(item.id.toString())) {
+        seenIds.add(item.id.toString());
         mergedResults.push(item);
       }
     }

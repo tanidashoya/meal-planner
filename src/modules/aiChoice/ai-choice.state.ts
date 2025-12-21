@@ -1,9 +1,9 @@
 import { atom, useAtom } from "jotai";
-import { aiChoice } from "./aichoice.entity";
+import { SearchRecipeResult } from "./aichoice.entity";
 
 //「まだ検索していない」と「検索したけど結果がなかった」を区別できないので、searchloadingだけでなくhasSearchedが必要
 //AI結果をグローバルステートに保管
-export const aiChoiceAtom = atom<aiChoice[]>([]);
+export const aiChoiceAtom = atom<SearchRecipeResult[]>([]);
 //AI結果の読み込み中をグローバルステートに保管
 export const aiSearchLoadingAtom = atom(false);
 //AI結果の読み込みエラーをグローバルステートに保管
