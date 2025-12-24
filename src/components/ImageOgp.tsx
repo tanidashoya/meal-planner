@@ -31,10 +31,10 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       if (cached) {
         const parsed = JSON.parse(cached);
         if (now - parsed.timestamp < ONE_DAY) {
-          console.log("📦 ローカルキャッシュから取得:", url);
+          // console.log("📦 ローカルキャッシュから取得:", url);
           return parsed.data;
         } else {
-          console.log("🧹 キャッシュ期限切れ → 削除:", url);
+          // console.log("🧹 キャッシュ期限切れ → 削除:", url);
           localStorage.removeItem(cacheKey);
         }
       }

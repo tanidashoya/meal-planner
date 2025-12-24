@@ -5,13 +5,11 @@ import { useAiChoiceStore } from "../modules/aiChoice/ai-choice.state";
 import { useCurrentUserStore } from "../modules/auth/current-user.state";
 import { useRecipeStore } from "../modules/recipes/recipe.state";
 import { recipeRepository } from "../modules/recipes/recipe.repository";
-import { RecipeParams } from "../modules/recipes/recipe.entity";
 import { AiResult } from "../components/AIChoice/AiResult";
 import { AiInput } from "../components/AIChoice/AiInput";
+import { SearchRecipeResult } from "../modules/aiChoice/aichoice.entity";
 
 export const MatchRecipe = () => {
-  // const [searchText, setSearchText] = useState("");
-  const [mode, setMode] = useState<"free" | "strict">("free");
   const { currentUser } = useCurrentUserStore();
   const recipeStore = useRecipeStore();
   //追加したレシピかの判定に使う
@@ -21,50 +19,29 @@ export const MatchRecipe = () => {
   const aiChoiceStore = useAiChoiceStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // setSearchText(e.target.value);
     aiChoiceStore.setAiWord(e.target.value);
   };
 
-  const handleSimilarRecipes = async (text: string) => {
+  const handleRecipesSearch = async (text: string) => {
     aiChoiceStore.setAiSearchLoading(true);
+    //ai結果の読み込みが完了したかを判定する状態
     aiChoiceStore.setHasSearched(false);
     aiChoiceStore.set([]);
-    const { data, error } = await supabase.functions.invoke(
-      "search-similar-recipes",
-      { body: { text } }
-    );
+    //optionsオブジェクトのbodyキーのqueryキーにtextを設定して送るように指示している
+    const { data, error } = await supabase.functions.invoke("recipes-search", {
+      body: { query: text },
+    });
     if (error) {
-      console.error("AIレシピ探索に失敗", error.message);
-      toast.error("AIレシピ探索に失敗");
+      console.error("レシピ検索に失敗", error.message);
+      toast.error("レシピ検索に失敗");
     } else {
-      toast.success("AIによるレシピ探索が完了");
+      toast.success("レシピ検索が完了");
     }
     aiChoiceStore.set(data);
-    console.log(data);
-    // setData(data);
+    //ai結果の読み込みが完了したかを判定する状態をtrueにする
     aiChoiceStore.setHasSearched(true);
+    //ai結果の読み込み中をグローバルステートに保管
     aiChoiceStore.setAiSearchLoading(false);
-    return data;
-  };
-
-  const handleSimilarRecipesFree = async (text: string) => {
-    aiChoiceStore.setAiSearchLoading(true);
-    aiChoiceStore.setHasSearched(false);
-    aiChoiceStore.set([]);
-    const { data, error } = await supabase.functions.invoke(
-      "search-similar-recipes-free",
-      { body: { text } }
-    );
-    if (error) {
-      console.error("AIレシピ探索に失敗", error.message);
-      toast.error("AIレシピ探索に失敗");
-    } else {
-      toast.success("AIによるレシピ探索が完了");
-    }
-    aiChoiceStore.set(data);
-    aiChoiceStore.setHasSearched(true);
-    aiChoiceStore.setAiSearchLoading(false);
-    return;
   };
 
   const handleClick = () => {
@@ -72,16 +49,10 @@ export const MatchRecipe = () => {
       toast.warn("検索ワードを入力してください");
       return;
     }
-    //楽天レシピ
-    // handleSearch(aiChoiceStore.aiWord);
-    if (mode === "free") {
-      handleSimilarRecipesFree(aiChoiceStore.aiWord);
-    } else if (mode === "strict") {
-      handleSimilarRecipes(aiChoiceStore.aiWord);
-    }
+    handleRecipesSearch(aiChoiceStore.aiWord);
   };
 
-  const addRecipeToMyRecipe = async (params: RecipeParams) => {
+  const addRecipeToMyRecipe = async (params: SearchRecipeResult) => {
     //idがnullやundefinedの場合は早期return
     if (!params.id) {
       toast.error("レシピIDが見つかりません");
@@ -95,15 +66,21 @@ export const MatchRecipe = () => {
     //追加しましたの判断で使う
     setIsAddingRecipe({ ...isAddingRecipe, [params.id]: true });
     try {
-      const recipes = await recipeRepository.create(currentUser.id, params);
-      recipeStore.set([recipes]);
+      const recipe = await recipeRepository.create(currentUser.id, {
+        title: params.title_original ?? "", //各値をリネームして渡している
+        category: params.category ?? "", //nullの可能性があるため、?? ""としている
+        source: params.url ?? "", //nullの可能性があるため、?? ""としている
+      });
+      if (recipe == null) return;
+      recipeStore.set([recipe]);
       toast.success("レシピの追加に成功しました");
     } catch (error) {
       // エラー時のローディング状態（setIsAddingRecipe）をリセット（必須）
+      //追加失敗時にisAddingRecipeのidをキーにしてfalseにする
       setIsAddingRecipe((prev) => {
         const newState = { ...prev };
         if (params.id !== undefined) {
-          delete newState[params.id]; // このレシピIDのキーを削除
+          delete newState[params.id]; // 追加中レシピを格納するオブジェクトから追加失敗時にレシピIDのキーを削除して元の【Myレシピに追加】ボタンを表示させる
         }
         return newState;
       });
@@ -119,8 +96,6 @@ export const MatchRecipe = () => {
   return (
     <div className="flex flex-col items-center justify-center px-4 mb-24 mt-18 ">
       <AiInput
-        mode={mode}
-        setMode={setMode}
         handleChange={handleChange}
         aiWord={aiChoiceStore.aiWord}
         handleClick={handleClick}
