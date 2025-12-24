@@ -1,3 +1,7 @@
+//ユーザー入力（自由文）→材料っぽい単語を分割→
+// ingredients テーブルで候補の材料IDを拾う →
+// recipe_ingredients（中間テーブル）でレシピIDに引き直す →
+// all_recipes からレシピ情報を返す
 // supabase/functions/recipes-search/searchIngredients.ts
 import { createClient } from "@supabase/supabase-js";
 import { normalize } from "./normalize.ts";
@@ -5,28 +9,29 @@ import { normalize } from "./normalize.ts";
 type Recipe = {
   id: string;
   title_original: string;
+  title_core: string;
   url: string | null;
   category: string | null;
 };
 
 type Result<T> = { data: T[]; error: Error | null };
 
-function splitTokens(raw: string) {
-  return raw
-    .split(/[\s　,、・\+\＋\/／]+/g)
+//ユーザー入力（自由文）→材料っぽい単語を分割
+const splitTokens = (raw: string) =>
+  raw
+    .split(/[\s\u3000,、・+＋/／]+/g)
     .map((s) => s.trim())
     .filter(Boolean);
-}
 
-function uniq<T>(arr: T[]) {
-  return [...new Set(arr)];
-}
+//配列から重複を削除
+const uniq = <T>(arr: T[]) => [...new Set(arr)];
 
-function intersectSets(a: Set<string>, b: Set<string>) {
+//2つのセットの共通要素を返す
+const intersectSets = (a: Set<string>, b: Set<string>) => {
   const out = new Set<string>();
   for (const x of a) if (b.has(x)) out.add(x);
   return out;
-}
+};
 
 async function findIngredientIdsForToken(
   supabase: ReturnType<typeof createClient>,
