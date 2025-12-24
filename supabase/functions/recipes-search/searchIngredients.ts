@@ -42,11 +42,32 @@ async function findIngredientIdsForToken(
   const raw = rawToken.trim();
   const norm = normToken.trim();
 
+  const MIN_NORMALIZED_LENGTH = 2;
+
+  // ===============================
+  // ① 完全一致を最優先
+  // ===============================
+  if (norm && norm.length >= MIN_NORMALIZED_LENGTH) {
+    const { data, error } = await supabase
+      .from("ingredients")
+      .select("id")
+      .eq("name_core", norm)
+      .limit(limit);
+
+    if (error) return { data: [], error: new Error(error.message) };
+    if (data && data.length > 0) {
+      return {
+        data: uniq(data.map((r: { id: string }) => r.id)),
+        error: null,
+      };
+    }
+  }
+
+  // ===============================
+  // ② フォールバック（従来どおり）
+  // ===============================
   const clauses: string[] = [];
 
-  // AND検索では本当は eq が理想だが、ユーザー入力の揺れを拾うためにまずは ilike で候補集合を作る
-  // 正規化後が1文字以下の場合は意味のない検索になるためスキップ
-  const MIN_NORMALIZED_LENGTH = 2;
   if (norm && norm.length >= MIN_NORMALIZED_LENGTH) {
     clauses.push(`name_core.ilike.%${norm}%`);
     clauses.push(`name_kana.ilike.%${norm}%`);
@@ -65,8 +86,10 @@ async function findIngredientIdsForToken(
 
   if (error) return { data: [], error: new Error(error.message) };
 
-  const ids = (data ?? []).map((r: { id: string }) => r.id);
-  return { data: uniq(ids), error: null };
+  return {
+    data: uniq((data ?? []).map((r: { id: string }) => r.id)),
+    error: null,
+  };
 }
 
 async function recipeIdsByIngredientIds(
