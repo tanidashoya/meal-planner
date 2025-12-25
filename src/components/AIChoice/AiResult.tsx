@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { SearchRecipeResult } from "../../modules/aiChoice/aichoice.entity";
 import { motion } from "framer-motion";
 import { ImageOgp } from "../ImageOgp";
@@ -5,6 +6,9 @@ import { Check } from "lucide-react";
 import ArrowRight from "../../assets/arrow_right.png";
 import { Plus } from "lucide-react";
 import downArrow from "../../assets/down_arrow.png";
+import { supabase } from "../../lib/supabase";
+import { isURL } from "../../lib/common";
+import { toast } from "react-toastify";
 
 interface AiResultProps {
   aiChoice: SearchRecipeResult[];
@@ -12,7 +16,49 @@ interface AiResultProps {
   addRecipeToMyRecipe: (params: SearchRecipeResult) => void;
   hasSearched: boolean;
   isLoading: boolean;
+  setAiSearchLoading: (loading: boolean) => void;
 }
+
+// OGPデータの型
+type OgpData = {
+  title?: string;
+  description?: string;
+  image?: string;
+};
+
+// OGPを事前に取得する関数
+const fetchOgp = async (url: string): Promise<OgpData | null> => {
+  if (!isURL(url)) return null;
+
+  const cacheKey = `ogp_${url}`;
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const cached = localStorage.getItem(cacheKey);
+  const now = Date.now();
+
+  if (cached) {
+    const parsed = JSON.parse(cached);
+    if (parsed.data?.status === 404 || parsed.data?.error) {
+      return null;
+    }
+    if (now - parsed.timestamp < ONE_DAY) {
+      return parsed.data;
+    }
+    localStorage.removeItem(cacheKey);
+  }
+
+  try {
+    const { data, error } = await supabase.functions.invoke("ogp-image", {
+      body: { url },
+    });
+    if (error || data?.status === 404 || data?.error) {
+      return null;
+    }
+    localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: now }));
+    return data;
+  } catch {
+    return null;
+  }
+};
 
 export const AiResult = ({
   aiChoice,
@@ -20,11 +66,50 @@ export const AiResult = ({
   addRecipeToMyRecipe,
   hasSearched,
   isLoading,
+  setAiSearchLoading,
 }: AiResultProps) => {
+  // OGPチェック済みの有効なレシピを保持
+  const [validRecipes, setValidRecipes] = useState<SearchRecipeResult[]>([]);
+
+  // 検索結果が変わったらOGPをチェックして有効なレシピだけをフィルタリング
+  useEffect(() => {
+    if (aiChoice.length === 0) {
+      setValidRecipes([]);
+      return;
+    }
+
+    const checkOgpForRecipes = async () => {
+      const validList: SearchRecipeResult[] = [];
+
+      // 各レシピのOGPを並行してチェック
+      const results = await Promise.all(
+        aiChoice.map(async (recipe) => {
+          const ogp = await fetchOgp(recipe.url || "");
+          return { recipe, hasValidOgp: ogp !== null && !!ogp.image };
+        })
+      );
+
+      // OGP画像が有効なレシピだけをフィルタリング
+      for (const result of results) {
+        if (result.hasValidOgp) {
+          validList.push(result.recipe);
+        }
+      }
+
+      setValidRecipes(validList);
+      // OGPチェック完了後にグローバルのローディングをfalseにする
+      setAiSearchLoading(false);
+
+      // OGPチェック完了後にtoastで通知
+      toast.success("レシピ検索が完了");
+    };
+
+    checkOgpForRecipes();
+  }, [aiChoice, setAiSearchLoading]);
   return (
     <div className="flex flex-col gap-4 w-full">
-      {/* aiChoiceが配列であり、かつ要素が0より大きい場合は以下のモーションを表示 */}
-      {Array.isArray(aiChoice) && aiChoice.length > 0 ? (
+      {/* 有効なレシピがある場合 */}
+      {validRecipes.length > 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 10 }}
@@ -32,7 +117,7 @@ export const AiResult = ({
         >
           <div className="flex flex-row justify-center items-center mt-4 mb-12 gap-2">
             <p className="text-gray-500 text-center font-bold text-lg ">
-              こんなレシピはどう？(全{aiChoice.length}件)
+              こんなレシピはどう？(全{validRecipes.length}件)
             </p>
             <img
               src={downArrow}
@@ -40,7 +125,7 @@ export const AiResult = ({
               className="w-8 h-8 animate-pulse"
             />
           </div>
-          {aiChoice.map((recipe: SearchRecipeResult, index: number) => (
+          {validRecipes.map((recipe: SearchRecipeResult, index: number) => (
             <div key={recipe.id}>
               <motion.a
                 href={recipe.url || ""}
@@ -125,7 +210,7 @@ export const AiResult = ({
             </div>
           ))}
         </motion.div>
-      ) : hasSearched ? (
+      ) : hasSearched && !isLoading ? (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

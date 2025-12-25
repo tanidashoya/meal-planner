@@ -42,7 +42,7 @@ async function findIngredientIdsForToken(
   const raw = rawToken.trim();
   const norm = normToken.trim();
 
-  const MIN_NORMALIZED_LENGTH = 2;
+  const MIN_NORMALIZED_LENGTH = 3; // 正規化後が2文字以下の場合はname_coreとの比較をスキップ
 
   // ===============================
   // ① 完全一致を最優先
@@ -127,6 +127,13 @@ export async function searchIngredients(
 
     const resolvedMode =
       mode !== "auto" ? mode : rawTokens.length >= 2 ? "and" : "or";
+
+    // デバッグログ
+    console.log("=== searchIngredients DEBUG ===");
+    console.log("query:", query);
+    console.log("rawTokens:", rawTokens);
+    console.log("mode:", mode);
+    console.log("resolvedMode:", resolvedMode);
 
     const ING_LIMIT = Math.max(30, MAX_RESULTS * 10); // 材料候補（1トークンあたり）
     const RI_LIMIT = Math.max(500, MAX_RESULTS * 200); // 中間テーブル行数（1トークンあたり）

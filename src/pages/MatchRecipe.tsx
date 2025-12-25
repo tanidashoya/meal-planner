@@ -8,6 +8,7 @@ import { recipeRepository } from "../modules/recipes/recipe.repository";
 import { AiResult } from "../components/AIChoice/AiResult";
 import { AiInput } from "../components/AIChoice/AiInput";
 import { SearchRecipeResult } from "../modules/aiChoice/aichoice.entity";
+import { normalizeIngredientByAlias } from "../lib/ingredientAlias";
 
 export const MatchRecipe = () => {
   const { currentUser } = useCurrentUserStore();
@@ -27,21 +28,25 @@ export const MatchRecipe = () => {
     //ai結果の読み込みが完了したかを判定する状態
     aiChoiceStore.setHasSearched(false);
     aiChoiceStore.set([]);
-    //optionsオブジェクトのbodyキーのqueryキーにtextを設定して送るように指示している
+
+    // フロントエンドでエイリアス正規化を適用（例: "豚こま切れ" → "豚こま"）
+    const aliasNormalizedQuery = normalizeIngredientByAlias(text);
+
+    //optionsオブジェクトのbodyキーに元のqueryとエイリアス正規化後のクエリを両方送る
     const { data, error } = await supabase.functions.invoke("recipes-search", {
-      body: { query: text },
+      body: { query: text, aliasQuery: aliasNormalizedQuery },
     });
     if (error) {
       console.error("レシピ検索に失敗", error.message);
       toast.error("レシピ検索に失敗");
-    } else {
-      toast.success("レシピ検索が完了");
+      // エラー時のみここでローディングを終了（正常時はAiResultでOGPチェック完了後に終了）
+      aiChoiceStore.setAiSearchLoading(false);
+      return;
     }
     aiChoiceStore.set(data);
     //ai結果の読み込みが完了したかを判定する状態をtrueにする
     aiChoiceStore.setHasSearched(true);
-    //ai結果の読み込み中をグローバルステートに保管
-    aiChoiceStore.setAiSearchLoading(false);
+    // ローディング終了はAiResultでOGPチェック完了後に行う
   };
 
   const handleClick = () => {
@@ -106,6 +111,7 @@ export const MatchRecipe = () => {
         addRecipeToMyRecipe={addRecipeToMyRecipe}
         hasSearched={aiChoiceStore.HasSearched}
         isLoading={aiChoiceStore.aiSearchLoading}
+        setAiSearchLoading={aiChoiceStore.setAiSearchLoading}
       />
     </div>
   );
