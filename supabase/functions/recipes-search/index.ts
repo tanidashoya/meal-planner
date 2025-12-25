@@ -56,8 +56,8 @@ Deno.serve(async (req) => {
     //   body: { query: text },
     // });
     //
-    //分割代入でqueryキーの値を変数queryに代入している？
-    const { query } = await req.json();
+    //分割代入でqueryとaliasQueryを取得（aliasQueryはフロントでエイリアス正規化済み）
+    const { query, aliasQuery } = await req.json();
     if (!query || typeof query !== "string") {
       return new Response(JSON.stringify({ error: "queryが必要です" }), {
         status: 400,
@@ -65,8 +65,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 正規化前後の値を確認
+    // 材料検索用のクエリ（エイリアス正規化済みがあればそれを使う）
+    const ingredientQuery = aliasQuery || query;
     const normalizedQuery = normalize(query);
+    const normalizedIngredientQuery = normalize(ingredientQuery);
+
+    // タイトル検索は元のqueryを使用
     const { data: titleResults, error: titleError } = await searchTitle(
       supabase,
       normalizedQuery,
@@ -74,8 +78,15 @@ Deno.serve(async (req) => {
       MAX_RESULTS
     );
 
+    // 材料検索はエイリアス正規化後のqueryを使用（複数語の場合はAND検索）
     const { data: ingredientResults, error: ingredientError } =
-      await searchIngredients(supabase, normalizedQuery, query, MAX_RESULTS);
+      await searchIngredients(
+        supabase,
+        normalizedIngredientQuery,
+        ingredientQuery,
+        MAX_RESULTS,
+        "and" // 常にAND検索を使用
+      );
 
     const error = titleError || ingredientError;
     if (error) {
@@ -85,20 +96,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 結果をマージして重複を除去（idで判定）
-    const seenIds = new Set<string>();
-    const mergedResults = [];
-    for (const item of [
-      ...(titleResults || []),
-      ...(ingredientResults || []),
-    ]) {
-      if (!seenIds.has(item.id.toString())) {
-        seenIds.add(item.id.toString());
-        mergedResults.push(item);
-      }
-    }
-    // 最大MAX_RESULTS件に制限
-    const data = mergedResults.slice(0, MAX_RESULTS);
+    // 材料検索を優先：材料検索の結果をそのまま返す（0件でもタイトル検索にフォールバックしない）
+    // タイトル検索は材料検索が実行できない場合（エイリアスがない等）のみ使用
+    const data = (ingredientResults || []).slice(0, MAX_RESULTS);
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

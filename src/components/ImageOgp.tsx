@@ -5,9 +5,10 @@ import { isURL } from "../lib/common";
 interface ImageOgpProps {
   url: string;
   className?: string;
+  onOgpError?: () => void; // OGP取得失敗時のコールバック
 }
 
-export const ImageOgp = ({ url, className }: ImageOgpProps) => {
+export const ImageOgp = ({ url, className, onOgpError }: ImageOgpProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [ogp, setOgp] = useState<{
     title?: string;
@@ -30,6 +31,10 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
 
       if (cached) {
         const parsed = JSON.parse(cached);
+        // キャッシュされたデータが404エラーの場合はnullを返す
+        if (parsed.data?.status === 404 || parsed.data?.error) {
+          return null;
+        }
         if (now - parsed.timestamp < ONE_DAY) {
           // console.log("📦 ローカルキャッシュから取得:", url);
           return parsed.data;
@@ -45,6 +50,12 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       });
       if (error) {
         console.error("OGP取得エラー:", error);
+        return null;
+      }
+
+      // 404エラーの場合はnullを返す
+      if (data?.status === 404 || data?.error) {
+        console.log("📛 ページが見つかりません:", url);
         return null;
       }
 
@@ -67,10 +78,20 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
       setIsLoading(true);
       try {
         const data = await getOgpPreview(url);
-        console.log("OGP結果:", data);
-        if (isMounted) setOgp(data); // ✅ アンマウント後なら更新しない
+        console.log("OGP結果:", url, data);
+        if (isMounted) {
+          setOgp(data);
+          // OGP画像がない場合（dataがnull、またはdata.imageがない場合）はエラーコールバックを呼び出す
+          if (!data || !data.image) {
+            console.log("📛 OGP画像なし → 非表示対象:", url);
+            onOgpError?.();
+          }
+        }
       } catch (err) {
         console.error("OGP取得エラー:", err);
+        if (isMounted) {
+          onOgpError?.();
+        }
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -80,7 +101,7 @@ export const ImageOgp = ({ url, className }: ImageOgpProps) => {
     return () => {
       isMounted = false;
     };
-  }, [url]);
+  }, [url, onOgpError]);
 
   return (
     <div className={`flex justify-center items-center ${className}`}>

@@ -225,6 +225,26 @@ Deno.serve(async (req) => {
     }
 
     // ======================================================
+    // 404エラーチェック（ページが見つからない場合）
+    // ======================================================
+    if (res.status === 404) {
+      return new Response(
+        JSON.stringify({
+          error: "ページが見つかりません",
+          status: 404,
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=86400",
+          },
+        }
+      );
+    }
+
+    // ======================================================
     // ③ DoS対策：HTMLサイズチェック（巨大HTMLでメモリ圧迫する攻撃を防ぐ）
     // ⇒ Content-Lengthが2MB以上の場合はエラーを返す
     // ⇒ HEADを返さないサーバーもあるため、fetch後にtext()する前にチェック
