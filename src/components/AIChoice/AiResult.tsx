@@ -75,6 +75,12 @@ export const AiResult = ({
   useEffect(() => {
     if (aiChoice.length === 0) {
       setValidRecipes([]);
+      // hasSearched=trueなら検索完了後の0件なのでローディング終了
+      // hasSearched=falseなら検索開始時の初期化なのでローディング継続
+      if (hasSearched) {
+        setAiSearchLoading(false);
+        toast.success("レシピ検索が完了");
+      }
       return;
     }
 
@@ -105,7 +111,7 @@ export const AiResult = ({
     };
 
     checkOgpForRecipes();
-  }, [aiChoice, setAiSearchLoading]);
+  }, [aiChoice, hasSearched, setAiSearchLoading]);
   return (
     <div className="flex flex-col gap-4 w-full">
       {/* 有効なレシピがある場合 */}

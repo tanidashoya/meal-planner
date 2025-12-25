@@ -16,6 +16,7 @@ export const INGREDIENT_ALIAS_RULES: IngredientAliasRule[] = [
   { pattern: /豚ひき.*/, canonical: "豚ひき肉" },
   { pattern: /豚ひき.*/, canonical: "豚ひき肉" },
   { pattern: /豚ミンチ.*/, canonical: "豚ひき肉" },
+  { pattern: /肉.*/, canonical: "豚こま" },
 
   // 牛肉系
   { pattern: /牛こま.*/, canonical: "牛こま" },
