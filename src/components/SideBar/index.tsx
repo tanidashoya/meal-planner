@@ -8,7 +8,6 @@ import { Item } from "./Item";
 import { Search, PlusCircle, List } from "lucide-react";
 import tasteIcon from "../../assets/taste_icon.webp";
 import { Sheet } from "../ui/sheet";
-import { Button } from "../ui/button";
 import { PanelLeft } from "lucide-react";
 import { SheetTrigger } from "../ui/sheet";
 import { SheetContent } from "../ui/sheet";
@@ -112,225 +111,90 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
   );
 
   return (
-    //<aside> 要素は HTML5 で導入された「意味を持つタグ（セマンティック要素）」のひとつ
-    //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒index.cssで定義されている
-    //border-r → 右の境界線を表示する
-    //modal={false} → 裏側のページも操作可能
-    <div className="fixed top-0 left-0 right-0 z-50 flex items-center pt-2 pb-1 border-b bg-white lg:top-0 lg:left-0 lg:right-auto lg:bottom-0 lg:w-20 lg:flex-col lg:items-stretch lg:justify-start lg:pt-2 lg:pb-2 lg:border-b-0 lg:border-r lg:bg-white">
-      <div className="flex items-center gap-1.5 w-full overflow-x-auto px-2 scrollbar-hide lg:w-full lg:flex-col lg:items-center lg:justify-start lg:overflow-visible lg:px-1 lg:gap-2">
+    <div className="fixed top-0 left-0 right-0 z-50 border-b bg-white lg:right-auto lg:bottom-0 lg:w-20 lg:border-b-0 lg:border-r">
+      <div className="flex items-end justify-around px-1 py-1 lg:flex-col lg:items-center lg:justify-start lg:h-full lg:overflow-y-auto lg:py-2 lg:px-1 lg:gap-2">
+        {/* レシピ一覧（Sheet） */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <div className="relative group shrink-0">
-              <Button
-                variant="outline"
-                className="hover:bg-white lg:m-0 !px-2 !py-3 md:!px-3 md:!py-4 lg:!px-3 lg:!py-5 !shadow-none !outline-none shrink-0 flex flex-col"
+            <div className="relative group">
+              <button
+                type="button"
+                className="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 lg:p-3 rounded-md hover:bg-gray-100"
               >
-                <PanelLeft
-                  className="!h-7 !w-7 md:!h-8 md:!w-8 text-gray-500 "
-                  strokeWidth={1.5}
-                />
+                <PanelLeft className="h-6 w-6 lg:h-7 lg:w-7 text-gray-500" strokeWidth={1.5} />
                 <MobileLabel label="一覧" />
-              </Button>
-              <HoverLabel
-                label={open ? "レシピ一覧を閉じる" : "レシピ一覧を開く"}
-              />
+              </button>
+              <HoverLabel label={open ? "レシピ一覧を閉じる" : "レシピ一覧を開く"} />
             </div>
           </SheetTrigger>
-          {/* [&_svg]:h-5 [&_svg]:w-5 → アイコンのサイズを5pxにする svg:画像フォーマットの一種で、アイコンやイラストを 数式（ベクトル）で描いている画像 */}
-          {/* Shadcn UI が内部で使っている Lucide アイコンも svg */}
-          <SheetContent
-            side="left"
-            className="w-[88vw] max-w-[340px] md:w-[320px]"
-          >
+          <SheetContent side="left" className="w-[88vw] max-w-[340px] md:w-[320px]">
             {recipePanel}
           </SheetContent>
         </Sheet>
 
-        {/* レシピランダム提案ボタン */}
-        {/* <div className="relative group shrink-0">
-          <Button
-            variant="outline"
-            className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
+        {/* ランダム提案 */}
+        <div className="relative group">
+          <button
+            type="button"
+            className="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 lg:p-3 rounded-md hover:bg-gray-100"
             onClick={() => {
-              if (!touchHandled.current) {
-                navigate("/picks");
-              }
+              if (!touchHandled.current) navigate("/suggest-recipes");
               touchHandled.current = false;
             }}
-            onTouchStart={() => {
-              touchHandled.current = true;
-              navigate("/picks");
-            }}
+            onTouchStart={() => { touchHandled.current = true; navigate("/suggest-recipes"); }}
           >
-            <img
-              src={randomPicksIcon}
-              alt="picks icon"
-              className="size-9 md:size-10"
-            />
-            <MobileLabel label="おすすめ" />
-          </Button>
-          <HoverLabel label="今日のおすすめ" />
-        </div> */}
+            <img src={weeklyRecipesIcon} alt="weekly recipes icon" className="h-6 w-6 lg:h-8 lg:w-8" />
+            <MobileLabel label="ランダム" />
+          </button>
+          <HoverLabel label="ランダム提案" />
+        </div>
 
-        {/* レシピAI探索ボタン */}
-        {/* {aiChoiceStore.aiSearchLoading ? (
-          <div className="!px-2 !ml-2 !mr-1 !shadow-none rounded-md flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        ) : (
-          <div className="relative group shrink-0">
-            <Button
-              variant="outline"
-              className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
-              onClick={() => {
-                if (!touchHandled.current) {
-                  navigate("/match-recipe");
-                }
-                touchHandled.current = false;
-              }}
-              onTouchStart={() => {
-                touchHandled.current = true;
-                navigate("/match-recipe");
-              }}
-            >
-              <img
-                src={matchRecipeIcon}
-                alt="picks icon"
-                className="size-10 md:size-11"
-              />
-              <MobileLabel label="AI探索" />
-            </Button>
-            <HoverLabel label="AIレシピ探索" />
-          </div>
-        )} */}
-        {/* 外部サイトへのリンクボタン */}
-        {/* <div className="relative group shrink-0">
-          <Button
-            variant="outline"
-            className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
-            onClick={() => {
-              if (!touchHandled.current) {
-                navigate("/outside-site");
-              }
-              touchHandled.current = false;
-            }}
-            onTouchStart={() => {
-              touchHandled.current = true;
-              navigate("/outside-site");
-            }}
-          >
-            <img
-              src={outsideSiteIcon}
-              alt="outside site icon"
-              className="size-8 md:size-9"
-            />
-            <MobileLabel label="外部サイト" />
-          </Button>
-          <HoverLabel label="外部サイト" />
-        </div> */}
-
+        {/* === PC専用ボタン群（lg以上で表示） === */}
         <div className="hidden lg:flex flex-col items-center gap-2">
           <div className="relative group">
-            <Button
-              variant="outline"
-              className="hover:bg-white !px-3 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-              onClick={() => {
-                if (!touchHandled.current) {
-                  navigate("/");
-                }
-                touchHandled.current = false;
-              }}
-              onTouchStart={() => {
-                touchHandled.current = true;
-                navigate("/");
-              }}
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-0.5 p-3 rounded-md hover:bg-gray-100"
+              onClick={() => { if (!touchHandled.current) navigate("/"); touchHandled.current = false; }}
+              onTouchStart={() => { touchHandled.current = true; navigate("/"); }}
             >
-              <PlusCircle className="size-8 text-gray-500" strokeWidth={1.5} />
-            </Button>
+              <PlusCircle className="h-7 w-7 text-gray-500" strokeWidth={1.5} />
+            </button>
             <HoverLabel label="レシピ追加" />
           </div>
           <div className="relative group">
-            <Button
-              variant="outline"
-              className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-              onClick={() => {
-                if (!touchHandled.current) {
-                  navigate("/star-sort");
-                }
-                touchHandled.current = false;
-              }}
-              onTouchStart={() => {
-                touchHandled.current = true;
-                navigate("/star-sort");
-              }}
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-0.5 p-3 rounded-md hover:bg-gray-100"
+              onClick={() => { if (!touchHandled.current) navigate("/star-sort"); touchHandled.current = false; }}
+              onTouchStart={() => { touchHandled.current = true; navigate("/star-sort"); }}
             >
-              <img src={tasteIcon} alt="taste icon" className="size-8" />
-            </Button>
+              <img src={tasteIcon} alt="taste icon" className="h-7 w-7" />
+            </button>
             <HoverLabel label="おいしさ順" />
           </div>
           <div className="relative group">
-            <Button
-              variant="outline"
-              className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
-              onClick={() => {
-                if (!touchHandled.current) {
-                  navigate("/time-sort");
-                }
-                touchHandled.current = false;
-              }}
-              onTouchStart={() => {
-                touchHandled.current = true;
-                navigate("/time-sort");
-              }}
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-0.5 p-3 rounded-md hover:bg-gray-100"
+              onClick={() => { if (!touchHandled.current) navigate("/time-sort"); touchHandled.current = false; }}
+              onTouchStart={() => { touchHandled.current = true; navigate("/time-sort"); }}
             >
-              <img src={watchIcon} alt="watch icon" className="size-8" />
-            </Button>
+              <img src={watchIcon} alt="watch icon" className="h-7 w-7" />
+            </button>
             <HoverLabel label="調理時間順" />
           </div>
           <div className="relative group">
-            <Button
-              variant="outline"
-              className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none flex flex-col"
-              onClick={() => {
-                if (!touchHandled.current) {
-                  navigate("/all-recipes");
-                }
-                touchHandled.current = false;
-              }}
-              onTouchStart={() => {
-                touchHandled.current = true;
-                navigate("/all-recipes");
-              }}
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-0.5 p-3 rounded-md hover:bg-gray-100"
+              onClick={() => { if (!touchHandled.current) navigate("/all-recipes"); touchHandled.current = false; }}
+              onTouchStart={() => { touchHandled.current = true; navigate("/all-recipes"); }}
             >
-              <img src={allIcon} alt="all recipes icon" className="size-8" />
-              <MobileLabel label="全レシピ" />
-            </Button>
+              <img src={allIcon} alt="all recipes icon" className="h-7 w-7" />
+            </button>
             <HoverLabel label="全レシピ一覧" />
           </div>
-        </div>
-        <div className="relative group shrink-0">
-          <Button
-            variant="outline"
-            className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
-            onClick={() => {
-              if (!touchHandled.current) {
-                navigate("/suggest-recipes");
-              }
-              touchHandled.current = false;
-            }}
-            onTouchStart={() => {
-              touchHandled.current = true;
-              navigate("/suggest-recipes");
-            }}
-          >
-            <img
-              src={weeklyRecipesIcon}
-              alt="weekly recipes icon"
-              className="size-9 md:size-10"
-            />
-            <MobileLabel label="ランダム" />
-          </Button>
-          <HoverLabel label="ランダム提案" />
         </div>
       </div>
     </div>

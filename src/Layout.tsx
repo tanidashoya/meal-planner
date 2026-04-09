@@ -151,7 +151,7 @@ export const Layout = () => {
   // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
   // md:flex-row:ブレイクポイントがmd以上のときにflex-rowにする
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-white">
+    <div className="h-[100dvh] flex flex-col lg:flex-row bg-white">
       <div>
         <SideBar openModal={openModal} open={open} setOpen={setOpen} />
       </div>
@@ -160,7 +160,7 @@ export const Layout = () => {
       {/* mainが実際にスクロール可能なコンテナとなる */}
       <main
         id="scroll-container"
-        className="flex-1 h-full pt-20 pb-20 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col px-3 sm:px-4 md:px-6"
+        className="flex-1 h-full pt-16 pb-18 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col px-3 sm:px-4 md:px-6"
       >
         <div className="w-full max-w-[1280px] mx-auto flex-1">
           <Outlet />
