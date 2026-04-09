@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     const normalizedIngredientQuery = normalize(ingredientQuery);
 
     // タイトル検索は元のqueryを使用
-    const { data: titleResults, error: titleError } = await searchTitle(
+    const { error: titleError } = await searchTitle(
       supabase,
       normalizedQuery,
       query,

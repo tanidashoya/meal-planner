@@ -160,7 +160,7 @@ export const Layout = () => {
       {/* mainが実際にスクロール可能なコンテナとなる */}
       <main
         id="scroll-container"
-        className="flex-1 h-full pt-15 pb-20 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col px-3 sm:px-4 md:px-6"
+        className="flex-1 h-full pt-20 pb-20 lg:pt-0 lg:pb-0 lg:ml-20 overflow-y-auto flex flex-col px-3 sm:px-4 md:px-6"
       >
         <div className="w-full max-w-[1280px] mx-auto flex-1">
           <Outlet />
