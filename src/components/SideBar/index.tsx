@@ -35,6 +35,12 @@ const HoverLabel = ({ label }: { label: string }) => (
   </span>
 );
 
+const MobileLabel = ({ label }: { label: string }) => (
+  <span className="lg:hidden text-[10px] leading-none text-gray-500 mt-1 whitespace-nowrap">
+    {label}
+  </span>
+);
+
 export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
   //AI処理中どうかの判定に使うグローバルステート
   // const aiChoiceStore = useAiChoiceStore();
@@ -110,19 +116,20 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
     //bg-secondary → 補助的な背景色（グレー系になることが多い）⇒index.cssで定義されている
     //border-r → 右の境界線を表示する
     //modal={false} → 裏側のページも操作可能
-    <div className="fixed top-0 left-0 right-0 z-50 flex items-center pt-3 pb-1 border-b bg-white lg:top-0 lg:left-0 lg:right-auto lg:bottom-0 lg:w-20 lg:flex-col lg:items-stretch lg:justify-start lg:pt-2 lg:pb-2 lg:border-b-0 lg:border-r lg:bg-white">
+    <div className="fixed top-0 left-0 right-0 z-50 flex items-center pt-2 pb-1 border-b bg-white lg:top-0 lg:left-0 lg:right-auto lg:bottom-0 lg:w-20 lg:flex-col lg:items-stretch lg:justify-start lg:pt-2 lg:pb-2 lg:border-b-0 lg:border-r lg:bg-white">
       <div className="flex items-center gap-1.5 w-full overflow-x-auto px-2 scrollbar-hide lg:w-full lg:flex-col lg:items-center lg:justify-start lg:overflow-visible lg:px-1 lg:gap-2">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <div className="relative group shrink-0">
               <Button
                 variant="outline"
-                className="hover:bg-white lg:m-0 !px-3 !py-5 md:!px-4 md:!py-6 lg:!px-3 lg:!py-5 !shadow-none !outline-none shrink-0"
+                className="hover:bg-white lg:m-0 !px-2 !py-3 md:!px-3 md:!py-4 lg:!px-3 lg:!py-5 !shadow-none !outline-none shrink-0 flex flex-col"
               >
                 <PanelLeft
                   className="!h-7 !w-7 md:!h-8 md:!w-8 text-gray-500 "
                   strokeWidth={1.5}
                 />
+                <MobileLabel label="一覧" />
               </Button>
               <HoverLabel
                 label={open ? "レシピ一覧を閉じる" : "レシピ一覧を開く"}
@@ -143,7 +150,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         {/* <div className="relative group shrink-0">
           <Button
             variant="outline"
-            className="hover:bg-white !px-2 !py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0"
+            className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
             onClick={() => {
               if (!touchHandled.current) {
                 navigate("/picks");
@@ -160,6 +167,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
               alt="picks icon"
               className="size-9 md:size-10"
             />
+            <MobileLabel label="おすすめ" />
           </Button>
           <HoverLabel label="今日のおすすめ" />
         </div> */}
@@ -173,7 +181,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <div className="relative group shrink-0">
             <Button
               variant="outline"
-              className="hover:bg-white !px-2 !py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0"
+              className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
               onClick={() => {
                 if (!touchHandled.current) {
                   navigate("/match-recipe");
@@ -190,6 +198,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
                 alt="picks icon"
                 className="size-10 md:size-11"
               />
+              <MobileLabel label="AI探索" />
             </Button>
             <HoverLabel label="AIレシピ探索" />
           </div>
@@ -198,7 +207,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         {/* <div className="relative group shrink-0">
           <Button
             variant="outline"
-            className="hover:bg-white !px-2 !py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0"
+            className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
             onClick={() => {
               if (!touchHandled.current) {
                 navigate("/outside-site");
@@ -215,6 +224,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
               alt="outside site icon"
               className="size-8 md:size-9"
             />
+            <MobileLabel label="外部サイト" />
           </Button>
           <HoverLabel label="外部サイト" />
         </div> */}
@@ -280,7 +290,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
           <div className="relative group">
             <Button
               variant="outline"
-              className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none"
+              className="hover:bg-white !px-2 !py-5 lg:mt-2 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none flex flex-col"
               onClick={() => {
                 if (!touchHandled.current) {
                   navigate("/all-recipes");
@@ -293,6 +303,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
               }}
             >
               <img src={allIcon} alt="all recipes icon" className="size-8" />
+              <MobileLabel label="全レシピ" />
             </Button>
             <HoverLabel label="全レシピ一覧" />
           </div>
@@ -300,7 +311,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
         <div className="relative group shrink-0">
           <Button
             variant="outline"
-            className="hover:bg-white !px-2 !py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0"
+            className="hover:bg-white !px-2 !py-3 lg:py-5 lg:mt-0 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none shrink-0 flex flex-col"
             onClick={() => {
               if (!touchHandled.current) {
                 navigate("/suggest-recipes");
@@ -317,6 +328,7 @@ export const SideBar = ({ openModal, open, setOpen }: SideBarProps) => {
               alt="weekly recipes icon"
               className="size-9 md:size-10"
             />
+            <MobileLabel label="ランダム" />
           </Button>
           <HoverLabel label="ランダム提案" />
         </div>
