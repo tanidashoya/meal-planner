@@ -113,7 +113,7 @@ export const AiResult = ({
     checkOgpForRecipes();
   }, [aiChoice, hasSearched, setAiSearchLoading]);
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto">
       {/* 有効なレシピがある場合 */}
       {validRecipes.length > 0 ? (
         <motion.div
@@ -162,13 +162,13 @@ export const AiResult = ({
                   </span>
                 </div>
 
-                <div className="flex flex-row gap-2 border p-2 rounded-md justify-center items-center">
-                  <ImageOgp url={recipe.url || ""} className="w-[148px]" />
-                  <div className="flex flex-1 flex-col gap-1 w-1/2">
+                <div className="flex flex-col sm:flex-row gap-2 border p-2 rounded-md justify-center sm:items-center">
+                  <ImageOgp url={recipe.url || ""} className="w-full sm:w-[148px]" />
+                  <div className="flex flex-1 flex-col gap-1 min-w-0">
                     <span className="text-sm bleak-all text-gray-500">
                       {recipe.title_original}
                     </span>
-                    <span className="text-sm truncate text-blue-500 font-medium">
+                    <span className="text-sm break-all text-blue-500 font-medium">
                       {recipe.url}
                     </span>
                   </div>
@@ -185,7 +185,7 @@ export const AiResult = ({
                   duration: 0.8,
                   ease: [0.22, 1, 0.36, 1], // ゆっくり自然なカーブ
                 }}
-                className="flex justify-end mt-2 mb-4"
+                className="flex justify-end mt-2 mb-4 pr-1"
               >
                 {isAddingRecipe[recipe.id] ? (
                   <div className="flex items-center gap-1 bg-secondary-500 rounded-md px-4 py-2">
@@ -193,7 +193,7 @@ export const AiResult = ({
                     <span className=" text-sm">追加しました</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 mb-4">
+                  <div className="flex items-center gap-1 mb-4 flex-wrap justify-end">
                     <img
                       src={ArrowRight}
                       alt="arrow-right"

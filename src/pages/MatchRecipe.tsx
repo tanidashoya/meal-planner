@@ -99,7 +99,7 @@ export const MatchRecipe = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 mb-24 mt-18 ">
+    <div className="flex flex-col items-center justify-center px-2 sm:px-4 mb-24 mt-18 w-full max-w-6xl mx-auto">
       <AiInput
         handleChange={handleChange}
         aiWord={aiChoiceStore.aiWord}

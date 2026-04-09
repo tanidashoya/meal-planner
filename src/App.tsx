@@ -72,7 +72,7 @@ function App() {
   //状態やprops、親コンポーネントの再レンダリングが起きれば再実行される ⇒ ここではisLoadingの値が変わると再実行される
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+      <div className="flex flex-col items-center justify-center h-screen bg-white">
         {/* 要素に 点滅（パルス）アニメーション を付けます。背景色や文字色が「ふわっ → 薄く → ふわっ」と繰り返し変化するような効果。 */}
         <div className="animate-pulse mb-12 md:mb-4 flex flex-col items-center justify-center">
           <img

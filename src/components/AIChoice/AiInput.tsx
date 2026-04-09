@@ -14,7 +14,7 @@ export const AiInput = ({
   handleClick,
 }: AiInputProps) => {
   return (
-    <div className="w-full flex flex-col items-center justify-center mt-[-12px]">
+    <div className="w-full max-w-3xl flex flex-col items-center justify-center mt-[-12px]">
       <motion.img
         src={aiIcon}
         alt="ai icon"
@@ -32,7 +32,7 @@ export const AiInput = ({
       <span className="text-base font-medium text-center w-full text-gray-500 mt-2">
         検索ワードを入力してください！
       </span>
-      <div className="py-5 px-3 rounded-md border-2 border-gray-300 mt-3 ">
+      <div className="py-5 px-3 sm:px-4 rounded-md border-2 border-gray-300 mt-3 w-full bg-white">
         <div className="flex flex-row items-center justify-center mb-4 gap-1">
           <input
             type="text"
@@ -52,7 +52,7 @@ export const AiInput = ({
         <div className="flex flex-row gap-4 mt-4 w-full">
           <button
             onClick={() => handleClick()}
-            className="w-3/5 mx-auto bg-green-500 text-white px-4 py-2 rounded-md  shadow-md"
+            className="w-full sm:w-3/5 mx-auto bg-green-500 text-white px-4 py-2 rounded-md shadow-md"
           >
             検索を開始
           </button>

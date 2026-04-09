@@ -85,9 +85,9 @@ export const UnratedRecipes = () => {
   }
 
   return (
-    <Card className="border-0 shadow-none m-auto lg:w-3/5 w-full h-full pb-8 mt-15 gap-3">
-      <CardContent className="p-2 pb-28">
-        <h2 className="font-['Inter'] text-xl font-bold text-gray-600 mb-15 text-center">
+    <Card className="border-0 shadow-none m-auto w-full max-w-6xl h-full pb-8 mt-15 gap-3">
+      <CardContent className="p-2 sm:p-3 pb-28">
+        <h2 className="font-['Inter'] text-xl sm:text-2xl font-bold text-gray-600 mb-12 sm:mb-15 text-center">
           未評価レシピ一覧（全{unratedRecipes.length}件）
         </h2>
 
@@ -111,11 +111,11 @@ export const UnratedRecipes = () => {
           {arrayUnratedRecipes.map(([category, recipes]) => (
             <SwiperSlide key={category} className="!flex !justify-center">
               <div className="w-[96%] max-w-full">
-                <h2 className="text-2xl text-gray-600 font-bold mb-6 text-center">
+                <h2 className="text-xl sm:text-2xl text-gray-600 font-bold mb-6 text-center">
                   {category} ( {recipes.length}件 )
                 </h2>
                 {recipes.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
                     {recipes.map((recipe) => (
                       <div
                         key={recipe.id}

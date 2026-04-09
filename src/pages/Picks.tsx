@@ -66,7 +66,7 @@ export const Picks = () => {
       setIsLoading(true);
       const dailyId = await picksRepository.fetchNewDateID();
       const officialRecipes = await picksRepository.fetchOfficialRecipes(
-        dailyId.id
+        dailyId.id,
       );
       if (officialRecipes == null) {
         return;
@@ -94,67 +94,69 @@ export const Picks = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       ) : (
-        officialRecipes.map((officialRecipe) => (
-          <motion.div
-            key={officialRecipe.id}
-            className="mb-2 p-0 w-[90%]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.5,
-              delay: 0.2,
-            }}
-          >
-            <div>
-              <a
-                href={officialRecipe.url || ""}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full p-4 focus:!outline-none border !border-gray-300 !shadow-sm overflow-hidden rounded-lg hover:bg-gray-50"
-              >
-                <div className="flex flex-col items-center justify-center gap-2 mb-4 w-full p-0">
-                  <span className="block break-all w-full text-left text-base font-bold text-gray-700">
-                    {officialRecipe.title}
-                  </span>
-                  <span className="block text-blue-500 font-medium text-sm truncate w-full">
-                    {officialRecipe.url}
-                  </span>
-                </div>
-                <ImageOgp
-                  url={officialRecipe.url || ""}
-                  className="w-full h-28 my-0"
-                />
-              </a>
-            </div>
-            {/* Myレシピに追加ボタン(押したらisAddingRecipeの状態でofficialRecipe.idをキーにしてtrueにする) */}
-            {/* その状態（オブジェクト）内に追加したIDのキーがtru担っていたら追加しました */}
-            <div className="flex justify-end mt-2 mb-4">
-              {isAddingRecipe[officialRecipe.id] ? (
-                <div className="flex items-center gap-1 bg-secondary-500 rounded-md px-4 py-2">
-                  <Check className="h-4 w-4 text-white-500" />
-                  <span className=" text-sm">追加しました</span>
-                </div>
-              ) : (
-                <button
-                  onClick={() =>
-                    createRecipe({
-                      title: officialRecipe.title || "",
-                      source: officialRecipe.url || "",
-                      category: officialRecipe.category || "",
-                      id: officialRecipe.id,
-                    })
-                  }
-                  className="flex items-center gap-1 bg-green-400 text-white px-4 py-2 rounded-md"
+        <div className="w-full max-w-6xl px-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {officialRecipes.map((officialRecipe) => (
+            <motion.div
+              key={officialRecipe.id}
+              className="mb-2 p-0 w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.2,
+              }}
+            >
+              <div>
+                <a
+                  href={officialRecipe.url || ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full p-4 focus:!outline-none border !border-gray-300 !shadow-sm overflow-hidden rounded-lg hover:bg-gray-50"
                 >
-                  <div className="flex items-center gap-1">
-                    <Plus className="h-4 w-4 text-white-500" />
-                    <span className="text-white text-sm">Myレシピに追加</span>
+                  <div className="flex flex-col items-center justify-center gap-2 mb-4 w-full p-0">
+                    <span className="block break-all w-full text-left text-base font-bold text-gray-700">
+                      {officialRecipe.title}
+                    </span>
+                    <span className="block text-blue-500 font-medium text-sm truncate w-full">
+                      {officialRecipe.url}
+                    </span>
                   </div>
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ))
+                  <ImageOgp
+                    url={officialRecipe.url || ""}
+                    className="w-full h-28 my-0"
+                  />
+                </a>
+              </div>
+              {/* Myレシピに追加ボタン(押したらisAddingRecipeの状態でofficialRecipe.idをキーにしてtrueにする) */}
+              {/* その状態（オブジェクト）内に追加したIDのキーがtru担っていたら追加しました */}
+              <div className="flex justify-end mt-2 mb-4">
+                {isAddingRecipe[officialRecipe.id] ? (
+                  <div className="flex items-center gap-1 bg-secondary-500 rounded-md px-4 py-2">
+                    <Check className="h-4 w-4 text-white-500" />
+                    <span className=" text-sm">追加しました</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() =>
+                      createRecipe({
+                        title: officialRecipe.title || "",
+                        source: officialRecipe.url || "",
+                        category: officialRecipe.category || "",
+                        id: officialRecipe.id,
+                      })
+                    }
+                    className="flex items-center gap-1 bg-green-400 text-white px-4 py-2 rounded-md"
+                  >
+                    <div className="flex items-center gap-1">
+                      <Plus className="h-4 w-4 text-white-500" />
+                      <span className="text-white text-sm">Myレシピに追加</span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
       )}
     </div>
   );
