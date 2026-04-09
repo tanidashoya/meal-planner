@@ -234,6 +234,15 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* PWA専用のスクロール問題対策 */
 /* PWA（Progressive Web App）とは、Webアプリケーションをモバイルアプリのようにインストールできるようにする技術 */
 /* display-mode: standalone → アプリとしてインストールされた場合のみ適用 */

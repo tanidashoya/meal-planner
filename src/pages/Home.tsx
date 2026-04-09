@@ -64,29 +64,29 @@ export function Home() {
   //m-auto: 左右のマージンを自動で設定し、水平方向の中央揃えを行います
   // w-1/2: 幅を親要素の50%に設定します
   return (
-    <div className="h-full max-h-full flex items-center justify-center overflow-hidden">
-      <Card className="border-0 shadow-none w-[95%] sm:w-[90%] lg:w-3/5 gap-2">
+    <div className="h-full max-h-full flex items-center justify-center py-4 sm:py-6">
+      <Card className="border-0 shadow-none w-full max-w-4xl gap-2">
         <CardHeader>
           <CardTitle className="text-xl font-['Inter'] font-bold md:text-5xl font-medium tracking-wide text-center text-gray-800">
             <img
               src={mealPlanner}
               alt="mealPlanner"
-              className="h-[120px] m-auto"
+              className="h-24 sm:h-28 md:h-[120px] m-auto"
             />
           </CardTitle>
           <CardDescription className="text-base md:text-2xl font-medium lg:mt-16 text-gray-500 text-center mb-4">
             新しいレシピを追加しよう！
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-3.5 border-2 border-gray-300 rounded-lg px-6 py-6 shadow-sm lg:gap-3.5">
+        <CardContent className="flex flex-col gap-3.5 border-2 border-gray-300 rounded-lg px-4 sm:px-6 py-5 sm:py-6 shadow-sm lg:gap-3.5 bg-white">
           {/* categoryの入力欄を作成する */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap">
             <SelectCategory
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
               isSelectOpen={isSelectOpen}
               setIsSelectOpen={setIsSelectOpen}
-              className="w-[170px]"
+              className="w-[160px] sm:w-[180px]"
             />
             <span className="text-red-500 ml-2 text-base md:text-lg">
               ※必須
@@ -94,8 +94,8 @@ export function Home() {
           </div>
           {/* recipeTitleの入力欄・参照元の入力欄を作成する */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-1">
-              <div className="w-4/5">
+            <div className="flex items-center gap-1 flex-wrap">
+              <div className="w-full sm:w-4/5">
                 <input
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -109,7 +109,7 @@ export function Home() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1 w-4/5">
+            <div className="flex items-center gap-1 w-full sm:w-4/5">
               <input
                 type="text"
                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -129,7 +129,7 @@ export function Home() {
                 source: source,
               })
             }
-            className="w-[180px] mt-4 bg-green-500 mx-auto "
+            className="w-full max-w-[220px] mt-4 bg-green-500 mx-auto"
             disabled={!recipeTitle.trim() || !selectedCategory}
           >
             {isLoading ? (

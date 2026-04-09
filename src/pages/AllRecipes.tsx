@@ -106,9 +106,9 @@ export const AllRecipes = () => {
   }
 
   return (
-    <Card className="border-0 shadow-none m-auto lg:w-3/5 w-full h-full pb-8 mt-12 gap-3">
-      <CardContent className="p-2 pb-28">
-        <h2 className="font-['Inter'] text-2xl font-bold text-gray-600 mb-8 text-center">
+    <Card className="border-0 shadow-none m-auto w-full max-w-6xl h-full pb-8 mt-12 gap-3">
+      <CardContent className="p-2 sm:p-3 pb-28">
+        <h2 className="font-['Inter'] text-xl sm:text-2xl font-bold text-gray-600 mb-8 text-center">
           Myレシピ一覧（全{recipes.length}件）
         </h2>
 
@@ -118,7 +118,7 @@ export const AllRecipes = () => {
             placeholder="レシピタイトルで検索"
             value={searchText}
             onChange={handleChange}
-            className="border border-gray-400 rounded-md py-2 px-4 gap-6 lg:p-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full max-w-md border border-gray-400 rounded-md py-2 px-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
@@ -142,11 +142,11 @@ export const AllRecipes = () => {
           {filteredRecipes.map(([category, recipes]) => (
             <SwiperSlide key={category} className="!flex !justify-center">
               <div className="w-[96%] max-w-full">
-                <h2 className="text-2xl text-gray-600 font-bold mb-6 text-center">
+                <h2 className="text-xl sm:text-2xl text-gray-600 font-bold mb-6 text-center">
                   {category} ( {recipes.length}件 )
                 </h2>
                 {recipes.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
                     {recipes.map((recipe) => (
                       <div
                         key={recipe.id}

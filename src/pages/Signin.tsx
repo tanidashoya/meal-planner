@@ -67,11 +67,11 @@ export function Signin() {
     return <Navigate replace to="/" />;
   }
   return (
-    <div className="flex flex-col items-center justify-center h-[100dvh] lg:w-screen">
-      <span className="text-4xl font-bold mb-8">ログイン</span>
-      <div className="flex flex-col items-center justify-center gap-y-2 border border-gray-300 rounded-md p-6 w-[90%] md:w-[480px]">
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-8 sm:py-10 bg-white">
+      <span className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">ログイン</span>
+      <div className="flex flex-col items-center justify-center gap-y-3 border border-gray-300 rounded-md p-5 sm:p-6 w-full max-w-[480px] bg-white shadow-sm">
         {/* メールアドレス */}
-        <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
+        <div className="flex flex-col justify-center gap-y-2 w-full max-w-96">
           <span className="text-base font-bold">Eメールアドレス：</span>
           <input
             type="email"
@@ -89,7 +89,7 @@ export function Signin() {
           )}
         </div>
         {/* パスワード */}
-        <div className="flex flex-col justify-center gap-y-2 w-[90%] md:w-96">
+        <div className="flex flex-col justify-center gap-y-2 w-full max-w-96">
           <span className="text-base font-bold">パスワード：</span>
           <input
             type="password"
@@ -111,7 +111,7 @@ export function Signin() {
             !email || !password || isLoading || Object.keys(errors).length > 0
           }
           onClick={handleSignIn}
-          className="w-60 p-2 border border-gray-300 rounded-md bg-blue-200 mb-8 mt-8 disabled:bg-gray-100 disabled:!cursor-not-allowed disabled:!border-gray-200"
+          className="w-full max-w-60 p-2 border border-gray-300 rounded-md bg-blue-200 mb-6 mt-6 disabled:bg-gray-100 disabled:!cursor-not-allowed disabled:!border-gray-200"
         >
           {isLoading ? (
             <div className="flex items-center justify-center">
@@ -121,7 +121,7 @@ export function Signin() {
             <span className="text-base">ログイン</span>
           )}
         </button>
-        <span className="text-base">
+        <span className="text-sm sm:text-base text-center">
           アカウントをお持ちでない方は
           <Link to="/signup">
             <p className="text-center text-base hover:border-b hover:border-blue-300 ml-2 transition-all duration-200 mt-2">

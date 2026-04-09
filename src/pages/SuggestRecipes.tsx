@@ -30,7 +30,7 @@ export const SuggestRecipes = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2 mt-15 mb-12">
+    <div className="flex flex-col items-center justify-center gap-2 mt-15 mb-12 w-full max-w-6xl mx-auto">
       <div className="flex flex-col items-center justify-center gap-8 mb-8">
         <p className="text-xl font-bold text-center tracking-wider">
           Myレシピから提案
@@ -44,7 +44,7 @@ export const SuggestRecipes = () => {
           ランダムレシピ出力
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-3 px-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 px-2 sm:px-4 w-full">
         {suggestRecipes.map((recipe) => (
           <div
             key={recipe.id}
