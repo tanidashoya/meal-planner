@@ -19,7 +19,7 @@ export const BottomBar = () => {
   //}}
   //これでスマホでタッチしたときにブラウザのデフォルトの動作を防止して、コンポーネントの遷移を可能にしている
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-gray-200 bg-white w-full flex justify-center items-center gap-0 px-1 h-16 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
+    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-gray-200 bg-white w-full flex justify-center items-center gap-0 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]" style={{ minHeight: "64px" }}>
       <Button
         variant="outline"
         className="flex flex-col items-center hover:bg-white !px-1.5 !py-5 !shadow-none !outline-none focus:!outline-none focus-visible:!outline-none gap-1 flex-1 min-w-0"
